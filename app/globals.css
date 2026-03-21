@@ -2,14 +2,17 @@
 
 :root {
   --canvas: #efe4cd;
-  --surface: rgba(255, 250, 238, 0.88);
+  --surface: rgba(255, 251, 242, 0.84);
   --surface-strong: #f7efe0;
+  --surface-muted: rgba(247, 239, 224, 0.82);
+  --surface-float: rgba(255, 250, 240, 0.92);
   --ink: #342b21;
   --ink-strong: #231b15;
   --ink-muted: rgba(52, 43, 33, 0.72);
   --ink-soft: rgba(52, 43, 33, 0.56);
   --line: rgba(91, 74, 43, 0.12);
-  --line-strong: rgba(91, 74, 43, 0.24);
+  --line-strong: rgba(91, 74, 43, 0.22);
+  --line-heavy: rgba(91, 74, 43, 0.32);
   --accent: #ca8c47;
   --accent-soft: rgba(202, 140, 71, 0.14);
   --positive: #2f6b57;
@@ -21,6 +24,7 @@
   --chart-3: #6e5d8f;
   --font-display: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Palatino, Georgia, serif;
   --font-sans: "Avenir Next", "Segoe UI", "Helvetica Neue", sans-serif;
+  color-scheme: light;
 }
 
 * {
@@ -34,6 +38,13 @@ html {
 body {
   margin: 0;
   font-family: var(--font-sans), sans-serif;
+  background:
+    radial-gradient(circle at top left, rgba(229, 196, 142, 0.24), transparent 34%),
+    radial-gradient(circle at top right, rgba(55, 84, 74, 0.08), transparent 28%),
+    linear-gradient(180deg, rgba(255, 250, 241, 0.72), rgba(239, 228, 205, 0.96));
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 
 a {
@@ -49,4 +60,11 @@ textarea {
 
 ::selection {
   background: rgba(202, 140, 71, 0.24);
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
 }

@@ -1,4 +1,5 @@
 type BarDatum = {
+  id: string;
   label: string;
   value: number | null;
 };
@@ -23,7 +24,7 @@ export function MicroBarChart({ items, height = 180 }: MicroBarChartProps) {
         const color = index % 3 === 0 ? "var(--chart-1)" : index % 3 === 1 ? "var(--chart-2)" : "var(--chart-3)";
 
         return (
-          <g key={item.label}>
+          <g key={item.id}>
             <rect
               x={x}
               y={y}

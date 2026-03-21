@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { ChatPanel } from "@/components/ticker/chat-panel";
 import { HistoryPanel } from "@/components/ticker/history-panel";
 import { NewsPanel } from "@/components/ticker/news-panel";
+import { RecentSymbolTracker } from "@/components/ticker/recent-symbol-tracker";
 import { ResearchSections } from "@/components/ticker/research-sections";
 import { TickerHeader } from "@/components/ticker/ticker-header";
 import { SetupPanel } from "@/components/ui/setup-panel";
@@ -40,7 +41,8 @@ export default async function TickerPage({ params }: TickerPageProps) {
   ]);
 
   return (
-    <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_340px]">
+    <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_360px]">
+      <RecentSymbolTracker symbol={normalizedSymbol} />
       <div className="space-y-6">
         <TickerHeader data={overview} />
         <HistoryPanel
@@ -48,10 +50,10 @@ export default async function TickerPage({ params }: TickerPageProps) {
           currency={overview.overview.currency ?? "USD"}
           initialData={historyResult.status === "fulfilled" ? historyResult.value : null}
         />
-        <NewsPanel data={newsResult.status === "fulfilled" ? newsResult.value : null} />
         <ResearchSections symbol={normalizedSymbol} nextEarningsDate={overview.overview.earnings_date} />
       </div>
-      <div>
+      <div className="space-y-6">
+        <NewsPanel data={newsResult.status === "fulfilled" ? newsResult.value : null} />
         <ChatPanel symbol={normalizedSymbol} />
       </div>
     </div>

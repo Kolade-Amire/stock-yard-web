@@ -44,55 +44,63 @@ export function HistoryPanel({ symbol, currency, initialData }: HistoryPanelProp
   const latestBar = bars[bars.length - 1] ?? null;
 
   return (
-    <Card className="px-5 py-5">
-      <div className="mb-5 flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
-        <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.28em] text-(--ink-soft)">Price context</p>
-          <h2 className="mt-2 font-(family-name:--font-display) text-3xl text-(--ink)">Chart deck</h2>
+    <Card variant="panel" className="px-5 py-5">
+      <div className="mb-5 flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
+        <div className="space-y-2">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-(--ink-soft)">Price context</p>
+          <div className="flex flex-wrap items-end gap-4">
+            <h2 className="font-(family-name:--font-display) text-[2.4rem] leading-none text-(--ink)">Chart deck</h2>
+            <p className="text-sm text-(--ink-muted)">{formatCurrency(latestBar?.close ?? null, currency)} latest close</p>
+          </div>
         </div>
-        <div className="flex flex-wrap gap-2">
-          {HISTORY_PERIODS.map((item) => (
-            <Button
-              key={item}
-              variant={item === period ? "primary" : "secondary"}
-              size="compact"
-              onClick={() => {
-                const nextInterval = HISTORY_INTERVALS_BY_PERIOD[item].includes(activeInterval)
-                  ? activeInterval
-                  : HISTORY_INTERVALS_BY_PERIOD[item][0];
+        <div className="space-y-2">
+          <div className="flex flex-wrap gap-2">
+            {HISTORY_PERIODS.map((item) => (
+              <Button
+                key={item}
+                variant={item === period ? "primary" : "secondary"}
+                size="compact"
+                onClick={() => {
+                  const nextInterval = HISTORY_INTERVALS_BY_PERIOD[item].includes(activeInterval)
+                    ? activeInterval
+                    : HISTORY_INTERVALS_BY_PERIOD[item][0];
 
-                setPeriod(item);
-                setInterval(nextInterval);
-              }}
-            >
-              {item}
-            </Button>
-          ))}
+                  setPeriod(item);
+                  setInterval(nextInterval);
+                }}
+              >
+                {item}
+              </Button>
+            ))}
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {HISTORY_INTERVALS_BY_PERIOD[period].map((item) => (
+              <Button key={item} variant={item === activeInterval ? "primary" : "ghost"} size="compact" onClick={() => setInterval(item)}>
+                {item}
+              </Button>
+            ))}
+          </div>
         </div>
-      </div>
-        <div className="mb-4 flex flex-wrap gap-2">
-          {HISTORY_INTERVALS_BY_PERIOD[period].map((item) => (
-          <Button key={item} variant={item === activeInterval ? "primary" : "ghost"} size="compact" onClick={() => setInterval(item)}>
-            {item}
-          </Button>
-        ))}
       </div>
       {bars.length ? (
         <>
-          <TimeSeriesChart
-            series={[
-              {
-                key: symbol,
-                label: symbol,
-                color: "var(--chart-1)",
-                fill: "rgba(47, 107, 87, 0.22)",
-                points: bars.map((bar) => ({
-                  timestamp: bar.timestamp,
-                  value: bar.close,
-                })),
-              },
-            ]}
-          />
+          <div className="rounded-[28px] border border-(--line) bg-(--surface-muted) px-3 py-4">
+            <TimeSeriesChart
+              height={360}
+              series={[
+                {
+                  key: symbol,
+                  label: symbol,
+                  color: "var(--chart-1)",
+                  fill: "rgba(47, 107, 87, 0.18)",
+                  points: bars.map((bar) => ({
+                    timestamp: bar.timestamp,
+                    value: bar.close,
+                  })),
+                },
+              ]}
+            />
+          </div>
           <div className="mt-5 grid gap-3 md:grid-cols-4">
             <Stat label="Last close" value={formatCurrency(latestBar?.close ?? null, currency)} />
             <Stat label="Open" value={formatCurrency(latestBar?.open ?? null, currency)} />
@@ -119,8 +127,8 @@ type StatProps = {
 
 function Stat({ label, value }: StatProps) {
   return (
-    <div className="rounded-[20px] border border-(--line) bg-(--surface-strong) px-4 py-3">
-      <p className="text-xs uppercase tracking-[0.18em] text-(--ink-soft)">{label}</p>
+    <div className="rounded-[20px] border border-(--line) bg-(--surface-muted) px-4 py-3">
+      <p className="text-[11px] uppercase tracking-[0.18em] text-(--ink-soft)">{label}</p>
       <p className="mt-2 text-sm font-medium text-(--ink)">{value}</p>
     </div>
   );

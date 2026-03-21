@@ -3,8 +3,6 @@ import { EarningsCalendarTable } from "@/components/home/earnings-calendar-table
 import { HeroSearch } from "@/components/home/hero-search";
 import { MoversBoard } from "@/components/home/movers-board";
 import { SectorPulseGrid } from "@/components/home/sector-pulse-grid";
-import { DataLimitations } from "@/components/ui/data-limitations";
-import { SectionHeading } from "@/components/ui/section-heading";
 import { SetupPanel } from "@/components/ui/setup-panel";
 import { HOME_MOVER_SCREENS } from "@/lib/stock-yard/constants";
 import { isStockYardConfigured } from "@/lib/stock-yard/env";
@@ -44,52 +42,24 @@ export default async function HomePage() {
       <HeroSearch />
       {!configured ? <SetupPanel /> : null}
 
-      <section className="space-y-5">
-        <SectionHeading
-          eyebrow="Discovery"
-          title="Market movers"
-          description="Three quick cuts of the tape so the landing page stays useful even before you dive into a ticker."
-        />
-        <div className="grid gap-4 xl:grid-cols-3">
-          {HOME_MOVER_SCREENS.map((screen, index) => (
-            <MoversBoard
-              key={screen.key}
-              label={screen.label}
-              data={Array.isArray(moversResults) && moversResults[index]?.status === "fulfilled" ? moversResults[index].value : null}
-            />
-          ))}
+      <div className="grid gap-6 xl:grid-cols-[minmax(0,1.25fr)_360px]">
+        <div className="space-y-6">
+          <section className="grid gap-4 xl:grid-cols-3">
+            {HOME_MOVER_SCREENS.map((screen, index) => (
+              <MoversBoard
+                key={screen.key}
+                label={screen.label}
+                data={Array.isArray(moversResults) && moversResults[index]?.status === "fulfilled" ? moversResults[index].value : null}
+              />
+            ))}
+          </section>
+          <EarningsCalendarTable data={earnings} />
         </div>
-      </section>
-
-      <section className="space-y-5">
-        <SectionHeading
-          eyebrow="Benchmarks"
-          title="Context funds"
-          description="Curated reference funds to anchor broad market, sector, and bond context."
-        />
-        <BenchmarkGrid data={benchmarks} />
-        <DataLimitations items={benchmarks?.dataLimitations ?? []} />
-      </section>
-
-      <section className="space-y-5">
-        <SectionHeading
-          eyebrow="Calendar"
-          title="Upcoming catalysts"
-          description="A clean earnings tape with just enough information to spot what matters next."
-        />
-        <EarningsCalendarTable data={earnings} />
-        <DataLimitations items={earnings?.dataLimitations ?? []} />
-      </section>
-
-      <section className="space-y-5">
-        <SectionHeading
-          eyebrow="Pulse"
-          title="Sector orientation"
-          description="Sector cards stay informational in V1 and help the landing page feel alive without turning into a cluttered screener."
-        />
-        <SectorPulseGrid data={sectorPulse} />
-        <DataLimitations items={sectorPulse?.dataLimitations ?? []} />
-      </section>
+        <aside className="space-y-6">
+          <BenchmarkGrid data={benchmarks} />
+          <SectorPulseGrid data={sectorPulse} />
+        </aside>
+      </div>
     </>
   );
 }

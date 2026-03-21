@@ -1,5 +1,9 @@
+import Link from "next/link";
+
 import { Card } from "@/components/ui/card";
+import { DataLimitations } from "@/components/ui/data-limitations";
 import { formatCurrency, formatNumber, formatSignedPercent } from "@/lib/stock-yard/format";
+import { tickerRoute } from "@/lib/routes";
 import type { MoversResponse } from "@/lib/stock-yard/schemas";
 
 type MoversBoardProps = {
@@ -9,15 +13,19 @@ type MoversBoardProps = {
 
 export function MoversBoard({ data, label }: MoversBoardProps) {
   return (
-    <Card className="px-5 py-5">
+    <Card variant="panel" className="px-4 py-4">
       <div className="mb-4 flex items-center justify-between">
-        <h3 className="font-(family-name:--font-display) text-2xl text-(--ink)">{label}</h3>
-        <p className="text-xs uppercase tracking-[0.28em] text-(--ink-soft)">Movers</p>
+        <h3 className="font-(family-name:--font-display) text-[1.7rem] text-(--ink)">{label}</h3>
+        <p className="text-[11px] uppercase tracking-[0.28em] text-(--ink-soft)">Movers</p>
       </div>
       {data ? (
-        <div className="space-y-3">
+        <div className="space-y-2.5">
           {data.results.slice(0, 6).map((item) => (
-            <div key={item.symbol} className="grid grid-cols-[1fr_auto] items-center gap-4 rounded-2xl border border-(--line) px-4 py-3">
+            <Link
+              key={item.symbol}
+              href={tickerRoute(item.symbol)}
+              className="grid grid-cols-[1fr_auto] items-center gap-4 rounded-[22px] border border-(--line) bg-(--surface-muted) px-4 py-3 transition-colors hover:border-(--line-heavy) hover:bg-(--surface-float)"
+            >
               <div>
                 <p className="font-semibold text-(--ink)">{item.symbol}</p>
                 <p className="truncate text-sm text-(--ink-muted)">{item.name}</p>
@@ -29,8 +37,9 @@ export function MoversBoard({ data, label }: MoversBoardProps) {
                 </p>
                 <p className="text-xs text-(--ink-soft)">{formatNumber(item.volume)}</p>
               </div>
-            </div>
+            </Link>
           ))}
+          <DataLimitations items={data.dataLimitations} />
         </div>
       ) : (
         <p className="text-sm text-(--ink-muted)">Mover data will appear here when the API is configured.</p>

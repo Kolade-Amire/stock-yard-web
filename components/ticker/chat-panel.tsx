@@ -1,7 +1,7 @@
 "use client";
 
 import * as Dialog from "@radix-ui/react-dialog";
-import { LoaderCircle, MessageSquarePlus, Send, X } from "lucide-react";
+import { ChevronDown, ChevronUp, LoaderCircle, MessageSquarePlus, Send, X } from "lucide-react";
 import { useEffect, useState } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -19,6 +19,7 @@ type ChatPanelProps = {
 
 export function ChatPanel({ symbol }: ChatPanelProps) {
   const [open, setOpen] = useState(false);
+  const [desktopExpanded, setDesktopExpanded] = useState(true);
   const [draft, setDraft] = useState("");
   const [sessionId, setSessionId] = useState<string | undefined>(undefined);
   const [conversation, setConversation] = useState<ChatTurn[]>([]);
@@ -67,19 +68,38 @@ export function ChatPanel({ symbol }: ChatPanelProps) {
   return (
     <>
       <div className="hidden xl:block">
-        <ChatSurface
-          symbol={symbol}
-          conversation={conversation}
-          draft={draft}
-          setDraft={setDraft}
-          isSubmitting={isSubmitting}
-          errorMessage={errorMessage}
-          onSend={sendMessage}
-        />
+        {desktopExpanded ? (
+          <ChatSurface
+            symbol={symbol}
+            conversation={conversation}
+            draft={draft}
+            setDraft={setDraft}
+            isSubmitting={isSubmitting}
+            errorMessage={errorMessage}
+            onSend={sendMessage}
+            onToggleCollapse={() => setDesktopExpanded(false)}
+          />
+        ) : (
+          <Card variant="rail" className="sticky top-24 px-4 py-4">
+            <div className="space-y-3">
+              <div className="flex items-center justify-between gap-3">
+                <div>
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-(--ink-soft)">Embedded chat</p>
+                  <h2 className="mt-1 font-(family-name:--font-display) text-[1.6rem] text-(--ink)">{symbol} discussion</h2>
+                </div>
+                <Button type="button" variant="ghost" size="compact" onClick={() => setDesktopExpanded(true)}>
+                  <ChevronDown className="size-4" />
+                  Open
+                </Button>
+              </div>
+              <p className="text-sm leading-6 text-(--ink-muted)">Keep the chat tucked away until you need grounded Q&A on this symbol.</p>
+            </div>
+          </Card>
+        )}
       </div>
       <Dialog.Root open={open} onOpenChange={setOpen}>
         <Dialog.Trigger asChild>
-          <Button className="fixed bottom-4 right-4 z-30 xl:hidden">
+          <Button className="fixed bottom-4 right-4 z-30 shadow-[0_14px_28px_rgba(35,27,21,0.18)] xl:hidden">
             <MessageSquarePlus className="mr-2 size-4" />
             Chat
           </Button>
@@ -120,28 +140,39 @@ type ChatSurfaceProps = {
   isSubmitting: boolean;
   errorMessage: string | null;
   onSend: () => void;
+  onToggleCollapse?: () => void;
   mobile?: boolean;
 };
 
-function ChatSurface({ symbol, conversation, draft, setDraft, isSubmitting, errorMessage, onSend, mobile = false }: ChatSurfaceProps) {
+function ChatSurface({ symbol, conversation, draft, setDraft, isSubmitting, errorMessage, onSend, onToggleCollapse, mobile = false }: ChatSurfaceProps) {
   return (
-    <Card className={mobile ? "px-0 py-0 shadow-none" : "sticky top-24 px-5 py-5"}>
+    <Card variant="rail" className={mobile ? "px-0 py-0 shadow-none" : "sticky top-24 px-4 py-4"}>
       <div className="mb-4">
-        <p className="text-xs font-semibold uppercase tracking-[0.24em] text-(--ink-soft)">Embedded chat</p>
-        <h2 className="mt-2 font-(family-name:--font-display) text-3xl text-(--ink)">{symbol} discussion</h2>
-        <p className="mt-2 text-sm text-(--ink-muted)">Ticker-scoped grounded chat. Sessions reset when the active symbol changes.</p>
+        <div className="flex items-start justify-between gap-3">
+          <div>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-(--ink-soft)">Embedded chat</p>
+            <h2 className="mt-2 font-(family-name:--font-display) text-[2rem] text-(--ink)">{symbol} discussion</h2>
+          </div>
+          {!mobile && onToggleCollapse ? (
+            <Button type="button" variant="ghost" size="compact" onClick={onToggleCollapse}>
+              <ChevronUp className="size-4" />
+              Hide
+            </Button>
+          ) : null}
+        </div>
+        <p className="mt-2 text-sm leading-6 text-(--ink-muted)">Ticker-scoped grounded chat. Sessions reset when the active symbol changes.</p>
       </div>
       <div className="space-y-3">
         <div className="max-h-[420px] space-y-3 overflow-auto pr-1">
           {conversation.length === 0 ? (
-            <div className="rounded-[24px] border border-dashed border-(--line-strong) px-4 py-6 text-sm text-(--ink-muted)">
+            <div className="rounded-[24px] border border-dashed border-(--line-strong) bg-(--surface) px-4 py-6 text-sm leading-6 text-(--ink-muted)">
               Ask about near-term risks, earnings setup, analyst tone, ownership signals, or recent headline context.
             </div>
           ) : (
             conversation.map((turn, index) => (
               <div
                 key={`${turn.role}-${index}`}
-                className={turn.role === "assistant" ? "rounded-[24px] border border-(--line) bg-(--surface-strong) px-4 py-4" : "ml-auto max-w-[85%] rounded-[24px] bg-(--ink) px-4 py-4 text-(--surface)"}
+                className={turn.role === "assistant" ? "rounded-[24px] border border-(--line) bg-(--surface) px-4 py-4" : "ml-auto max-w-[85%] rounded-[24px] bg-(--ink) px-4 py-4 text-(--surface)"}
               >
                 <p className="mb-2 text-xs uppercase tracking-[0.22em] opacity-70">{turn.role}</p>
                 <p className="text-sm leading-6">{turn.content}</p>
@@ -149,13 +180,13 @@ function ChatSurface({ symbol, conversation, draft, setDraft, isSubmitting, erro
             ))
           )}
           {isSubmitting ? (
-            <div className="flex items-center gap-2 rounded-[24px] border border-(--line) bg-(--surface-strong) px-4 py-4 text-sm text-(--ink-muted)">
+            <div className="flex items-center gap-2 rounded-[24px] border border-(--line) bg-(--surface) px-4 py-4 text-sm text-(--ink-muted)">
               <LoaderCircle className="size-4 animate-spin" />
               Thinking…
             </div>
           ) : null}
         </div>
-        <div className="rounded-[24px] border border-(--line) bg-(--surface-strong) p-3">
+        <div className="rounded-[24px] border border-(--line) bg-(--surface) p-3">
           <textarea
             value={draft}
             onChange={(event) => setDraft(event.target.value)}

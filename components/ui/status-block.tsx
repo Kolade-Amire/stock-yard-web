@@ -10,10 +10,10 @@ type StatusBlockProps = {
 
 export function StatusBlock({ title, description, action }: StatusBlockProps) {
   return (
-    <Card className="px-5 py-6">
+    <Card variant="band" className="px-6 py-7 md:px-8">
       <div className="space-y-3">
         <h3 className="font-(family-name:--font-display) text-2xl text-(--ink)">{title}</h3>
-        <p className="max-w-xl text-sm text-(--ink-muted)">{description}</p>
+        <p className="max-w-xl text-sm leading-6 text-(--ink-muted)">{description}</p>
         {action}
       </div>
     </Card>
