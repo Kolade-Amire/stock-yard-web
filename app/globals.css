@@ -1,30 +1,34 @@
 @import "tailwindcss";
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
 
 :root {
-  --canvas: #efe4cd;
-  --surface: rgba(255, 251, 242, 0.84);
-  --surface-strong: #f7efe0;
-  --surface-muted: rgba(247, 239, 224, 0.82);
-  --surface-float: rgba(255, 250, 240, 0.92);
-  --ink: #342b21;
-  --ink-strong: #231b15;
-  --ink-muted: rgba(52, 43, 33, 0.72);
-  --ink-soft: rgba(52, 43, 33, 0.56);
-  --line: rgba(91, 74, 43, 0.12);
-  --line-strong: rgba(91, 74, 43, 0.22);
-  --line-heavy: rgba(91, 74, 43, 0.32);
-  --accent: #ca8c47;
-  --accent-soft: rgba(202, 140, 71, 0.14);
-  --positive: #2f6b57;
-  --negative: #a35842;
-  --warning: #8e6a31;
-  --ring: rgba(47, 107, 87, 0.42);
-  --chart-1: #2f6b57;
-  --chart-2: #ca8c47;
-  --chart-3: #6e5d8f;
-  --font-display: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Palatino, Georgia, serif;
-  --font-sans: "Avenir Next", "Segoe UI", "Helvetica Neue", sans-serif;
-  color-scheme: light;
+  --canvas: #0f1219;
+  --surface: rgba(255, 255, 255, 0.04);
+  --surface-strong: rgba(255, 255, 255, 0.08);
+  --surface-muted: rgba(255, 255, 255, 0.03);
+  --surface-float: rgba(255, 255, 255, 0.06);
+  --ink: #e8eaed;
+  --ink-strong: #ffffff;
+  --ink-muted: rgba(232, 234, 237, 0.64);
+  --ink-soft: rgba(232, 234, 237, 0.4);
+  --line: rgba(255, 255, 255, 0.08);
+  --line-strong: rgba(255, 255, 255, 0.14);
+  --line-heavy: rgba(255, 255, 255, 0.22);
+  --accent: #3b82f6;
+  --accent-soft: rgba(59, 130, 246, 0.14);
+  --positive: #10b981;
+  --positive-soft: rgba(16, 185, 129, 0.12);
+  --negative: #ef4444;
+  --negative-soft: rgba(239, 68, 68, 0.12);
+  --warning: #f59e0b;
+  --ring: rgba(59, 130, 246, 0.4);
+  --chart-1: #10b981;
+  --chart-2: #3b82f6;
+  --chart-3: #a78bfa;
+  --chart-4: #f59e0b;
+  --chart-5: #ec4899;
+  --font-sans: "Inter", "Segoe UI", "Helvetica Neue", system-ui, sans-serif;
+  color-scheme: dark;
 }
 
 * {
@@ -38,10 +42,7 @@ html {
 body {
   margin: 0;
   font-family: var(--font-sans), sans-serif;
-  background:
-    radial-gradient(circle at top left, rgba(229, 196, 142, 0.24), transparent 34%),
-    radial-gradient(circle at top right, rgba(55, 84, 74, 0.08), transparent 28%),
-    linear-gradient(180deg, rgba(255, 250, 241, 0.72), rgba(239, 228, 205, 0.96));
+  background: var(--canvas);
   color: var(--ink);
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
@@ -59,7 +60,7 @@ textarea {
 }
 
 ::selection {
-  background: rgba(202, 140, 71, 0.24);
+  background: rgba(59, 130, 246, 0.3);
 }
 
 button,

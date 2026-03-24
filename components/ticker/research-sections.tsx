@@ -92,22 +92,19 @@ export function ResearchSections({ symbol, nextEarningsDate }: ResearchSectionsP
   });
 
   return (
-    <Tabs.Root value={activeTab} onValueChange={(value) => setActiveTab(value as ResearchTab)} className="space-y-5">
-      <Card variant="band" className="px-5 py-5">
-        <div className="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
+    <Tabs.Root value={activeTab} onValueChange={(value) => setActiveTab(value as ResearchTab)} className="space-y-4">
+      <Card variant="band" className="px-5 py-4">
+        <div className="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
           <div>
-            <p className="text-[11px] font-semibold uppercase tracking-[0.3em] text-(--ink-soft)">Research deck</p>
-            <h2 className="mt-2 font-(family-name:--font-display) text-[2.4rem] leading-none text-(--ink)">Deeper signal</h2>
-            <p className="mt-2 max-w-3xl text-sm leading-6 text-(--ink-muted)">
-              Move across financials, earnings, analyst tone, ownership, and options without turning the page into a single endless stack.
-            </p>
+            <h2 className="text-xl font-bold text-(--ink-strong)">Research</h2>
+            <p className="mt-1 text-sm text-(--ink-muted)">Financials, earnings, analyst sentiment, ownership, and options data.</p>
           </div>
-          <Tabs.List className="flex flex-wrap gap-2">
+          <Tabs.List className="flex flex-wrap gap-1.5">
             {RESEARCH_TABS.map((tab) => (
               <Tabs.Trigger
                 key={tab.key}
                 value={tab.key}
-                className="rounded-full border border-(--line) bg-(--surface-float) px-3 py-2 text-sm text-(--ink-muted) transition-colors data-[state=active]:border-(--ink) data-[state=active]:bg-(--ink) data-[state=active]:text-(--surface)"
+                className="rounded-lg border border-(--line) bg-(--surface-float) px-3 py-1.5 text-sm text-(--ink-muted) transition-colors data-[state=active]:border-(--accent) data-[state=active]:bg-(--accent) data-[state=active]:text-white"
               >
                 {tab.label}
               </Tabs.Trigger>
@@ -117,12 +114,12 @@ export function ResearchSections({ symbol, nextEarningsDate }: ResearchSectionsP
       </Card>
 
       <Tabs.Content value="financials">
-        <div className="grid gap-4 xl:grid-cols-[0.95fr_1.05fr]">
-          <Card variant="panel" className="px-5 py-5">
+        <div className="grid gap-3 xl:grid-cols-[0.95fr_1.05fr]">
+          <Card variant="panel" className="px-5 py-4">
             <ResearchPanelHeader title="Summary" subtitle="TTM and capital structure" />
             {financialSummary.data ? (
               <>
-                <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+                <div className="grid gap-2 md:grid-cols-2 xl:grid-cols-3">
                   <MetricCard label="Revenue TTM" value={formatCurrency(financialSummary.data.financialSummary.revenue_ttm)} />
                   <MetricCard label="Net income TTM" value={formatCurrency(financialSummary.data.financialSummary.net_income_ttm)} />
                   <MetricCard label="Free cash flow" value={formatCurrency(financialSummary.data.financialSummary.free_cash_flow)} />
@@ -130,7 +127,7 @@ export function ResearchSections({ symbol, nextEarningsDate }: ResearchSectionsP
                   <MetricCard label="ROE" value={formatPercent(financialSummary.data.financialSummary.return_on_equity, 1)} />
                   <MetricCard label="Debt / equity" value={formatNumber(financialSummary.data.financialSummary.debt_to_equity, 1)} />
                 </div>
-                <div className="mt-4">
+                <div className="mt-3">
                   <DataLimitations items={financialSummary.data.dataLimitations} />
                 </div>
               </>
@@ -138,11 +135,11 @@ export function ResearchSections({ symbol, nextEarningsDate }: ResearchSectionsP
               <SectionFallback query={financialSummary} emptyMessage="Financial statements are not materially available for this symbol." />
             )}
           </Card>
-          <Card variant="panel" className="px-5 py-5">
-            <ResearchPanelHeader title="Trend" subtitle="Annual and quarterly revenue pulse" />
+          <Card variant="panel" className="px-5 py-4">
+            <ResearchPanelHeader title="Trend" subtitle="Annual and quarterly revenue" />
             {financialTrends.data?.annual.length || financialTrends.data?.quarterly.length ? (
               <>
-                <div className="grid gap-4 lg:grid-cols-2">
+                <div className="grid gap-3 lg:grid-cols-2">
                   <TrendCard
                     label="Annual"
                     items={(financialTrends.data?.annual ?? []).slice(-6).map((point) => ({
@@ -160,7 +157,7 @@ export function ResearchSections({ symbol, nextEarningsDate }: ResearchSectionsP
                     }))}
                   />
                 </div>
-                <div className="mt-4">
+                <div className="mt-3">
                   <DataLimitations items={financialTrends.data.dataLimitations} />
                 </div>
               </>
@@ -172,25 +169,25 @@ export function ResearchSections({ symbol, nextEarningsDate }: ResearchSectionsP
       </Tabs.Content>
 
       <Tabs.Content value="earnings">
-        <div className="grid gap-4 xl:grid-cols-[0.9fr_1.1fr]">
-          <Card variant="panel" className="px-5 py-5">
-            <ResearchPanelHeader title="History" subtitle="Surprise cadence and next date" />
-            <div className="mb-4 rounded-[22px] border border-(--line) bg-(--surface-muted) px-4 py-4">
-              <p className="text-[11px] uppercase tracking-[0.18em] text-(--ink-soft)">Next known date</p>
-              <p className="mt-2 text-lg font-semibold text-(--ink)">{formatDate(nextEarningsDate)}</p>
+        <div className="grid gap-3 xl:grid-cols-[0.9fr_1.1fr]">
+          <Card variant="panel" className="px-5 py-4">
+            <ResearchPanelHeader title="History" subtitle="Surprise cadence" />
+            <div className="mb-3 rounded-lg border border-(--line) bg-(--surface-muted) px-4 py-3">
+              <p className="text-[11px] font-medium uppercase tracking-wider text-(--ink-soft)">Next earnings date</p>
+              <p className="mt-1 text-base font-semibold text-(--ink-strong)">{formatDate(nextEarningsDate)}</p>
             </div>
             {earningsHistory.data?.events.length ? (
-              <div className="space-y-3">
+              <div className="space-y-2">
                 {earningsHistory.data.events.slice(-4).reverse().map((event) => (
-                  <div key={event.reportDate} className="flex items-center justify-between gap-4 rounded-[20px] border border-(--line) bg-(--surface-muted) px-4 py-3">
+                  <div key={event.reportDate} className="flex items-center justify-between gap-4 rounded-lg border border-(--line) bg-(--surface-muted) px-3 py-2.5">
                     <div>
                       <p className="font-medium text-(--ink)">{event.quarter}</p>
-                      <p className="text-sm text-(--ink-muted)">{formatDate(event.reportDate)}</p>
+                      <p className="text-xs text-(--ink-muted)">{formatDate(event.reportDate)}</p>
                     </div>
                     <div className="text-right text-sm">
                       <p className="text-(--ink)">Actual: {event.epsActual ?? "—"}</p>
                       <p className="text-(--ink-muted)">Est: {event.epsEstimate ?? "—"}</p>
-                      <p className={event.surprisePercent !== null && event.surprisePercent >= 0 ? "text-(--positive)" : "text-(--negative)"}>
+                      <p className={event.surprisePercent !== null && event.surprisePercent >= 0 ? "font-medium text-(--positive)" : "font-medium text-(--negative)"}>
                         {formatSignedPercent(event.surprisePercent, 1)}
                       </p>
                     </div>
@@ -202,11 +199,11 @@ export function ResearchSections({ symbol, nextEarningsDate }: ResearchSectionsP
               <SectionFallback query={earningsHistory} emptyMessage="Earnings history is limited or unavailable for this symbol." />
             )}
           </Card>
-          <Card variant="panel" className="px-5 py-5">
-            <ResearchPanelHeader title="Estimates" subtitle="Forward EPS and revenue snapshots" />
+          <Card variant="panel" className="px-5 py-4">
+            <ResearchPanelHeader title="Estimates" subtitle="Forward EPS and revenue" />
             {earningsEstimates.data?.epsEstimates.length || earningsEstimates.data?.revenueEstimates.length ? (
               <>
-                <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+                <div className="grid gap-2 md:grid-cols-2 xl:grid-cols-4">
                   {(earningsEstimates.data?.epsEstimates ?? []).slice(0, 4).map((estimate) => (
                     <MetricCard
                       key={estimate.period}
@@ -216,7 +213,7 @@ export function ResearchSections({ symbol, nextEarningsDate }: ResearchSectionsP
                     />
                   ))}
                 </div>
-                <div className="mt-4 grid gap-3 md:grid-cols-2">
+                <div className="mt-3 grid gap-2 md:grid-cols-2">
                   {(earningsEstimates.data?.revenueEstimates ?? []).slice(0, 2).map((estimate) => (
                     <MetricCard
                       key={`rev-${estimate.period}`}
@@ -234,7 +231,7 @@ export function ResearchSections({ symbol, nextEarningsDate }: ResearchSectionsP
                     />
                   ))}
                 </div>
-                <div className="mt-4">
+                <div className="mt-3">
                   <DataLimitations items={earningsEstimates.data.dataLimitations} />
                 </div>
               </>
@@ -246,25 +243,25 @@ export function ResearchSections({ symbol, nextEarningsDate }: ResearchSectionsP
       </Tabs.Content>
 
       <Tabs.Content value="analyst">
-        <div className="grid gap-4 xl:grid-cols-[0.95fr_1.05fr]">
-          <Card variant="panel" className="px-5 py-5">
-            <ResearchPanelHeader title="Summary" subtitle="Targets and recommendation mix" />
+        <div className="grid gap-3 xl:grid-cols-[0.95fr_1.05fr]">
+          <Card variant="panel" className="px-5 py-4">
+            <ResearchPanelHeader title="Summary" subtitle="Targets and recommendations" />
             {analystSummary.data ? (
               <>
-                <div className="grid gap-3 md:grid-cols-2">
+                <div className="grid gap-2 md:grid-cols-2">
                   <MetricCard label="Target mean" value={formatCurrency(analystSummary.data.analystSummary.targetMean)} />
                   <MetricCard label="Current target" value={formatCurrency(analystSummary.data.analystSummary.currentPriceTarget)} />
                   <MetricCard label="Target low" value={formatCurrency(analystSummary.data.analystSummary.targetLow)} />
                   <MetricCard label="Target high" value={formatCurrency(analystSummary.data.analystSummary.targetHigh)} />
                 </div>
-                <div className="mt-4 grid gap-2 md:grid-cols-2 xl:grid-cols-5">
+                <div className="mt-3 grid gap-1.5 md:grid-cols-2 xl:grid-cols-5">
                   <MetricCard label="Strong buy" value={formatNumber(analystSummary.data.analystSummary.recommendationSummary.strongBuy)} />
                   <MetricCard label="Buy" value={formatNumber(analystSummary.data.analystSummary.recommendationSummary.buy)} />
                   <MetricCard label="Hold" value={formatNumber(analystSummary.data.analystSummary.recommendationSummary.hold)} />
                   <MetricCard label="Sell" value={formatNumber(analystSummary.data.analystSummary.recommendationSummary.sell)} />
                   <MetricCard label="Strong sell" value={formatNumber(analystSummary.data.analystSummary.recommendationSummary.strongSell)} />
                 </div>
-                <div className="mt-4">
+                <div className="mt-3">
                   <DataLimitations items={combineLimitations(analystSummary.data.dataLimitations, analystHistory.data?.dataLimitations ?? [])} />
                 </div>
               </>
@@ -272,21 +269,21 @@ export function ResearchSections({ symbol, nextEarningsDate }: ResearchSectionsP
               <SectionFallback query={analystSummary} emptyMessage="Analyst coverage is limited for this symbol." />
             )}
           </Card>
-          <Card variant="panel" className="px-5 py-5">
+          <Card variant="panel" className="px-5 py-4">
             <ResearchPanelHeader title="Recent actions" subtitle="Firm activity and target changes" />
             {analystHistory.data?.actions.length ? (
-              <div className="space-y-3">
+              <div className="space-y-2">
                 {analystHistory.data.actions.slice(0, 5).map((action) => (
-                  <div key={`${action.gradedAt}-${action.firm ?? action.toGrade ?? "action"}`} className="rounded-[20px] border border-(--line) bg-(--surface-muted) px-4 py-3">
+                  <div key={`${action.gradedAt}-${action.firm ?? action.toGrade ?? "action"}`} className="rounded-lg border border-(--line) bg-(--surface-muted) px-3 py-2.5">
                     <div className="flex items-center justify-between gap-4">
                       <div>
                         <p className="font-medium text-(--ink)">{action.firm ?? "Research firm"}</p>
-                        <p className="mt-1 text-sm text-(--ink-muted)">{formatDateTime(action.gradedAt)}</p>
+                        <p className="mt-0.5 text-xs text-(--ink-muted)">{formatDateTime(action.gradedAt)}</p>
                       </div>
-                      <p className="text-sm text-(--ink)">{action.priceTargetAction ?? action.action ?? "Update"}</p>
+                      <p className="text-sm font-medium text-(--accent)">{action.priceTargetAction ?? action.action ?? "Update"}</p>
                     </div>
-                    <p className="mt-2 text-sm text-(--ink-muted)">
-                      {action.fromGrade ?? "—"} to {action.toGrade ?? "—"} · target {formatCurrency(action.currentPriceTarget)} from {formatCurrency(action.priorPriceTarget)}
+                    <p className="mt-1.5 text-xs text-(--ink-muted)">
+                      {action.fromGrade ?? "—"} → {action.toGrade ?? "—"} · target {formatCurrency(action.currentPriceTarget)} from {formatCurrency(action.priorPriceTarget)}
                     </p>
                   </div>
                 ))}
@@ -299,27 +296,27 @@ export function ResearchSections({ symbol, nextEarningsDate }: ResearchSectionsP
       </Tabs.Content>
 
       <Tabs.Content value="ownership">
-        <Card variant="panel" className="px-5 py-5">
-          <ResearchPanelHeader title="Ownership" subtitle="Major holders and roster slices" />
+        <Card variant="panel" className="px-5 py-4">
+          <ResearchPanelHeader title="Ownership" subtitle="Major holders and roster" />
           {ownership.data ? (
-            <Tabs.Root defaultValue="institutional" className="space-y-4">
-              <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+            <Tabs.Root defaultValue="institutional" className="space-y-3">
+              <div className="grid gap-2 md:grid-cols-2 xl:grid-cols-4">
                 {ownership.data.majorHolders.slice(0, 4).map((holder) => (
                   <MetricCard key={holder.key} label={holder.label} value={formatPercent(holder.value, 2)} />
                 ))}
               </div>
-              <Tabs.List className="flex flex-wrap gap-2">
+              <Tabs.List className="flex flex-wrap gap-1.5">
                 {OWNERSHIP_TABS.map((tab) => (
                   <Tabs.Trigger
                     key={tab.key}
                     value={tab.key}
-                    className="rounded-full border border-(--line) bg-(--surface-float) px-3 py-2 text-sm text-(--ink-muted) data-[state=active]:border-(--ink) data-[state=active]:bg-(--ink) data-[state=active]:text-(--surface)"
+                    className="rounded-lg border border-(--line) bg-(--surface-float) px-3 py-1.5 text-sm text-(--ink-muted) data-[state=active]:border-(--accent) data-[state=active]:bg-(--accent) data-[state=active]:text-white"
                   >
                     {tab.label}
                   </Tabs.Trigger>
                 ))}
               </Tabs.List>
-              <Tabs.Content value="institutional" className="space-y-3">
+              <Tabs.Content value="institutional" className="space-y-2">
                 {ownership.data.institutionalHolders.length ? (
                   ownership.data.institutionalHolders.map((holder) => (
                     <HolderRow
@@ -333,7 +330,7 @@ export function ResearchSections({ symbol, nextEarningsDate }: ResearchSectionsP
                   <EmptyInline message="No institutional holder rows returned." />
                 )}
               </Tabs.Content>
-              <Tabs.Content value="mutual_funds" className="space-y-3">
+              <Tabs.Content value="mutual_funds" className="space-y-2">
                 {ownership.data.mutualFundHolders.length ? (
                   ownership.data.mutualFundHolders.map((holder) => (
                     <HolderRow
@@ -347,7 +344,7 @@ export function ResearchSections({ symbol, nextEarningsDate }: ResearchSectionsP
                   <EmptyInline message="No mutual fund holder rows returned." />
                 )}
               </Tabs.Content>
-              <Tabs.Content value="insider_roster" className="space-y-3">
+              <Tabs.Content value="insider_roster" className="space-y-2">
                 {ownership.data.insiderRoster.length ? (
                   ownership.data.insiderRoster.map((holder, index) => (
                     <HolderRow
@@ -370,12 +367,12 @@ export function ResearchSections({ symbol, nextEarningsDate }: ResearchSectionsP
       </Tabs.Content>
 
       <Tabs.Content value="options">
-        <Card variant="panel" className="px-5 py-5">
-          <ResearchPanelHeader title="Options" subtitle="Nearest chain and expiration deck" />
+        <Card variant="panel" className="px-5 py-4">
+          <ResearchPanelHeader title="Options" subtitle="Chain and expiration deck" />
           {expirations.data?.expirations.length ? (
-            <div className="space-y-4">
-              <div className="flex flex-wrap items-center gap-2">
-                <div className="rounded-full border border-(--line) bg-(--surface-muted) px-3 py-1.5 text-xs uppercase tracking-[0.18em] text-(--ink-soft)">
+            <div className="space-y-3">
+              <div className="flex flex-wrap items-center gap-1.5">
+                <div className="rounded-lg border border-(--line) bg-(--surface-muted) px-3 py-1.5 text-xs text-(--ink-soft)">
                   Underlying {formatCurrency(optionChain.data?.underlyingPrice ?? null)}
                 </div>
                 {expirations.data.expirations.slice(0, 6).map((item) => (
@@ -383,20 +380,20 @@ export function ResearchSections({ symbol, nextEarningsDate }: ResearchSectionsP
                     key={item}
                     type="button"
                     onClick={() => setSelectedExpiration(item)}
-                    className="rounded-full border border-(--line) bg-(--surface-float) px-3 py-2 text-sm text-(--ink-muted) transition-colors hover:border-(--accent) data-[active=true]:border-(--ink) data-[active=true]:bg-(--ink) data-[active=true]:text-(--surface)"
+                    className="rounded-lg border border-(--line) bg-(--surface-float) px-3 py-1.5 text-sm text-(--ink-muted) transition-colors hover:border-(--accent) data-[active=true]:border-(--accent) data-[active=true]:bg-(--accent) data-[active=true]:text-white"
                     data-active={item === expiration}
                   >
                     {item}
                   </button>
                 ))}
               </div>
-              <Tabs.Root defaultValue="calls" className="space-y-4">
-                <Tabs.List className="flex gap-2">
+              <Tabs.Root defaultValue="calls" className="space-y-3">
+                <Tabs.List className="flex gap-1.5">
                   {OPTION_TABS.map((tab) => (
                     <Tabs.Trigger
                       key={tab.key}
                       value={tab.key}
-                      className="rounded-full border border-(--line) bg-(--surface-float) px-3 py-2 text-sm text-(--ink-muted) data-[state=active]:border-(--ink) data-[state=active]:bg-(--ink) data-[state=active]:text-(--surface)"
+                      className="rounded-lg border border-(--line) bg-(--surface-float) px-3 py-1.5 text-sm text-(--ink-muted) data-[state=active]:border-(--accent) data-[state=active]:bg-(--accent) data-[state=active]:text-white"
                     >
                       {tab.label}
                     </Tabs.Trigger>
@@ -427,9 +424,9 @@ type ResearchPanelHeaderProps = {
 
 function ResearchPanelHeader({ title, subtitle }: ResearchPanelHeaderProps) {
   return (
-    <div className="mb-4">
-      <h3 className="font-(family-name:--font-display) text-[2rem] text-(--ink)">{title}</h3>
-      <p className="mt-1 text-sm leading-6 text-(--ink-muted)">{subtitle}</p>
+    <div className="mb-3">
+      <h3 className="text-lg font-bold text-(--ink-strong)">{title}</h3>
+      <p className="mt-0.5 text-sm text-(--ink-muted)">{subtitle}</p>
     </div>
   );
 }
@@ -442,10 +439,10 @@ type MetricCardProps = {
 
 function MetricCard({ label, value, meta }: MetricCardProps) {
   return (
-    <div className="rounded-[22px] border border-(--line) bg-(--surface-muted) px-4 py-4">
-      <p className="text-[11px] uppercase tracking-[0.18em] text-(--ink-soft)">{label}</p>
-      <p className="mt-2 text-sm font-medium text-(--ink)">{value}</p>
-      {meta ? <p className="mt-2 text-xs leading-5 text-(--ink-muted)">{meta}</p> : null}
+    <div className="rounded-lg border border-(--line) bg-(--surface-muted) px-3 py-3">
+      <p className="text-[11px] font-medium uppercase tracking-wider text-(--ink-soft)">{label}</p>
+      <p className="mt-1 text-sm font-medium text-(--ink)">{value}</p>
+      {meta ? <p className="mt-1 text-xs text-(--ink-muted)">{meta}</p> : null}
     </div>
   );
 }
@@ -457,12 +454,12 @@ type TrendCardProps = {
 
 function TrendCard({ label, items }: TrendCardProps) {
   return (
-    <div className="rounded-[24px] border border-(--line) bg-(--surface-muted) px-4 py-4">
-      <p className="text-[11px] uppercase tracking-[0.18em] text-(--ink-soft)">{label}</p>
+    <div className="rounded-lg border border-(--line) bg-(--surface-muted) px-3 py-3">
+      <p className="text-[11px] font-medium uppercase tracking-wider text-(--ink-soft)">{label}</p>
       {items.length ? (
-        <MicroBarChart items={items} height={148} />
+        <MicroBarChart items={items} height={140} />
       ) : (
-        <p className="mt-3 text-sm text-(--ink-muted)">No chart rows available.</p>
+        <p className="mt-2 text-sm text-(--ink-muted)">No chart rows available.</p>
       )}
     </div>
   );
@@ -476,18 +473,18 @@ type HolderRowProps = {
 
 function HolderRow({ label, meta, value }: HolderRowProps) {
   return (
-    <div className="flex items-center justify-between gap-4 rounded-[20px] border border-(--line) bg-(--surface-muted) px-4 py-3">
+    <div className="flex items-center justify-between gap-4 rounded-lg border border-(--line) bg-(--surface-muted) px-3 py-2.5">
       <div>
         <p className="font-medium text-(--ink)">{label}</p>
-        <p className="text-sm text-(--ink-muted)">{meta}</p>
+        <p className="text-xs text-(--ink-muted)">{meta}</p>
       </div>
-      <p className="text-sm text-(--ink)">{value}</p>
+      <p className="text-sm font-medium text-(--ink)">{value}</p>
     </div>
   );
 }
 
 function EmptyInline({ message }: { message: string }) {
-  return <p className="rounded-[20px] border border-dashed border-(--line-strong) px-4 py-4 text-sm text-(--ink-muted)">{message}</p>;
+  return <p className="rounded-lg border border-dashed border-(--line-strong) px-4 py-4 text-sm text-(--ink-muted)">{message}</p>;
 }
 
 type SectionFallbackProps = {
@@ -497,7 +494,7 @@ type SectionFallbackProps = {
 
 function SectionFallback({ query, emptyMessage }: SectionFallbackProps) {
   if (query.isPending) {
-    return <EmptyInline message="Loading section…" />;
+    return <EmptyInline message="Loading…" />;
   }
 
   if (isStockYardApiError(query.error) && query.error.code === "DATA_UNAVAILABLE") {
@@ -528,7 +525,7 @@ function VirtualOptionsTable({ rows }: VirtualOptionsTableProps) {
   const virtualizer = useVirtualizer({
     count: rows.length,
     getScrollElement: () => parentRef.current,
-    estimateSize: () => 50,
+    estimateSize: () => 44,
     overscan: 8,
   });
 
@@ -538,7 +535,7 @@ function VirtualOptionsTable({ rows }: VirtualOptionsTableProps) {
 
   return (
     <div>
-      <div className="grid grid-cols-6 gap-2 border-b border-(--line) pb-3 text-[11px] uppercase tracking-[0.18em] text-(--ink-soft)">
+      <div className="grid grid-cols-6 gap-2 border-b border-(--line) pb-2 text-[11px] font-medium uppercase tracking-wider text-(--ink-soft)">
         <span>Strike</span>
         <span>Last</span>
         <span>Bid</span>
@@ -546,7 +543,7 @@ function VirtualOptionsTable({ rows }: VirtualOptionsTableProps) {
         <span>IV</span>
         <span>Volume</span>
       </div>
-      <div ref={parentRef} className="mt-2 h-[280px] overflow-auto">
+      <div ref={parentRef} className="mt-1.5 h-[280px] overflow-auto">
         <div style={{ height: virtualizer.getTotalSize(), position: "relative" }}>
           {virtualizer.getVirtualItems().map((item) => {
             const row = rows[item.index];
@@ -554,7 +551,7 @@ function VirtualOptionsTable({ rows }: VirtualOptionsTableProps) {
             return (
               <div
                 key={row.contractSymbol}
-                className="absolute inset-x-0 grid grid-cols-6 gap-2 rounded-[18px] border border-(--line) bg-(--surface-muted) px-3 py-3 text-sm text-(--ink)"
+                className="absolute inset-x-0 grid grid-cols-6 gap-2 rounded-lg border border-(--line) bg-(--surface-muted) px-3 py-2.5 text-sm text-(--ink)"
                 style={{ transform: `translateY(${item.start}px)` }}
               >
                 <span>{formatNumber(row.strike, 2)}</span>

@@ -15,40 +15,40 @@ export function NewsPanel({ data }: NewsPanelProps) {
 
   return (
     <Card variant="rail" className="px-4 py-4">
-      <div className="mb-4">
-        <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-(--ink-soft)">News</p>
-        <h2 className="mt-2 font-(family-name:--font-display) text-[2rem] text-(--ink)">Latest context</h2>
+      <div className="mb-3">
+        <p className="text-xs font-medium uppercase tracking-wider text-(--ink-soft)">News</p>
+        <h2 className="mt-1 text-lg font-semibold text-(--ink-strong)">Latest headlines</h2>
       </div>
       {lead ? (
-        <div className="space-y-3">
-          <article className="rounded-[26px] border border-(--line) bg-[linear-gradient(150deg,rgba(202,140,71,0.16),rgba(255,250,238,0.8))] p-4">
-            <p className="text-[11px] uppercase tracking-[0.22em] text-(--ink-soft)">{lead.publisher ?? formatDateTime(lead.published_at)}</p>
-            <h3 className="mt-3 font-(family-name:--font-display) text-[1.8rem] leading-tight text-(--ink)">{lead.title}</h3>
-            <p className="mt-3 text-sm leading-6 text-(--ink-muted)">{lead.summary ?? "Summary unavailable."}</p>
+        <div className="space-y-2">
+          <article className="rounded-xl border border-(--line-strong) bg-gradient-to-br from-(--accent-soft) to-transparent p-4">
+            <p className="text-[11px] font-medium uppercase tracking-wider text-(--ink-soft)">{lead.publisher ?? formatDateTime(lead.published_at)}</p>
+            <h3 className="mt-2 text-base font-bold leading-snug text-(--ink-strong)">{lead.title}</h3>
+            <p className="mt-2 text-sm leading-relaxed text-(--ink-muted)">{lead.summary ?? "Summary unavailable."}</p>
             {lead.link ? (
-              <a href={lead.link} target="_blank" rel="noreferrer" className="mt-5 inline-flex items-center gap-2 text-sm font-medium text-(--ink)">
+              <a href={lead.link} target="_blank" rel="noreferrer" className="mt-3 inline-flex items-center gap-2 text-sm font-medium text-(--accent)">
                 Read source <ArrowUpRight className="size-4" />
               </a>
             ) : null}
           </article>
           {remainder.map((item) => (
-            <article key={`${item.title}-${item.published_at}`} className="rounded-[22px] border border-(--line) bg-(--surface) px-4 py-4">
-              <p className="text-[11px] uppercase tracking-[0.18em] text-(--ink-soft)">{item.publisher ?? formatDateTime(item.published_at)}</p>
-              <h4 className="mt-2 text-base font-semibold text-(--ink)">{item.title}</h4>
+            <article key={`${item.title}-${item.published_at}`} className="rounded-lg border border-(--line) bg-(--surface) px-4 py-3">
+              <p className="text-[11px] font-medium uppercase tracking-wider text-(--ink-soft)">{item.publisher ?? formatDateTime(item.published_at)}</p>
+              <h4 className="mt-1.5 text-sm font-semibold text-(--ink)">{item.title}</h4>
               {item.link ? (
-                <a href={item.link} target="_blank" rel="noreferrer" className="mt-3 inline-flex items-center gap-2 text-sm text-(--ink-muted)">
-                  Open <ArrowUpRight className="size-4" />
+                <a href={item.link} target="_blank" rel="noreferrer" className="mt-2 inline-flex items-center gap-2 text-xs text-(--ink-muted) hover:text-(--accent)">
+                  Open <ArrowUpRight className="size-3.5" />
                 </a>
               ) : null}
             </article>
           ))}
         </div>
       ) : (
-        <div className="rounded-[24px] border border-dashed border-(--line-strong) px-4 py-10 text-center text-sm text-(--ink-muted)">
+        <div className="rounded-lg border border-dashed border-(--line-strong) px-4 py-8 text-center text-sm text-(--ink-muted)">
           No ticker news available right now.
         </div>
       )}
-      <div className="mt-4">
+      <div className="mt-3">
         <DataLimitations items={data?.dataLimitations ?? []} />
       </div>
     </Card>

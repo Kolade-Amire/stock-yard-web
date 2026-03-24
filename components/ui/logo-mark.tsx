@@ -1,13 +1,10 @@
 export function LogoMark() {
   return (
-    <div className="flex items-center gap-3">
-      <div className="grid size-10 place-items-center rounded-[18px] border border-(--line-heavy) bg-[linear-gradient(160deg,rgba(205,146,77,0.8),rgba(43,54,50,0.92))] text-xs font-semibold uppercase tracking-[0.2em] text-(--surface) shadow-[0_14px_34px_rgba(56,44,18,0.16)]">
+    <div className="flex items-center gap-2.5">
+      <div className="grid size-9 place-items-center rounded-lg bg-gradient-to-br from-(--accent) to-[#1d4ed8] text-xs font-bold text-white shadow-[0_4px_12px_rgba(59,130,246,0.3)]">
         SY
       </div>
-      <div>
-        <p className="font-(family-name:--font-display) text-xl leading-none text-(--ink)">Stock-Yard</p>
-        <p className="text-[11px] uppercase tracking-[0.26em] text-(--ink-soft)">Editorial Terminal</p>
-      </div>
+      <p className="text-lg font-semibold tracking-tight text-(--ink-strong)">Stock-Yard</p>
     </div>
   );
 }

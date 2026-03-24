@@ -57,15 +57,15 @@ export function TimeSeriesChart({ series, height = 320, mode = "area" }: TimeSer
           type: ColorType.Solid,
           color: "transparent",
         },
-        textColor: "rgba(55, 47, 37, 0.72)",
+        textColor: "rgba(232, 234, 237, 0.5)",
         attributionLogo: false,
       },
       grid: {
         vertLines: {
-          color: "rgba(167, 147, 118, 0.12)",
+          color: "rgba(255, 255, 255, 0.06)",
         },
         horzLines: {
-          color: "rgba(167, 147, 118, 0.12)",
+          color: "rgba(255, 255, 255, 0.06)",
         },
       },
       rightPriceScale: {
@@ -76,10 +76,10 @@ export function TimeSeriesChart({ series, height = 320, mode = "area" }: TimeSer
       },
       crosshair: {
         vertLine: {
-          color: "rgba(55, 47, 37, 0.18)",
+          color: "rgba(255, 255, 255, 0.15)",
         },
         horzLine: {
-          color: "rgba(55, 47, 37, 0.18)",
+          color: "rgba(255, 255, 255, 0.15)",
         },
       },
       handleScale: {

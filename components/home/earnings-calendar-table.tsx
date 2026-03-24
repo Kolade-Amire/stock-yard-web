@@ -14,12 +14,12 @@ export function EarningsCalendarTable({ data }: EarningsCalendarTableProps) {
   return (
     <Card variant="panel" className="overflow-hidden">
       <div className="border-b border-(--line) px-5 py-4">
-        <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-(--ink-soft)">Calendar</p>
-        <h3 className="mt-2 font-(family-name:--font-display) text-[2rem] text-(--ink)">Upcoming catalysts</h3>
+        <p className="text-xs font-medium uppercase tracking-wider text-(--ink-soft)">Calendar</p>
+        <h3 className="mt-1 text-lg font-semibold text-(--ink-strong)">Upcoming earnings</h3>
       </div>
       <div className="overflow-x-auto">
         <table className="min-w-full text-left text-sm">
-          <thead className="text-[11px] uppercase tracking-[0.22em] text-(--ink-soft)">
+          <thead className="text-xs uppercase tracking-wider text-(--ink-soft)">
             <tr>
               <th className="px-5 py-3 font-medium">Symbol</th>
               <th className="px-5 py-3 font-medium">Company</th>
@@ -33,16 +33,16 @@ export function EarningsCalendarTable({ data }: EarningsCalendarTableProps) {
             {data?.events.length ? (
               data.events.map((event) => (
                 <tr key={`${event.symbol}-${event.earningsDate}`} className="border-t border-(--line) transition-colors hover:bg-(--surface-muted)">
-                  <td className="px-5 py-4 font-semibold text-(--ink)">
+                  <td className="px-5 py-3 font-semibold text-(--ink-strong)">
                     <Link href={tickerRoute(event.symbol)} className="transition-colors hover:text-(--accent)">
                       {event.symbol}
                     </Link>
                   </td>
-                  <td className="px-5 py-4 text-(--ink-muted)">{event.companyName}</td>
-                  <td className="px-5 py-4 text-(--ink-muted)">{formatDateTime(event.earningsDate)}</td>
-                  <td className="px-5 py-4 text-(--ink-muted)">{event.reportTime ?? "TBD"}</td>
-                  <td className="px-5 py-4 text-(--ink-muted)">{event.epsEstimate ?? "Unavailable"}</td>
-                  <td className="px-5 py-4 text-(--ink-muted)">{formatNumber(event.marketCap)}</td>
+                  <td className="px-5 py-3 text-(--ink-muted)">{event.companyName}</td>
+                  <td className="px-5 py-3 text-(--ink-muted)">{formatDateTime(event.earningsDate)}</td>
+                  <td className="px-5 py-3 text-(--ink-muted)">{event.reportTime ?? "TBD"}</td>
+                  <td className="px-5 py-3 text-(--ink-muted)">{event.epsEstimate ?? "—"}</td>
+                  <td className="px-5 py-3 text-(--ink-muted)">{formatNumber(event.marketCap)}</td>
                 </tr>
               ))
             ) : (

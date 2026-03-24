@@ -14,28 +14,28 @@ type MoversBoardProps = {
 export function MoversBoard({ data, label }: MoversBoardProps) {
   return (
     <Card variant="panel" className="px-4 py-4">
-      <div className="mb-4 flex items-center justify-between">
-        <h3 className="font-(family-name:--font-display) text-[1.7rem] text-(--ink)">{label}</h3>
-        <p className="text-[11px] uppercase tracking-[0.28em] text-(--ink-soft)">Movers</p>
+      <div className="mb-3 flex items-center justify-between">
+        <h3 className="text-lg font-semibold text-(--ink-strong)">{label}</h3>
+        <p className="text-xs font-medium uppercase tracking-wider text-(--ink-soft)">Movers</p>
       </div>
       {data ? (
-        <div className="space-y-2.5">
+        <div className="space-y-1.5">
           {data.results.slice(0, 6).map((item) => (
             <Link
               key={item.symbol}
               href={tickerRoute(item.symbol)}
-              className="grid grid-cols-[1fr_auto] items-center gap-4 rounded-[22px] border border-(--line) bg-(--surface-muted) px-4 py-3 transition-colors hover:border-(--line-heavy) hover:bg-(--surface-float)"
+              className="grid grid-cols-[1fr_auto] items-center gap-4 rounded-lg border border-(--line) bg-(--surface-muted) px-3 py-2.5 transition-colors hover:border-(--line-heavy) hover:bg-(--surface-float)"
             >
               <div>
-                <p className="font-semibold text-(--ink)">{item.symbol}</p>
-                <p className="truncate text-sm text-(--ink-muted)">{item.name}</p>
+                <p className="font-semibold text-(--ink-strong)">{item.symbol}</p>
+                <p className="truncate text-xs text-(--ink-muted)">{item.name}</p>
               </div>
               <div className="text-right">
                 <p className="text-sm font-medium text-(--ink)">{formatCurrency(item.currentPrice)}</p>
-                <p className={item.percentChange !== null && item.percentChange >= 0 ? "text-sm text-(--positive)" : "text-sm text-(--negative)"}>
+                <p className={item.percentChange !== null && item.percentChange >= 0 ? "text-xs font-medium text-(--positive)" : "text-xs font-medium text-(--negative)"}>
                   {formatSignedPercent(item.percentChange)}
                 </p>
-                <p className="text-xs text-(--ink-soft)">{formatNumber(item.volume)}</p>
+                <p className="text-[11px] text-(--ink-soft)">{formatNumber(item.volume)}</p>
               </div>
             </Link>
           ))}

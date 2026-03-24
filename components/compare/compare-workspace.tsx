@@ -19,7 +19,7 @@ const TimeSeriesChart = dynamic(
   () => import("@/components/charts/time-series-chart").then((module) => module.TimeSeriesChart),
   {
     ssr: false,
-    loading: () => <div className="h-[380px] animate-pulse rounded-[24px] bg-(--surface-strong)" />,
+    loading: () => <div className="h-[380px] animate-pulse rounded-lg bg-(--surface-strong)" />,
   },
 );
 
@@ -102,22 +102,21 @@ export function CompareWorkspace({ configured, initialData, initialSymbols, init
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       <Card variant="band" className="px-5 py-5">
-        <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_320px]">
+        <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_300px]">
           <div className="space-y-4">
             <div>
-              <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-(--ink-soft)">Compare</p>
-              <h1 className="mt-2 font-(family-name:--font-display) text-5xl leading-none text-(--ink)">Relative performance</h1>
-              <p className="mt-3 max-w-3xl text-sm leading-6 text-(--ink-muted)">
-                Keep the basket tight, keep the controls close to the chart, and scan performance without leaving the editorial terminal rhythm.
+              <h1 className="text-2xl font-bold tracking-tight text-(--ink-strong)">Compare</h1>
+              <p className="mt-1 text-sm text-(--ink-muted)">
+                Side-by-side performance for 2–5 symbols.
               </p>
             </div>
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-1.5">
               {symbols.map((symbol) => (
-                <div key={symbol} className="inline-flex items-center gap-2 rounded-full border border-(--line-strong) bg-(--surface-float) px-3 py-2 text-sm font-medium text-(--ink)">
+                <div key={symbol} className="inline-flex items-center gap-1.5 rounded-lg border border-(--line-strong) bg-(--surface-float) px-3 py-1.5 text-sm font-medium text-(--ink)">
                   {symbol}
-                  <button type="button" onClick={() => removeSymbol(symbol)} className="rounded-full p-0.5 text-(--ink-soft) hover:text-(--ink)">
+                  <button type="button" onClick={() => removeSymbol(symbol)} className="rounded p-0.5 text-(--ink-soft) hover:text-(--ink)">
                     <X className="size-3.5" />
                   </button>
                 </div>
@@ -127,13 +126,13 @@ export function CompareWorkspace({ configured, initialData, initialSymbols, init
               <input
                 value={query}
                 onChange={(event) => setQuery(event.target.value)}
-                placeholder="Add a symbol"
-                className="w-full rounded-[26px] border border-(--line-strong) bg-(--surface-float) px-4 py-3 text-(--ink) outline-none placeholder:text-(--ink-soft)"
+                placeholder="Add a symbol…"
+                className="w-full rounded-lg border border-(--line-strong) bg-(--surface) px-4 py-2.5 text-sm text-(--ink) outline-none placeholder:text-(--ink-soft)"
               />
               {deferredQuery ? (
-                <div className="absolute inset-x-0 top-[calc(100%+8px)] z-20 rounded-[24px] border border-(--line) bg-(--surface-float) p-2 shadow-[0_18px_40px_rgba(56,44,18,0.12)]">
+                <div className="absolute inset-x-0 top-[calc(100%+6px)] z-20 rounded-lg border border-(--line) bg-[rgba(15,18,25,0.96)] p-2 shadow-[0_12px_40px_rgba(0,0,0,0.4)] backdrop-blur-xl">
                   {searchQuery.isPending ? (
-                    <p className="px-3 py-3 text-sm text-(--ink-muted)">Searching symbols…</p>
+                    <p className="px-3 py-2 text-sm text-(--ink-muted)">Searching…</p>
                   ) : searchQuery.data?.results.length ? (
                     searchQuery.data.results.slice(0, 5).map((item) => (
                       <button
@@ -141,25 +140,25 @@ export function CompareWorkspace({ configured, initialData, initialSymbols, init
                         type="button"
                         onMouseEnter={() => router.prefetch(tickerRoute(item.symbol))}
                         onClick={() => addSymbol(item.symbol)}
-                        className="flex w-full items-center justify-between rounded-[18px] px-3 py-3 text-left transition-colors hover:bg-(--surface)"
+                        className="flex w-full items-center justify-between rounded-md px-3 py-2 text-left transition-colors hover:bg-(--surface-strong)"
                       >
                         <div>
-                          <p className="font-medium text-(--ink)">{item.symbol}</p>
-                          <p className="text-sm text-(--ink-muted)">{item.name}</p>
+                          <p className="font-medium text-(--ink-strong)">{item.symbol}</p>
+                          <p className="text-xs text-(--ink-muted)">{item.name}</p>
                         </div>
                       </button>
                     ))
                   ) : (
-                    <p className="px-3 py-3 text-sm text-(--ink-muted)">No matching symbols.</p>
+                    <p className="px-3 py-2 text-sm text-(--ink-muted)">No matching symbols.</p>
                   )}
                 </div>
               ) : null}
             </div>
           </div>
-          <div className="space-y-4 rounded-[26px] border border-(--line) bg-(--surface-float) px-4 py-4">
+          <div className="space-y-3 rounded-xl border border-(--line) bg-(--surface-float) px-4 py-4">
             <div className="space-y-2">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-(--ink-soft)">Period</p>
-              <div className="flex flex-wrap gap-2">
+              <p className="text-xs font-medium uppercase tracking-wider text-(--ink-soft)">Period</p>
+              <div className="flex flex-wrap gap-1.5">
                 {HISTORY_PERIODS.map((item) => (
                   <Button key={item} variant={period === item ? "primary" : "secondary"} size="compact" onClick={() => choosePeriod(item)}>
                     {item}
@@ -168,8 +167,8 @@ export function CompareWorkspace({ configured, initialData, initialSymbols, init
               </div>
             </div>
             <div className="space-y-2">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-(--ink-soft)">Interval</p>
-              <div className="flex flex-wrap gap-2">
+              <p className="text-xs font-medium uppercase tracking-wider text-(--ink-soft)">Interval</p>
+              <div className="flex flex-wrap gap-1.5">
                 {HISTORY_INTERVALS_BY_PERIOD[period].map((item) => (
                   <Button key={item} variant={interval === item ? "primary" : "ghost"} size="compact" onClick={() => chooseInterval(item)}>
                     {item}
@@ -177,7 +176,6 @@ export function CompareWorkspace({ configured, initialData, initialSymbols, init
                 ))}
               </div>
             </div>
-            <p className="text-sm leading-6 text-(--ink-muted)">Keep the basket to 2 to 5 symbols so the comparison stays readable and quick.</p>
           </div>
         </div>
       </Card>
@@ -185,18 +183,17 @@ export function CompareWorkspace({ configured, initialData, initialSymbols, init
       <Card variant="panel" className="px-5 py-5">
         {compareQuery.data?.series.length ? (
           <>
-            <div className="mb-5">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-(--ink-soft)">Chart-led view</p>
-              <h2 className="mt-2 font-(family-name:--font-display) text-[2rem] text-(--ink)">Basket performance</h2>
+            <div className="mb-4">
+              <h2 className="text-lg font-bold text-(--ink-strong)">Performance</h2>
             </div>
-            <div className="rounded-[28px] border border-(--line) bg-(--surface-muted) px-3 py-4">
+            <div className="rounded-lg border border-(--line) bg-(--surface-muted) px-3 py-3">
             <TimeSeriesChart
               mode="line"
               height={420}
               series={compareQuery.data.series.map((series, index) => ({
                 key: series.symbol,
                 label: series.symbol,
-                color: index === 0 ? "var(--chart-1)" : index === 1 ? "var(--chart-2)" : "var(--chart-3)",
+                color: index === 0 ? "var(--chart-1)" : index === 1 ? "var(--chart-2)" : index === 2 ? "var(--chart-3)" : index === 3 ? "var(--chart-4)" : "var(--chart-5)",
                 points: series.bars.map((bar) => ({
                   timestamp: bar.timestamp,
                   value: bar.close,
@@ -204,24 +201,24 @@ export function CompareWorkspace({ configured, initialData, initialSymbols, init
               }))}
             />
             </div>
-            <div className="mt-5 grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+            <div className="mt-4 grid gap-2 md:grid-cols-2 xl:grid-cols-4">
               {compareQuery.data.series.map((series) => (
-                <div key={series.symbol} className="rounded-[22px] border border-(--line) bg-(--surface-muted) px-4 py-4">
-                  <p className="text-[11px] uppercase tracking-[0.18em] text-(--ink-soft)">{series.symbol}</p>
-                  <p className="mt-1 text-sm text-(--ink-muted)">{series.displayName}</p>
-                  <p className="mt-2 text-lg font-semibold text-(--ink)">{formatCurrency(series.currentPrice)}</p>
-                  <p className={series.changePercent !== null && series.changePercent >= 0 ? "text-sm text-(--positive)" : "text-sm text-(--negative)"}>
+                <div key={series.symbol} className="rounded-lg border border-(--line) bg-(--surface-muted) px-3 py-3">
+                  <p className="text-[11px] font-medium uppercase tracking-wider text-(--ink-soft)">{series.symbol}</p>
+                  <p className="mt-0.5 text-xs text-(--ink-muted)">{series.displayName}</p>
+                  <p className="mt-1.5 text-base font-semibold text-(--ink-strong)">{formatCurrency(series.currentPrice)}</p>
+                  <p className={series.changePercent !== null && series.changePercent >= 0 ? "text-sm font-medium text-(--positive)" : "text-sm font-medium text-(--negative)"}>
                     {formatSignedPercent(series.changePercent, 1)}
                   </p>
                 </div>
               ))}
             </div>
-            <div className="mt-4">
+            <div className="mt-3">
               <DataLimitations items={compareQuery.data.dataLimitations} />
             </div>
           </>
         ) : compareQuery.isPending ? (
-          <div className="h-[420px] animate-pulse rounded-[28px] bg-(--surface-muted)" />
+          <div className="h-[420px] animate-pulse rounded-lg bg-(--surface-muted)" />
         ) : compareQuery.error instanceof Error ? (
           <p className="text-sm text-(--negative)">{compareQuery.error.message}</p>
         ) : (

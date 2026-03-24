@@ -4,18 +4,18 @@ import { type HTMLAttributes } from "react";
 import { cn } from "@/lib/utils";
 
 const cardVariants = cva(
-  "rounded-[30px] border backdrop-blur-[18px] transition-colors",
+  "rounded-xl border backdrop-blur-md transition-colors",
   {
     variants: {
       variant: {
         panel:
-          "border-(--line) bg-(--surface) shadow-[0_18px_48px_rgba(56,44,18,0.08)]",
+          "border-(--line) bg-(--surface) shadow-[0_4px_24px_rgba(0,0,0,0.2)]",
         band:
-          "border-(--line-strong) bg-[linear-gradient(180deg,rgba(255,250,241,0.8),rgba(247,239,224,0.9))] shadow-[0_22px_60px_rgba(56,44,18,0.09)]",
+          "border-(--line-strong) bg-(--surface-strong) shadow-[0_4px_32px_rgba(0,0,0,0.24)]",
         rail:
-          "border-(--line) bg-(--surface-float) shadow-[0_16px_42px_rgba(56,44,18,0.08)]",
+          "border-(--line) bg-(--surface-float) shadow-[0_4px_20px_rgba(0,0,0,0.18)]",
         muted:
-          "border-(--line) bg-(--surface-muted) shadow-[0_12px_32px_rgba(56,44,18,0.05)]",
+          "border-(--line) bg-(--surface-muted) shadow-[0_2px_12px_rgba(0,0,0,0.1)]",
         ghost: "border-transparent bg-transparent shadow-none backdrop-blur-0",
       },
     },

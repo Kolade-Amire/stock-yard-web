@@ -10,9 +10,9 @@ export function DataLimitations({ items }: DataLimitationsProps) {
   }
 
   return (
-    <div className="rounded-2xl border border-(--line) bg-(--surface-strong) px-4 py-3 text-sm text-(--ink-muted)">
-      <div className="mb-2 flex items-center gap-2 font-medium text-(--ink)">
-        <AlertCircle className="size-4 text-(--accent)" />
+    <div className="rounded-lg border border-(--line) bg-(--surface-muted) px-4 py-3 text-sm text-(--ink-muted)">
+      <div className="mb-2 flex items-center gap-2 font-medium text-(--warning)">
+        <AlertCircle className="size-4 text-(--warning)" />
         Data limitations
       </div>
       <ul className="space-y-1">

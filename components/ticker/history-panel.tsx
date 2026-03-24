@@ -15,7 +15,7 @@ const TimeSeriesChart = dynamic(
   () => import("@/components/charts/time-series-chart").then((module) => module.TimeSeriesChart),
   {
     ssr: false,
-    loading: () => <div className="h-[320px] animate-pulse rounded-[24px] bg-(--surface-strong)" />,
+    loading: () => <div className="h-[320px] animate-pulse rounded-lg bg-(--surface-strong)" />,
   },
 );
 
@@ -45,16 +45,16 @@ export function HistoryPanel({ symbol, currency, initialData }: HistoryPanelProp
 
   return (
     <Card variant="panel" className="px-5 py-5">
-      <div className="mb-5 flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
-        <div className="space-y-2">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-(--ink-soft)">Price context</p>
-          <div className="flex flex-wrap items-end gap-4">
-            <h2 className="font-(family-name:--font-display) text-[2.4rem] leading-none text-(--ink)">Chart deck</h2>
+      <div className="mb-4 flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
+        <div className="space-y-1">
+          <p className="text-xs font-medium uppercase tracking-wider text-(--ink-soft)">Price chart</p>
+          <div className="flex flex-wrap items-end gap-3">
+            <h2 className="text-2xl font-bold text-(--ink-strong)">Chart</h2>
             <p className="text-sm text-(--ink-muted)">{formatCurrency(latestBar?.close ?? null, currency)} latest close</p>
           </div>
         </div>
         <div className="space-y-2">
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-1.5">
             {HISTORY_PERIODS.map((item) => (
               <Button
                 key={item}
@@ -73,7 +73,7 @@ export function HistoryPanel({ symbol, currency, initialData }: HistoryPanelProp
               </Button>
             ))}
           </div>
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-1.5">
             {HISTORY_INTERVALS_BY_PERIOD[period].map((item) => (
               <Button key={item} variant={item === activeInterval ? "primary" : "ghost"} size="compact" onClick={() => setInterval(item)}>
                 {item}
@@ -84,7 +84,7 @@ export function HistoryPanel({ symbol, currency, initialData }: HistoryPanelProp
       </div>
       {bars.length ? (
         <>
-          <div className="rounded-[28px] border border-(--line) bg-(--surface-muted) px-3 py-4">
+          <div className="rounded-lg border border-(--line) bg-(--surface-muted) px-3 py-3">
             <TimeSeriesChart
               height={360}
               series={[
@@ -92,7 +92,7 @@ export function HistoryPanel({ symbol, currency, initialData }: HistoryPanelProp
                   key: symbol,
                   label: symbol,
                   color: "var(--chart-1)",
-                  fill: "rgba(47, 107, 87, 0.18)",
+                  fill: "rgba(16, 185, 129, 0.12)",
                   points: bars.map((bar) => ({
                     timestamp: bar.timestamp,
                     value: bar.close,
@@ -101,7 +101,7 @@ export function HistoryPanel({ symbol, currency, initialData }: HistoryPanelProp
               ]}
             />
           </div>
-          <div className="mt-5 grid gap-3 md:grid-cols-4">
+          <div className="mt-4 grid gap-2 md:grid-cols-4">
             <Stat label="Last close" value={formatCurrency(latestBar?.close ?? null, currency)} />
             <Stat label="Open" value={formatCurrency(latestBar?.open ?? null, currency)} />
             <Stat label="Volume" value={formatNumber(latestBar?.volume ?? null)} />
@@ -109,7 +109,7 @@ export function HistoryPanel({ symbol, currency, initialData }: HistoryPanelProp
           </div>
         </>
       ) : (
-        <div className="rounded-[24px] border border-dashed border-(--line-strong) px-4 py-10 text-center text-sm text-(--ink-muted)">
+        <div className="rounded-lg border border-dashed border-(--line-strong) px-4 py-10 text-center text-sm text-(--ink-muted)">
           Chart data is unavailable for the selected controls.
         </div>
       )}
@@ -127,9 +127,9 @@ type StatProps = {
 
 function Stat({ label, value }: StatProps) {
   return (
-    <div className="rounded-[20px] border border-(--line) bg-(--surface-muted) px-4 py-3">
-      <p className="text-[11px] uppercase tracking-[0.18em] text-(--ink-soft)">{label}</p>
-      <p className="mt-2 text-sm font-medium text-(--ink)">{value}</p>
+    <div className="rounded-lg border border-(--line) bg-(--surface-muted) px-3 py-2.5">
+      <p className="text-[11px] font-medium uppercase tracking-wider text-(--ink-soft)">{label}</p>
+      <p className="mt-1 text-sm font-medium text-(--ink)">{value}</p>
     </div>
   );
 }

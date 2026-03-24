@@ -30,16 +30,16 @@ export function MicroBarChart({ items, height = 180 }: MicroBarChartProps) {
               y={y}
               width={barWidth - 16}
               height={Math.max(barHeight, 4)}
-              rx={14}
+              rx={4}
               fill={color}
-              opacity={0.86}
+              opacity={0.9}
             />
             <text
               x={x + (barWidth - 16) / 2}
               y={height - 8}
               textAnchor="middle"
               fontSize="10"
-              fill="rgba(55, 47, 37, 0.72)"
+              fill="rgba(232, 234, 237, 0.5)"
             >
               {item.label}
             </text>
