@@ -1,5 +1,4 @@
 @import "tailwindcss";
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
 
 :root {
   --canvas: #0f1219;
@@ -55,17 +54,11 @@ a {
 
 button,
 input,
-textarea {
+textarea,
+select {
   font: inherit;
 }
 
 ::selection {
   background: rgba(59, 130, 246, 0.3);
-}
-
-button,
-input,
-textarea,
-select {
-  font: inherit;
 }

@@ -1,10 +1,14 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
-
+import { Inter } from "next/font/google";
 import { SiteHeader } from "@/components/shell/site-header";
 import { Providers } from "@/app/providers";
-
 import "./globals.css";
+
+const inter = Inter({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+});
 
 export const metadata: Metadata = {
   title: "Stock-Yard",
@@ -17,13 +21,11 @@ type RootLayoutProps = {
 
 export default function RootLayout({ children }: RootLayoutProps) {
   return (
-    <html lang="en" className="dark">
-      <body>
+    <html lang="en">
+      <body className={inter.className}>
         <Providers>
-          <div className="min-h-screen text-(--ink)">
-            <SiteHeader />
-            <main className="relative mx-auto flex max-w-[1520px] flex-col gap-8 px-4 py-6 md:px-6 md:py-8 xl:px-8">{children}</main>
-          </div>
+          <SiteHeader />
+          {children}
         </Providers>
       </body>
     </html>
