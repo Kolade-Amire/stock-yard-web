@@ -2,6 +2,7 @@
 
 import { ArrowUpRight } from "lucide-react";
 
+import { TickerLogo } from "@/components/ui/ticker-logo";
 import type { SearchResult } from "@/lib/stock-yard/schemas";
 import { cn } from "@/lib/utils";
 
@@ -73,14 +74,20 @@ export function TickerResolverResults({
                   index === activeIndex ? "bg-(--surface-strong)" : "hover:bg-(--surface-strong)",
                 )}
               >
-                <div className="min-w-0">
-                  <p className={cn("truncate font-medium text-(--ink-strong)", compact ? "text-sm" : "text-base")}>
-                    {result.name}
-                  </p>
-                  <p className="truncate text-xs text-(--ink-muted)">
-                    {result.symbol}
-                    {result.exchange ? ` · ${result.exchange}` : ""}
-                  </p>
+                <div className="flex min-w-0 items-center gap-3">
+                  <TickerLogo
+                    symbol={result.symbol}
+                    variant="search"
+                  />
+                  <div className="min-w-0">
+                    <p className={cn("truncate font-medium text-(--ink-strong)", compact ? "text-sm" : "text-base")}>
+                      {result.name}
+                    </p>
+                    <p className="truncate text-xs text-(--ink-muted)">
+                      {result.symbol}
+                      {result.exchange ? ` · ${result.exchange}` : ""}
+                    </p>
+                  </div>
                 </div>
                 <ArrowUpRight className="size-4 shrink-0 text-(--ink-soft)" />
               </button>

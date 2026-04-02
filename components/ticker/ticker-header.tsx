@@ -2,6 +2,7 @@ import { ArrowUpRight, Globe2 } from "lucide-react";
 
 import { Card } from "@/components/ui/card";
 import { DataLimitations } from "@/components/ui/data-limitations";
+import { TickerLogo } from "@/components/ui/ticker-logo";
 import { formatCurrency, formatNumber, formatPercent, formatRange } from "@/lib/stock-yard/format";
 import type { TickerOverviewResponse } from "@/lib/stock-yard/schemas";
 
@@ -47,9 +48,14 @@ export function TickerHeader({ data }: TickerHeaderProps) {
             ) : null}
           </div>
           <div className="space-y-1">
-            <div className="flex flex-wrap items-end gap-4">
-              <div>
-                <h1 className="text-4xl font-bold tracking-tight text-(--ink-strong) md:text-5xl">{data.symbol}</h1>
+            <div className="flex items-start gap-4 md:gap-5">
+              <TickerLogo
+                symbol={data.symbol}
+                variant="ticker"
+                className="mt-1"
+              />
+              <div className="min-w-0 pt-0.5">
+                <h1 className="text-3xl font-bold tracking-tight text-(--ink-strong) md:text-4xl">{data.symbol}</h1>
                 <p className="mt-1 text-sm text-(--ink-muted)">{overview.display_name}</p>
               </div>
             </div>
