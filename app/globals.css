@@ -1,5 +1,4 @@
 @import "tailwindcss";
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
 
 :root {
   --canvas: #0f1219;
@@ -27,7 +26,7 @@
   --chart-3: #a78bfa;
   --chart-4: #f59e0b;
   --chart-5: #ec4899;
-  --font-sans: "Inter", "Segoe UI", "Helvetica Neue", system-ui, sans-serif;
+  --font-sans: var(--font-inter), "Segoe UI", "Helvetica Neue", system-ui, sans-serif;
   color-scheme: dark;
 }
 
