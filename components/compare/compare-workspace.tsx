@@ -8,6 +8,7 @@ import { startTransition, useState } from "react";
 
 import { TickerResolverResults } from "@/components/search/ticker-resolver-results";
 import { getOptionId, useTickerResolverSearch } from "@/components/search/use-ticker-resolver-search";
+import { getCompareSeriesColor } from "@/components/compare/series-colors";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { DataLimitations } from "@/components/ui/data-limitations";
@@ -121,7 +122,7 @@ export function CompareWorkspace({ configured, initialData, initialSymbols, init
                 </div>
               ))}
             </div>
-            <div className="relative">
+            <div>
               <form
                 onSubmit={(event) => {
                   event.preventDefault();
@@ -148,8 +149,9 @@ export function CompareWorkspace({ configured, initialData, initialSymbols, init
               </form>
               <TickerResolverResults
                 activeIndex={resolver.activeIndex}
-                className="top-[calc(100%+6px)] rounded-lg"
+                className="rounded-lg"
                 compact
+                displayMode="inline"
                 emptyMessage="No matching symbols."
                 errorMessage={resolver.errorMessage}
                 getOptionId={(index) => getOptionId(resolver.listboxId, index)}
@@ -201,7 +203,7 @@ export function CompareWorkspace({ configured, initialData, initialSymbols, init
               series={compareQuery.data.series.map((series, index) => ({
                 key: series.symbol,
                 label: series.symbol,
-                color: index === 0 ? "var(--chart-1)" : index === 1 ? "var(--chart-2)" : index === 2 ? "var(--chart-3)" : index === 3 ? "var(--chart-4)" : "var(--chart-5)",
+                color: getCompareSeriesColor(index),
                 points: series.bars.map((bar) => ({
                   timestamp: bar.timestamp,
                   value: bar.close,
@@ -210,10 +212,20 @@ export function CompareWorkspace({ configured, initialData, initialSymbols, init
             />
             </div>
             <div className="mt-4 grid gap-2 md:grid-cols-2 xl:grid-cols-4">
-              {compareQuery.data.series.map((series) => (
+              {compareQuery.data.series.map((series, index) => (
                 <div key={series.symbol} className="rounded-lg border border-(--line) bg-(--surface-muted) px-3 py-3">
-                  <p className="text-[11px] font-medium uppercase tracking-wider text-(--ink-soft)">{series.symbol}</p>
-                  <p className="mt-0.5 text-xs text-(--ink-muted)">{series.displayName}</p>
+                  <p
+                    className="text-[11px] font-medium uppercase tracking-wider"
+                    style={{ color: getCompareSeriesColor(index) }}
+                  >
+                    {series.symbol}
+                  </p>
+                  <p
+                    className="mt-0.5 text-xs font-medium"
+                    style={{ color: getCompareSeriesColor(index) }}
+                  >
+                    {series.displayName}
+                  </p>
                   <p className="mt-1.5 text-base font-semibold text-(--ink-strong)">{formatCurrency(series.currentPrice)}</p>
                   <p className={series.changePercent !== null && series.changePercent >= 0 ? "text-sm font-medium text-(--positive)" : "text-sm font-medium text-(--negative)"}>
                     {formatSignedPercent(series.changePercent, 1)}

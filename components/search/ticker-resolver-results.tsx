@@ -10,6 +10,7 @@ type TickerResolverResultsProps = {
   activeIndex: number;
   className?: string;
   compact?: boolean;
+  displayMode?: "overlay" | "inline";
   emptyMessage: string;
   errorMessage?: string | null;
   getOptionId: (index: number) => string;
@@ -26,6 +27,7 @@ export function TickerResolverResults({
   activeIndex,
   className,
   compact = false,
+  displayMode = "overlay",
   emptyMessage,
   errorMessage,
   getOptionId,
@@ -46,7 +48,10 @@ export function TickerResolverResults({
       id={listboxId}
       role="listbox"
       className={cn(
-        "absolute inset-x-0 z-20 rounded-xl border border-(--line) bg-(--surface-overlay) p-2 shadow-[var(--shadow-popover)] backdrop-blur-xl",
+        "rounded-xl border border-(--line) bg-(--surface-overlay) p-2 backdrop-blur-xl",
+        displayMode === "overlay"
+          ? "absolute inset-x-0 z-20 shadow-[var(--shadow-popover)]"
+          : "mt-2 w-full shadow-[var(--shadow-panel)]",
         className,
       )}
     >

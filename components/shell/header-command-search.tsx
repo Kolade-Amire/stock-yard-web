@@ -6,7 +6,6 @@ import { startTransition } from "react";
 
 import { TickerResolverResults } from "@/components/search/ticker-resolver-results";
 import { getOptionId, useTickerResolverSearch } from "@/components/search/use-ticker-resolver-search";
-import { Button } from "@/components/ui/button";
 import { pushRecentSymbol } from "@/lib/recent-symbols";
 import { tickerRoute } from "@/lib/routes";
 
@@ -24,7 +23,7 @@ export function HeaderCommandSearch() {
   });
 
   return (
-    <div className="relative min-w-[260px]">
+    <div className="relative min-w-[380px] lg:min-w-[440px]">
       <form
         onSubmit={(event) => {
           event.preventDefault();
@@ -47,14 +46,12 @@ export function HeaderCommandSearch() {
           aria-expanded={resolver.shouldShowResults}
           className="w-full bg-transparent text-sm text-(--ink) outline-none placeholder:text-(--ink-soft)"
         />
-        <Button type="submit" variant="secondary" size="compact" disabled={!resolver.canSubmit}>
-          Go
-        </Button>
       </form>
       <TickerResolverResults
         activeIndex={resolver.activeIndex}
         className="top-[calc(100%+6px)]"
         compact
+        displayMode="overlay"
         emptyMessage="No matches found."
         errorMessage={resolver.errorMessage}
         getOptionId={(index) => getOptionId(resolver.listboxId, index)}

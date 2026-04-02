@@ -46,7 +46,7 @@ export function HeroSearch() {
               Search any symbol to open a research workspace with charts, news, financials, and AI-powered chat.
             </p>
           </div>
-          <div className="relative max-w-3xl">
+          <div className="max-w-3xl">
             <form
               onSubmit={(event) => {
                 event.preventDefault();
@@ -75,7 +75,7 @@ export function HeroSearch() {
             </form>
             <TickerResolverResults
               activeIndex={resolver.activeIndex}
-              className="top-[calc(100%+8px)]"
+              displayMode="inline"
               emptyMessage="No matches found."
               errorMessage={resolver.errorMessage}
               getOptionId={(index) => getOptionId(resolver.listboxId, index)}

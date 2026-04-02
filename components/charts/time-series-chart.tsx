@@ -44,6 +44,57 @@ function readChartToken(token: string, fallback: string) {
   return value || fallback;
 }
 
+export function resolveChartColor(color: string) {
+  const tokenMatch = color.trim().match(/^var\((--[^)]+)\)$/);
+
+  if (!tokenMatch) {
+    return color;
+  }
+
+  return readChartToken(tokenMatch[1], color);
+}
+
+export function withChartAlpha(color: string, alpha: number) {
+  const resolved = resolveChartColor(color).trim();
+
+  if (resolved.startsWith("rgba(")) {
+    const parts = resolved.slice(5, -1).split(",").map((part) => part.trim());
+    if (parts.length >= 3) {
+      return `rgba(${parts[0]}, ${parts[1]}, ${parts[2]}, ${alpha})`;
+    }
+  }
+
+  if (resolved.startsWith("rgb(")) {
+    const parts = resolved.slice(4, -1).split(",").map((part) => part.trim());
+    if (parts.length >= 3) {
+      return `rgba(${parts[0]}, ${parts[1]}, ${parts[2]}, ${alpha})`;
+    }
+  }
+
+  if (resolved.startsWith("#")) {
+    const rawHex = resolved.slice(1);
+    const normalizedHex =
+      rawHex.length === 3
+        ? rawHex
+            .split("")
+            .map((char) => `${char}${char}`)
+            .join("")
+        : rawHex.length === 6
+          ? rawHex
+          : null;
+
+    if (normalizedHex !== null) {
+      const alphaHex = Math.round(alpha * 255)
+        .toString(16)
+        .padStart(2, "0");
+
+      return `#${normalizedHex}${alphaHex}`;
+    }
+  }
+
+  return resolved;
+}
+
 export function TimeSeriesChart({ series, height = 320, mode = "area" }: TimeSeriesChartProps) {
   const { resolvedTheme } = useTheme();
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -105,10 +156,14 @@ export function TimeSeriesChart({ series, height = 320, mode = "area" }: TimeSer
     const createdSeries: Array<ISeriesApi<"Area" | "Line">> = [];
 
     for (const item of series) {
+      const resolvedLineColor = resolveChartColor(item.color);
+
       if (mode === "area" && series.length === 1) {
+        const resolvedFillColor = item.fill ? resolveChartColor(item.fill) : withChartAlpha(resolvedLineColor, 0.2);
+
         const areaSeries = chart.addSeries(AreaSeries, {
-          lineColor: item.color,
-          topColor: item.fill ?? `${item.color}33`,
+          lineColor: resolvedLineColor,
+          topColor: resolvedFillColor,
           bottomColor: "rgba(0, 0, 0, 0)",
           lineWidth: 2,
           priceLineVisible: false,
@@ -122,7 +177,7 @@ export function TimeSeriesChart({ series, height = 320, mode = "area" }: TimeSer
       }
 
       const lineSeries = chart.addSeries(LineSeries, {
-        color: item.color,
+        color: resolvedLineColor,
         lineWidth: 2,
         priceLineVisible: false,
         lastValueVisible: false,
