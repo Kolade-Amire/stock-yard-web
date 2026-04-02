@@ -19,29 +19,17 @@ export function SectorPulseGrid({ data }: SectorPulseGridProps) {
       </div>
       {topSectors.length ? (
         <div className="space-y-3">
-          <div className="rounded-lg border border-(--line) bg-(--surface) px-3 py-3">
-            <MicroBarChart
-              height={120}
-              items={topSectors.map((sector) => ({
-                id: sector.key,
-                label: sector.name.slice(0, 4),
-                value: sector.overview.marketWeight,
-              }))}
-            />
-          </div>
-          <div className="space-y-1.5">
-            {topSectors.slice(0, 5).map((sector) => (
-              <div key={sector.key} className="rounded-lg border border-(--line) bg-(--surface) px-3 py-2.5">
-                <div className="flex items-center justify-between gap-4">
-                  <h4 className="text-sm font-medium text-(--ink)">{sector.name}</h4>
-                  <p className="text-xs font-medium text-(--accent)">{formatPercent(sector.overview.marketWeight, 1)}</p>
-                </div>
-                <p className="mt-1 text-xs text-(--ink-muted)">
-                  {sector.topCompanies.slice(0, 3).map((company) => company.symbol).join(" · ")}
-                </p>
-              </div>
-            ))}
-          </div>
+          <MicroBarChart
+            variant="ranked"
+            items={topSectors.map((sector) => ({
+              id: sector.key,
+              label: sector.name,
+              meta: sector.topCompanies.slice(0, 3).map((company) => company.symbol).join(" · "),
+              value: sector.overview.marketWeight,
+              a11yLabel: `${sector.name}: ${formatPercent(sector.overview.marketWeight, 1)}`,
+            }))}
+            valueFormat={{ style: "percent", digits: 1 }}
+          />
           <DataLimitations items={data?.dataLimitations ?? []} />
         </div>
       ) : (

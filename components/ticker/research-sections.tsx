@@ -5,7 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { useRef, useState } from "react";
 
-import { MicroBarChart } from "@/components/charts/micro-bar-chart";
+import { MicroBarChart, type BarDatum } from "@/components/charts/micro-bar-chart";
 import { Card } from "@/components/ui/card";
 import { DataLimitations } from "@/components/ui/data-limitations";
 import { stockYardClient } from "@/lib/stock-yard/client";
@@ -136,25 +136,17 @@ export function ResearchSections({ symbol, nextEarningsDate }: ResearchSectionsP
             )}
           </Card>
           <Card variant="panel" className="px-5 py-4">
-            <ResearchPanelHeader title="Trend" subtitle="Annual and quarterly revenue" />
+            <ResearchPanelHeader title="Trend" subtitle="Annual and quarterly revenue" layout="inline" />
             {financialTrends.data?.annual.length || financialTrends.data?.quarterly.length ? (
               <>
-                <div className="grid gap-3 lg:grid-cols-2">
+                <div className="grid gap-2.5 lg:grid-cols-2">
                   <TrendCard
                     label="Annual"
-                    items={(financialTrends.data?.annual ?? []).slice(-6).map((point) => ({
-                      id: point.periodEnd,
-                      label: point.periodEnd.slice(2, 4),
-                      value: point.revenue,
-                    }))}
+                    items={(financialTrends.data?.annual ?? []).slice(-6).map((point) => formatAnnualTrendDatum(point.periodEnd, point.revenue))}
                   />
                   <TrendCard
                     label="Quarterly"
-                    items={(financialTrends.data?.quarterly ?? []).slice(-6).map((point) => ({
-                      id: point.periodEnd,
-                      label: point.periodEnd.slice(5, 7),
-                      value: point.revenue,
-                    }))}
+                    items={(financialTrends.data?.quarterly ?? []).slice(-6).map((point) => formatQuarterlyTrendDatum(point.periodEnd, point.revenue))}
                   />
                 </div>
                 <div className="mt-3">
@@ -420,9 +412,20 @@ export function ResearchSections({ symbol, nextEarningsDate }: ResearchSectionsP
 type ResearchPanelHeaderProps = {
   title: string;
   subtitle: string;
+  layout?: "stacked" | "inline";
 };
 
-function ResearchPanelHeader({ title, subtitle }: ResearchPanelHeaderProps) {
+function ResearchPanelHeader({ title, subtitle, layout = "stacked" }: ResearchPanelHeaderProps) {
+  if (layout === "inline") {
+    return (
+      <div className="mb-2 flex flex-wrap items-baseline gap-x-2 gap-y-1">
+        <h3 className="text-xl font-bold text-(--ink-strong)">{title}</h3>
+        <span aria-hidden="true" className="text-[15px] text-(--ink-soft)">•</span>
+        <p className="text-[15px] font-normal text-(--ink-muted)">{subtitle}</p>
+      </div>
+    );
+  }
+
   return (
     <div className="mb-3">
       <h3 className="text-lg font-bold text-(--ink-strong)">{title}</h3>
@@ -449,15 +452,21 @@ function MetricCard({ label, value, meta }: MetricCardProps) {
 
 type TrendCardProps = {
   label: string;
-  items: Array<{ id: string; label: string; value: number | null }>;
+  items: BarDatum[];
 };
 
 function TrendCard({ label, items }: TrendCardProps) {
   return (
-    <div className="rounded-lg border border-(--line) bg-(--surface-muted) px-3 py-3">
-      <p className="text-[11px] font-medium uppercase tracking-wider text-(--ink-soft)">{label}</p>
+    <div className="rounded-lg border border-(--line) bg-(--surface-muted) px-3 py-2.5">
+      <p className="text-sm font-medium uppercase tracking-[0.12em] text-(--ink-soft)">{label}</p>
       {items.length ? (
-        <MicroBarChart items={items} height={140} />
+        <MicroBarChart
+          variant="temporal"
+          items={items}
+          height={228}
+          tickFormat={{ style: "currency", currency: "USD", digits: 0 }}
+          valueFormat={{ style: "currency", currency: "USD", digits: 1 }}
+        />
       ) : (
         <p className="mt-2 text-sm text-(--ink-muted)">No chart rows available.</p>
       )}
@@ -571,4 +580,35 @@ function VirtualOptionsTable({ rows }: VirtualOptionsTableProps) {
 
 function combineLimitations(...groups: string[][]) {
   return Array.from(new Set(groups.flat().filter(Boolean)));
+}
+
+function formatAnnualTrendDatum(periodEnd: string, revenue: number | null): BarDatum {
+  const year = periodEnd.slice(0, 4);
+
+  return {
+    id: periodEnd,
+    label: year,
+    meta: `Fiscal year ${year}`,
+    value: revenue,
+    a11yLabel: `Fiscal year ${year}: ${formatCurrency(revenue, "USD", 0)}`,
+  };
+}
+
+function formatQuarterlyTrendDatum(periodEnd: string, revenue: number | null): BarDatum {
+  const date = new Date(periodEnd);
+  const month = date.getUTCMonth();
+  const quarter = `Q${Math.floor(month / 3) + 1}`;
+  const meta = new Intl.DateTimeFormat("en-US", {
+    month: "short",
+    year: "numeric",
+    timeZone: "UTC",
+  }).format(date);
+
+  return {
+    id: periodEnd,
+    label: quarter,
+    meta,
+    value: revenue,
+    a11yLabel: `${quarter} ${meta}: ${formatCurrency(revenue, "USD", 0)}`,
+  };
 }
