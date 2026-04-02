@@ -1,15 +1,15 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
 import { ArrowUpRight, Search } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { startTransition, useDeferredValue, useState, useSyncExternalStore } from "react";
+import { startTransition, useSyncExternalStore } from "react";
 
+import { TickerResolverResults } from "@/components/search/ticker-resolver-results";
+import { getOptionId, useTickerResolverSearch } from "@/components/search/use-ticker-resolver-search";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { compareRoute, tickerRoute } from "@/lib/routes";
-import { stockYardClient } from "@/lib/stock-yard/client";
 import {
   pushRecentSymbol,
   readRecentSymbols,
@@ -22,34 +22,17 @@ const FEATURED_SYMBOLS = ["AAPL", "MSFT", "NVDA", "SPY", "QQQ"];
 
 export function HeroSearch() {
   const router = useRouter();
-  const [query, setQuery] = useState("");
-  const deferredQuery = useDeferredValue(query.trim());
   const recentSymbols = useSyncExternalStore(subscribeRecentSymbols, readRecentSymbols, readRecentSymbolsServerSnapshot);
+  const resolver = useTickerResolverSearch({
+    maxResults: 6,
+    onResolve(result) {
+      pushRecentSymbol(result.symbol);
 
-  const searchQuery = useQuery({
-    queryKey: ["ticker-search", deferredQuery],
-    queryFn: () => stockYardClient.searchTickers(deferredQuery),
-    enabled: deferredQuery.length > 0,
-    staleTime: 60_000,
+      startTransition(() => {
+        router.push(tickerRoute(result.symbol));
+      });
+    },
   });
-
-  function handleSelect(symbol: string) {
-    pushRecentSymbol(symbol);
-
-    startTransition(() => {
-      router.push(tickerRoute(symbol));
-    });
-  }
-
-  function submitSearch() {
-    const symbol = (deferredQuery || query.trim()).toUpperCase();
-
-    if (!symbol) {
-      return;
-    }
-
-    handleSelect(symbol);
-  }
 
   return (
     <Card variant="band" className="px-5 py-5 md:px-6 md:py-6">
@@ -67,49 +50,43 @@ export function HeroSearch() {
             <form
               onSubmit={(event) => {
                 event.preventDefault();
-                submitSearch();
+                resolver.submitActiveResult();
               }}
               className="flex items-center gap-3 rounded-xl border border-(--line-strong) bg-(--surface) px-4 py-3"
             >
               <Search className="size-5 text-(--ink-soft)" />
               <input
-                value={query}
-                onChange={(event) => setQuery(event.target.value)}
+                role="combobox"
+                value={resolver.query}
+                onChange={(event) => resolver.setQuery(event.target.value)}
+                onFocus={resolver.handleInputFocus}
+                onKeyDown={resolver.handleInputKeyDown}
                 placeholder="Search symbols or companies…"
+                aria-autocomplete="list"
+                aria-haspopup="listbox"
+                aria-controls={resolver.listboxId}
+                aria-activedescendant={resolver.activeDescendantId}
+                aria-expanded={resolver.shouldShowResults}
                 className="w-full bg-transparent text-base text-(--ink) outline-none placeholder:text-(--ink-soft)"
               />
-              <Button type="submit">
+              <Button type="submit" disabled={!resolver.canSubmit}>
                 Search
               </Button>
             </form>
-            {deferredQuery ? (
-              <div className="absolute inset-x-0 top-[calc(100%+8px)] z-20 rounded-xl border border-(--line) bg-(--surface-overlay) p-2 shadow-[var(--shadow-popover)] backdrop-blur-xl">
-                {searchQuery.isPending ? (
-                  <p className="px-3 py-3 text-sm text-(--ink-muted)">Searching…</p>
-                ) : searchQuery.data?.results.length ? (
-                  <ul className="space-y-0.5">
-                    {searchQuery.data.results.slice(0, 6).map((result) => (
-                      <li key={result.symbol}>
-                        <button
-                          type="button"
-                          onMouseEnter={() => router.prefetch(tickerRoute(result.symbol))}
-                          onClick={() => handleSelect(result.symbol)}
-                          className="flex w-full items-center justify-between rounded-lg px-3 py-2.5 text-left transition-colors hover:bg-(--surface-strong)"
-                        >
-                          <div>
-                            <p className="font-semibold text-(--ink-strong)">{result.symbol}</p>
-                            <p className="text-sm text-(--ink-muted)">{result.name}</p>
-                          </div>
-                          <ArrowUpRight className="size-4 text-(--ink-soft)" />
-                        </button>
-                      </li>
-                    ))}
-                  </ul>
-                ) : (
-                  <p className="px-3 py-3 text-sm text-(--ink-muted)">No matches found.</p>
-                )}
-              </div>
-            ) : null}
+            <TickerResolverResults
+              activeIndex={resolver.activeIndex}
+              className="top-[calc(100%+8px)]"
+              emptyMessage="No matches found."
+              errorMessage={resolver.errorMessage}
+              getOptionId={(index) => getOptionId(resolver.listboxId, index)}
+              isPending={resolver.isPending}
+              isOpen={resolver.shouldShowResults}
+              listboxId={resolver.listboxId}
+              onHover={resolver.handleResultMouseEnter}
+              onPrefetchSymbol={(symbol) => router.prefetch(tickerRoute(symbol))}
+              onSelect={resolver.handleResultSelect}
+              results={resolver.results}
+            />
           </div>
           <div className="grid gap-3 lg:grid-cols-2">
             <SymbolCluster

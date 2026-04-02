@@ -2,10 +2,12 @@
 
 import { useQuery } from "@tanstack/react-query";
 import dynamic from "next/dynamic";
-import { X } from "lucide-react";
+import { Search, X } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { startTransition, useDeferredValue, useState } from "react";
+import { startTransition, useState } from "react";
 
+import { TickerResolverResults } from "@/components/search/ticker-resolver-results";
+import { getOptionId, useTickerResolverSearch } from "@/components/search/use-ticker-resolver-search";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { DataLimitations } from "@/components/ui/data-limitations";
@@ -36,14 +38,11 @@ export function CompareWorkspace({ configured, initialData, initialSymbols, init
   const [symbols, setSymbols] = useState(initialSymbols);
   const [period, setPeriod] = useState(initialPeriod);
   const [interval, setInterval] = useState(initialInterval);
-  const [query, setQuery] = useState("");
-  const deferredQuery = useDeferredValue(query.trim());
-
-  const searchQuery = useQuery({
-    queryKey: ["compare-search", deferredQuery],
-    queryFn: () => stockYardClient.searchTickers(deferredQuery),
-    enabled: deferredQuery.length > 0,
-    staleTime: 60_000,
+  const resolver = useTickerResolverSearch({
+    maxResults: 5,
+    onResolve(result) {
+      return addSymbol(result.symbol);
+    },
   });
 
   const compareQuery = useQuery({
@@ -67,13 +66,13 @@ export function CompareWorkspace({ configured, initialData, initialSymbols, init
 
   function addSymbol(symbol: string) {
     if (symbols.includes(symbol) || symbols.length >= 5) {
-      return;
+      return false;
     }
 
     const nextSymbols = [...symbols, symbol];
     setSymbols(nextSymbols);
-    setQuery("");
     syncUrl(nextSymbols, period, interval);
+    return true;
   }
 
   function removeSymbol(symbol: string) {
@@ -123,36 +122,45 @@ export function CompareWorkspace({ configured, initialData, initialSymbols, init
               ))}
             </div>
             <div className="relative">
-              <input
-                value={query}
-                onChange={(event) => setQuery(event.target.value)}
-                placeholder="Add a symbol…"
-                className="w-full rounded-lg border border-(--line-strong) bg-(--surface) px-4 py-2.5 text-sm text-(--ink) outline-none placeholder:text-(--ink-soft)"
-              />
-              {deferredQuery ? (
-                <div className="absolute inset-x-0 top-[calc(100%+6px)] z-20 rounded-lg border border-(--line) bg-(--surface-overlay) p-2 shadow-[var(--shadow-popover)] backdrop-blur-xl">
-                  {searchQuery.isPending ? (
-                    <p className="px-3 py-2 text-sm text-(--ink-muted)">Searching…</p>
-                  ) : searchQuery.data?.results.length ? (
-                    searchQuery.data.results.slice(0, 5).map((item) => (
-                      <button
-                        key={item.symbol}
-                        type="button"
-                        onMouseEnter={() => router.prefetch(tickerRoute(item.symbol))}
-                        onClick={() => addSymbol(item.symbol)}
-                        className="flex w-full items-center justify-between rounded-md px-3 py-2 text-left transition-colors hover:bg-(--surface-strong)"
-                      >
-                        <div>
-                          <p className="font-medium text-(--ink-strong)">{item.symbol}</p>
-                          <p className="text-xs text-(--ink-muted)">{item.name}</p>
-                        </div>
-                      </button>
-                    ))
-                  ) : (
-                    <p className="px-3 py-2 text-sm text-(--ink-muted)">No matching symbols.</p>
-                  )}
+              <form
+                onSubmit={(event) => {
+                  event.preventDefault();
+                  resolver.submitActiveResult();
+                }}
+              >
+                <div className="flex items-center gap-3 rounded-lg border border-(--line-strong) bg-(--surface) px-4 py-2.5">
+                  <Search className="size-4 text-(--ink-soft)" />
+                  <input
+                    role="combobox"
+                    value={resolver.query}
+                    onChange={(event) => resolver.setQuery(event.target.value)}
+                    onFocus={resolver.handleInputFocus}
+                    onKeyDown={resolver.handleInputKeyDown}
+                    placeholder="Add a symbol or company…"
+                    aria-autocomplete="list"
+                    aria-haspopup="listbox"
+                    aria-controls={resolver.listboxId}
+                    aria-activedescendant={resolver.activeDescendantId}
+                    aria-expanded={resolver.shouldShowResults}
+                    className="w-full bg-transparent text-sm text-(--ink) outline-none placeholder:text-(--ink-soft)"
+                  />
                 </div>
-              ) : null}
+              </form>
+              <TickerResolverResults
+                activeIndex={resolver.activeIndex}
+                className="top-[calc(100%+6px)] rounded-lg"
+                compact
+                emptyMessage="No matching symbols."
+                errorMessage={resolver.errorMessage}
+                getOptionId={(index) => getOptionId(resolver.listboxId, index)}
+                isPending={resolver.isPending}
+                isOpen={resolver.shouldShowResults}
+                listboxId={resolver.listboxId}
+                onHover={resolver.handleResultMouseEnter}
+                onPrefetchSymbol={(symbol) => router.prefetch(tickerRoute(symbol))}
+                onSelect={resolver.handleResultSelect}
+                results={resolver.results}
+              />
             </div>
           </div>
           <div className="space-y-3 rounded-xl border border-(--line) bg-(--surface-float) px-4 py-4">

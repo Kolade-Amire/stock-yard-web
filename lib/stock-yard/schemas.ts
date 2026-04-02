@@ -33,6 +33,8 @@ export const searchResponseSchema = z.object({
   ),
 });
 
+export type SearchResult = z.infer<typeof searchResponseSchema>["results"][number];
+
 export const tickerOverviewSchema = z.object({
   symbol: z.string(),
   overview: z.object({
