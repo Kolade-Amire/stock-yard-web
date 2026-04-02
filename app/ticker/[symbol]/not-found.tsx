@@ -8,7 +8,7 @@ export default function TickerNotFound() {
   return (
     <StatusBlock
       title="Ticker not found"
-      description="The overview endpoint is the authoritative symbol check, and this symbol did not validate against the Stock-Yard API."
+      description="The overview endpoint is the authoritative symbol check, and this symbol did not validate against the Stock Yard API."
       action={
         <Link href={homeRoute}>
           <Button>Back to discover</Button>

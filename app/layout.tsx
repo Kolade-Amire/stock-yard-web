@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
-import { Inter } from "next/font/google";
+import { Dancing_Script, Inter } from "next/font/google";
 import Script from "next/script";
 
 import { SiteHeader } from "@/components/shell/site-header";
@@ -14,9 +14,15 @@ const inter = Inter({
   weight: ["400", "500", "600", "700"],
 });
 
+const dancingScript = Dancing_Script({
+  subsets: ["latin"],
+  weight: ["700"],
+  variable: "--font-wordmark",
+});
+
 export const metadata: Metadata = {
-  title: "Stock-Yard",
-  description: "Fast, research-heavy stock intelligence on top of the Stock-Yard API.",
+  title: "Stock Yard",
+  description: "Fast, research-heavy stock intelligence on top of the Stock Yard API.",
 };
 
 type RootLayoutProps = {
@@ -26,7 +32,7 @@ type RootLayoutProps = {
 export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={inter.className}>
+      <body className={`${inter.className} ${dancingScript.variable}`}>
         <Script id="theme-init" strategy="beforeInteractive">
           {getThemeBootstrapScript()}
         </Script>

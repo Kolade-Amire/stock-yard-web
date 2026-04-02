@@ -54,7 +54,7 @@ export default async function TickerPage({ params }: TickerPageProps) {
       </div>
       <div className="space-y-6">
         <NewsPanel data={newsResult.status === "fulfilled" ? newsResult.value : null} />
-        <ChatPanel symbol={normalizedSymbol} />
+        <ChatPanel key={normalizedSymbol} symbol={normalizedSymbol} />
       </div>
     </div>
   );

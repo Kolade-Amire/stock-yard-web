@@ -104,7 +104,7 @@ export function ResearchSections({ symbol, nextEarningsDate }: ResearchSectionsP
               <Tabs.Trigger
                 key={tab.key}
                 value={tab.key}
-                className="rounded-lg border border-(--line) bg-(--surface-float) px-3 py-1.5 text-sm text-(--ink-muted) transition-colors data-[state=active]:border-(--accent) data-[state=active]:bg-(--accent) data-[state=active]:text-white"
+                className="rounded-lg border border-(--line) bg-(--surface-float) px-3 py-1.5 text-sm text-(--ink-muted) transition-colors data-[state=active]:border-(--accent) data-[state=active]:bg-(--accent) data-[state=active]:text-(--accent-contrast)"
               >
                 {tab.label}
               </Tabs.Trigger>
@@ -310,7 +310,7 @@ export function ResearchSections({ symbol, nextEarningsDate }: ResearchSectionsP
                   <Tabs.Trigger
                     key={tab.key}
                     value={tab.key}
-                    className="rounded-lg border border-(--line) bg-(--surface-float) px-3 py-1.5 text-sm text-(--ink-muted) data-[state=active]:border-(--accent) data-[state=active]:bg-(--accent) data-[state=active]:text-white"
+                    className="rounded-lg border border-(--line) bg-(--surface-float) px-3 py-1.5 text-sm text-(--ink-muted) data-[state=active]:border-(--accent) data-[state=active]:bg-(--accent) data-[state=active]:text-(--accent-contrast)"
                   >
                     {tab.label}
                   </Tabs.Trigger>
@@ -380,7 +380,7 @@ export function ResearchSections({ symbol, nextEarningsDate }: ResearchSectionsP
                     key={item}
                     type="button"
                     onClick={() => setSelectedExpiration(item)}
-                    className="rounded-lg border border-(--line) bg-(--surface-float) px-3 py-1.5 text-sm text-(--ink-muted) transition-colors hover:border-(--accent) data-[active=true]:border-(--accent) data-[active=true]:bg-(--accent) data-[active=true]:text-white"
+                    className="rounded-lg border border-(--line) bg-(--surface-float) px-3 py-1.5 text-sm text-(--ink-muted) transition-colors hover:border-(--accent) data-[active=true]:border-(--accent) data-[active=true]:bg-(--accent) data-[active=true]:text-(--accent-contrast)"
                     data-active={item === expiration}
                   >
                     {item}
@@ -393,7 +393,7 @@ export function ResearchSections({ symbol, nextEarningsDate }: ResearchSectionsP
                     <Tabs.Trigger
                       key={tab.key}
                       value={tab.key}
-                      className="rounded-lg border border-(--line) bg-(--surface-float) px-3 py-1.5 text-sm text-(--ink-muted) data-[state=active]:border-(--accent) data-[state=active]:bg-(--accent) data-[state=active]:text-white"
+                      className="rounded-lg border border-(--line) bg-(--surface-float) px-3 py-1.5 text-sm text-(--ink-muted) data-[state=active]:border-(--accent) data-[state=active]:bg-(--accent) data-[state=active]:text-(--accent-contrast)"
                     >
                       {tab.label}
                     </Tabs.Trigger>
