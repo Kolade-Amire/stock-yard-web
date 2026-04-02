@@ -11,6 +11,8 @@ import {
 } from "lightweight-charts";
 import { useEffect, useRef } from "react";
 
+import { useTheme } from "@/components/theme/theme-provider";
+
 type TimePoint = {
   timestamp: string;
   value: number;
@@ -37,7 +39,13 @@ function toChartPoint(point: TimePoint) {
   };
 }
 
+function readChartToken(token: string, fallback: string) {
+  const value = getComputedStyle(document.documentElement).getPropertyValue(token).trim();
+  return value || fallback;
+}
+
 export function TimeSeriesChart({ series, height = 320, mode = "area" }: TimeSeriesChartProps) {
+  const { resolvedTheme } = useTheme();
   const containerRef = useRef<HTMLDivElement | null>(null);
   const chartRef = useRef<IChartApi | null>(null);
   const resizeObserverRef = useRef<ResizeObserver | null>(null);
@@ -49,6 +57,10 @@ export function TimeSeriesChart({ series, height = 320, mode = "area" }: TimeSer
       return;
     }
 
+    const textColor = readChartToken("--chart-label", resolvedTheme === "dark" ? "rgba(232, 234, 237, 0.5)" : "rgba(50, 39, 25, 0.56)");
+    const gridColor = readChartToken("--chart-grid", resolvedTheme === "dark" ? "rgba(255, 255, 255, 0.06)" : "rgba(92, 70, 37, 0.12)");
+    const crosshairColor = readChartToken("--chart-crosshair", resolvedTheme === "dark" ? "rgba(255, 255, 255, 0.15)" : "rgba(92, 70, 37, 0.22)");
+
     const chart = createChart(container, {
       autoSize: true,
       height,
@@ -57,15 +69,15 @@ export function TimeSeriesChart({ series, height = 320, mode = "area" }: TimeSer
           type: ColorType.Solid,
           color: "transparent",
         },
-        textColor: "rgba(232, 234, 237, 0.5)",
+        textColor,
         attributionLogo: false,
       },
       grid: {
         vertLines: {
-          color: "rgba(255, 255, 255, 0.06)",
+          color: gridColor,
         },
         horzLines: {
-          color: "rgba(255, 255, 255, 0.06)",
+          color: gridColor,
         },
       },
       rightPriceScale: {
@@ -76,10 +88,10 @@ export function TimeSeriesChart({ series, height = 320, mode = "area" }: TimeSer
       },
       crosshair: {
         vertLine: {
-          color: "rgba(255, 255, 255, 0.15)",
+          color: crosshairColor,
         },
         horzLine: {
-          color: "rgba(255, 255, 255, 0.15)",
+          color: crosshairColor,
         },
       },
       handleScale: {
@@ -135,7 +147,7 @@ export function TimeSeriesChart({ series, height = 320, mode = "area" }: TimeSer
       chartRef.current = null;
       createdSeries.length = 0;
     };
-  }, [height, mode, series]);
+  }, [height, mode, resolvedTheme, series]);
 
   return <div ref={containerRef} className="w-full" />;
 }

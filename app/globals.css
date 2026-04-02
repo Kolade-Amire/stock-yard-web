@@ -1,11 +1,99 @@
 @import "tailwindcss";
 
 :root {
+  --canvas: #efe4cf;
+  --surface: rgba(255, 250, 241, 0.74);
+  --surface-strong: rgba(255, 252, 246, 0.9);
+  --surface-muted: rgba(99, 73, 37, 0.07);
+  --surface-float: rgba(255, 247, 234, 0.84);
+  --surface-overlay: rgba(255, 248, 237, 0.97);
+  --surface-header: rgba(239, 228, 207, 0.82);
+  --ink: #322719;
+  --ink-strong: #18120b;
+  --ink-muted: rgba(50, 39, 25, 0.72);
+  --ink-soft: rgba(50, 39, 25, 0.52);
+  --line: rgba(92, 70, 37, 0.12);
+  --line-strong: rgba(92, 70, 37, 0.18);
+  --line-heavy: rgba(92, 70, 37, 0.28);
+  --accent: #2563eb;
+  --accent-soft: rgba(37, 99, 235, 0.12);
+  --positive: #0f8a63;
+  --positive-soft: rgba(15, 138, 99, 0.12);
+  --negative: #dc2626;
+  --negative-soft: rgba(220, 38, 38, 0.12);
+  --warning: #d97706;
+  --ring: rgba(37, 99, 235, 0.35);
+  --chart-1: #0f8a63;
+  --chart-2: #2563eb;
+  --chart-3: #7c3aed;
+  --chart-4: #d97706;
+  --chart-5: #db2777;
+  --chart-label: rgba(50, 39, 25, 0.56);
+  --chart-grid: rgba(92, 70, 37, 0.12);
+  --chart-crosshair: rgba(92, 70, 37, 0.22);
+  --overlay: rgba(24, 18, 11, 0.42);
+  --shadow-panel: 0 8px 30px rgba(54, 40, 18, 0.08);
+  --shadow-band: 0 10px 36px rgba(54, 40, 18, 0.12);
+  --shadow-rail: 0 8px 24px rgba(54, 40, 18, 0.1);
+  --shadow-muted: 0 4px 14px rgba(54, 40, 18, 0.06);
+  --shadow-popover: 0 18px 44px rgba(24, 18, 11, 0.18);
+  --shadow-fab: 0 10px 26px rgba(24, 18, 11, 0.16);
+  --shadow-drawer: 0 -12px 40px rgba(24, 18, 11, 0.18);
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) {
+    --canvas: #0f1219;
+    --surface: rgba(255, 255, 255, 0.04);
+    --surface-strong: rgba(255, 255, 255, 0.08);
+    --surface-muted: rgba(255, 255, 255, 0.03);
+    --surface-float: rgba(255, 255, 255, 0.06);
+    --surface-overlay: rgba(15, 18, 25, 0.96);
+    --surface-header: rgba(15, 18, 25, 0.82);
+    --ink: #e8eaed;
+    --ink-strong: #ffffff;
+    --ink-muted: rgba(232, 234, 237, 0.64);
+    --ink-soft: rgba(232, 234, 237, 0.4);
+    --line: rgba(255, 255, 255, 0.08);
+    --line-strong: rgba(255, 255, 255, 0.14);
+    --line-heavy: rgba(255, 255, 255, 0.22);
+    --accent: #3b82f6;
+    --accent-soft: rgba(59, 130, 246, 0.14);
+    --positive: #10b981;
+    --positive-soft: rgba(16, 185, 129, 0.12);
+    --negative: #ef4444;
+    --negative-soft: rgba(239, 68, 68, 0.12);
+    --warning: #f59e0b;
+    --ring: rgba(59, 130, 246, 0.4);
+    --chart-1: #10b981;
+    --chart-2: #3b82f6;
+    --chart-3: #a78bfa;
+    --chart-4: #f59e0b;
+    --chart-5: #ec4899;
+    --chart-label: rgba(232, 234, 237, 0.5);
+    --chart-grid: rgba(255, 255, 255, 0.06);
+    --chart-crosshair: rgba(255, 255, 255, 0.15);
+    --overlay: rgba(0, 0, 0, 0.6);
+    --shadow-panel: 0 4px 24px rgba(0, 0, 0, 0.2);
+    --shadow-band: 0 4px 32px rgba(0, 0, 0, 0.24);
+    --shadow-rail: 0 4px 20px rgba(0, 0, 0, 0.18);
+    --shadow-muted: 0 2px 12px rgba(0, 0, 0, 0.1);
+    --shadow-popover: 0 12px 40px rgba(0, 0, 0, 0.4);
+    --shadow-fab: 0 8px 24px rgba(0, 0, 0, 0.4);
+    --shadow-drawer: 0 -12px 40px rgba(0, 0, 0, 0.4);
+    color-scheme: dark;
+  }
+}
+
+:root[data-theme="dark"] {
   --canvas: #0f1219;
   --surface: rgba(255, 255, 255, 0.04);
   --surface-strong: rgba(255, 255, 255, 0.08);
   --surface-muted: rgba(255, 255, 255, 0.03);
   --surface-float: rgba(255, 255, 255, 0.06);
+  --surface-overlay: rgba(15, 18, 25, 0.96);
+  --surface-header: rgba(15, 18, 25, 0.82);
   --ink: #e8eaed;
   --ink-strong: #ffffff;
   --ink-muted: rgba(232, 234, 237, 0.64);
@@ -26,6 +114,17 @@
   --chart-3: #a78bfa;
   --chart-4: #f59e0b;
   --chart-5: #ec4899;
+  --chart-label: rgba(232, 234, 237, 0.5);
+  --chart-grid: rgba(255, 255, 255, 0.06);
+  --chart-crosshair: rgba(255, 255, 255, 0.15);
+  --overlay: rgba(0, 0, 0, 0.6);
+  --shadow-panel: 0 4px 24px rgba(0, 0, 0, 0.2);
+  --shadow-band: 0 4px 32px rgba(0, 0, 0, 0.24);
+  --shadow-rail: 0 4px 20px rgba(0, 0, 0, 0.18);
+  --shadow-muted: 0 2px 12px rgba(0, 0, 0, 0.1);
+  --shadow-popover: 0 12px 40px rgba(0, 0, 0, 0.4);
+  --shadow-fab: 0 8px 24px rgba(0, 0, 0, 0.4);
+  --shadow-drawer: 0 -12px 40px rgba(0, 0, 0, 0.4);
   color-scheme: dark;
 }
 
@@ -43,6 +142,7 @@ body {
   color: var(--ink);
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
+  transition: background-color 160ms ease, color 160ms ease;
 }
 
 a {
@@ -52,17 +152,11 @@ a {
 
 button,
 input,
-textarea {
+textarea,
+select {
   font: inherit;
 }
 
 ::selection {
-  background: rgba(59, 130, 246, 0.3);
-}
-
-button,
-input,
-textarea,
-select {
-  font: inherit;
+  background: var(--accent-soft);
 }

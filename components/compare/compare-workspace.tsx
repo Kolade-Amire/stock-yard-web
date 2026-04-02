@@ -130,7 +130,7 @@ export function CompareWorkspace({ configured, initialData, initialSymbols, init
                 className="w-full rounded-lg border border-(--line-strong) bg-(--surface) px-4 py-2.5 text-sm text-(--ink) outline-none placeholder:text-(--ink-soft)"
               />
               {deferredQuery ? (
-                <div className="absolute inset-x-0 top-[calc(100%+6px)] z-20 rounded-lg border border-(--line) bg-[rgba(15,18,25,0.96)] p-2 shadow-[0_12px_40px_rgba(0,0,0,0.4)] backdrop-blur-xl">
+                <div className="absolute inset-x-0 top-[calc(100%+6px)] z-20 rounded-lg border border-(--line) bg-(--surface-overlay) p-2 shadow-[var(--shadow-popover)] backdrop-blur-xl">
                   {searchQuery.isPending ? (
                     <p className="px-3 py-2 text-sm text-(--ink-muted)">Searching…</p>
                   ) : searchQuery.data?.results.length ? (

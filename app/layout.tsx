@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { Inter } from "next/font/google";
+import Script from "next/script";
 
 import { SiteHeader } from "@/components/shell/site-header";
 import { Providers } from "@/app/providers";
+import { getThemeBootstrapScript } from "@/lib/theme";
 
 import "./globals.css";
 
@@ -23,8 +25,11 @@ type RootLayoutProps = {
 
 export default function RootLayout({ children }: RootLayoutProps) {
   return (
-    <html lang="en" className="dark">
+    <html lang="en" suppressHydrationWarning>
       <body className={inter.className}>
+        <Script id="theme-init" strategy="beforeInteractive">
+          {getThemeBootstrapScript()}
+        </Script>
         <Providers>
           <div className="min-h-screen text-(--ink)">
             <SiteHeader />

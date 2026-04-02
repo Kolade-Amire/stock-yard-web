@@ -99,14 +99,14 @@ export function ChatPanel({ symbol }: ChatPanelProps) {
       </div>
       <Dialog.Root open={open} onOpenChange={setOpen}>
         <Dialog.Trigger asChild>
-          <Button className="fixed bottom-4 right-4 z-30 shadow-[0_8px_24px_rgba(0,0,0,0.4)] xl:hidden">
+          <Button className="fixed bottom-4 right-4 z-30 shadow-[var(--shadow-fab)] xl:hidden">
             <MessageSquarePlus className="mr-2 size-4" />
             Chat
           </Button>
         </Dialog.Trigger>
         <Dialog.Portal>
-          <Dialog.Overlay className="fixed inset-0 z-40 bg-[rgba(0,0,0,0.6)]" />
-          <Dialog.Content className="fixed inset-x-0 bottom-0 z-50 rounded-t-2xl border border-(--line) bg-(--canvas) p-4 shadow-[0_-12px_40px_rgba(0,0,0,0.4)]">
+          <Dialog.Overlay className="fixed inset-0 z-40 bg-(--overlay)" />
+          <Dialog.Content className="fixed inset-x-0 bottom-0 z-50 rounded-t-2xl border border-(--line) bg-(--surface-overlay) p-4 shadow-[var(--shadow-drawer)]">
             <div className="mb-4 flex items-center justify-between">
               <Dialog.Title className="text-lg font-bold text-(--ink-strong)">AI Chat</Dialog.Title>
               <Dialog.Close asChild>

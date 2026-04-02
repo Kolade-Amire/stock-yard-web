@@ -39,7 +39,7 @@ export function MicroBarChart({ items, height = 180 }: MicroBarChartProps) {
               y={height - 8}
               textAnchor="middle"
               fontSize="10"
-              fill="rgba(232, 234, 237, 0.5)"
+              fill="var(--chart-label)"
             >
               {item.label}
             </text>
