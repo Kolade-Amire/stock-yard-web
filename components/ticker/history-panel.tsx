@@ -6,6 +6,7 @@ import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { getTickerHistoryChartDirection, getTickerHistoryChartTokens } from "@/components/ticker/history-chart-colors";
 import { HISTORY_INTERVALS_BY_PERIOD, HISTORY_PERIODS } from "@/lib/stock-yard/constants";
 import { stockYardClient } from "@/lib/stock-yard/client";
 import { formatCurrency, formatNumber } from "@/lib/stock-yard/format";
@@ -42,6 +43,8 @@ export function HistoryPanel({ symbol, currency, initialData }: HistoryPanelProp
 
   const bars = historyQuery.data?.bars ?? [];
   const latestBar = bars[bars.length - 1] ?? null;
+  const chartDirection = getTickerHistoryChartDirection(bars);
+  const chartTokens = getTickerHistoryChartTokens(chartDirection);
 
   return (
     <Card variant="panel" className="px-5 py-5">
@@ -91,8 +94,8 @@ export function HistoryPanel({ symbol, currency, initialData }: HistoryPanelProp
                 {
                   key: symbol,
                   label: symbol,
-                  color: "var(--chart-1)",
-                  fill: "rgba(16, 185, 129, 0.12)",
+                  color: chartTokens.line,
+                  fill: chartTokens.fill,
                   points: bars.map((bar) => ({
                     timestamp: bar.timestamp,
                     value: bar.close,
