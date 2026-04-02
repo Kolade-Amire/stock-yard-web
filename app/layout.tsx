@@ -10,7 +10,6 @@ import "./globals.css";
 const inter = Inter({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
-  variable: "--font-inter",
 });
 
 export const metadata: Metadata = {
@@ -24,8 +23,8 @@ type RootLayoutProps = {
 
 export default function RootLayout({ children }: RootLayoutProps) {
   return (
-    <html lang="en" className={`dark ${inter.variable}`}>
-      <body>
+    <html lang="en" className="dark">
+      <body className={inter.className}>
         <Providers>
           <div className="min-h-screen text-(--ink)">
             <SiteHeader />
