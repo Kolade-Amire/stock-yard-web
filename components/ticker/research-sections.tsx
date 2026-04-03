@@ -6,11 +6,14 @@ import { useVirtualizer } from "@tanstack/react-virtual";
 import { useRef, useState } from "react";
 
 import { MicroBarChart, type BarDatum } from "@/components/charts/micro-bar-chart";
+import { OwnershipDonutChart } from "@/components/charts/ownership-donut-chart";
+import { buildOwnershipDonutChartItems } from "@/components/charts/ownership-donut-chart-data";
 import { Card } from "@/components/ui/card";
 import { DataLimitations } from "@/components/ui/data-limitations";
 import { stockYardClient } from "@/lib/stock-yard/client";
 import { formatCurrency, formatDate, formatDateTime, formatNumber, formatPercent, formatSignedPercent } from "@/lib/stock-yard/format";
 import { isStockYardApiError } from "@/lib/stock-yard/fetch";
+import type { OwnershipResponse } from "@/lib/stock-yard/schemas";
 
 type ResearchSectionsProps = {
   symbol: string;
@@ -310,28 +313,14 @@ export function ResearchSections({ symbol, nextEarningsDate }: ResearchSectionsP
               </Tabs.List>
               <Tabs.Content value="institutional" className="space-y-2">
                 {ownership.data.institutionalHolders.length ? (
-                  ownership.data.institutionalHolders.map((holder) => (
-                    <HolderRow
-                      key={`${holder.holder}-${holder.dateReported}`}
-                      label={holder.holder}
-                      meta={`${formatDate(holder.dateReported)} · ${formatNumber(holder.shares)} shares`}
-                      value={formatPercent(holder.pctHeld, 2)}
-                    />
-                  ))
+                  <WeightedOwnershipTabContent holders={buildWeightedOwnershipRows(ownership.data.institutionalHolders)} />
                 ) : (
                   <EmptyInline message="No institutional holder rows returned." />
                 )}
               </Tabs.Content>
               <Tabs.Content value="mutual_funds" className="space-y-2">
                 {ownership.data.mutualFundHolders.length ? (
-                  ownership.data.mutualFundHolders.map((holder) => (
-                    <HolderRow
-                      key={`${holder.holder}-${holder.dateReported}`}
-                      label={holder.holder}
-                      meta={`${formatDate(holder.dateReported)} · ${formatNumber(holder.shares)} shares`}
-                      value={formatPercent(holder.pctHeld, 2)}
-                    />
-                  ))
+                  <WeightedOwnershipTabContent holders={buildWeightedOwnershipRows(ownership.data.mutualFundHolders)} />
                 ) : (
                   <EmptyInline message="No mutual fund holder rows returned." />
                 )}
@@ -478,16 +467,70 @@ type HolderRowProps = {
   label: string;
   meta: string;
   value: string;
+  labelColor?: string | null;
+  accentColor?: string | null;
 };
 
-function HolderRow({ label, meta, value }: HolderRowProps) {
+function HolderRow({ label, meta, value, labelColor, accentColor }: HolderRowProps) {
   return (
     <div className="flex items-center justify-between gap-4 rounded-lg border border-(--line) bg-(--surface-muted) px-3 py-2.5">
       <div>
-        <p className="font-medium text-(--ink)">{label}</p>
+        <p className="flex items-center gap-2 font-medium text-(--ink)">
+          {accentColor ? <span className="size-2 shrink-0 rounded-full" style={{ backgroundColor: accentColor }} aria-hidden="true" /> : null}
+          <span style={labelColor ? { color: labelColor } : undefined}>{label}</span>
+        </p>
         <p className="text-xs text-(--ink-muted)">{meta}</p>
       </div>
       <p className="text-sm font-medium text-(--ink)">{value}</p>
+    </div>
+  );
+}
+
+type WeightedOwnershipRow = {
+  id: string;
+  label: string;
+  meta: string;
+  value: string;
+  pctHeld: number | null;
+};
+
+type WeightedOwnershipTabContentProps = {
+  holders: WeightedOwnershipRow[];
+};
+
+function WeightedOwnershipTabContent({ holders }: WeightedOwnershipTabContentProps) {
+  const chartItems = buildOwnershipDonutChartItems(
+    holders.map((holder) => ({
+      id: holder.id,
+      label: holder.label,
+      value: holder.pctHeld,
+    })),
+  );
+  const colorByHolderId = new Map(chartItems.map((item) => [item.id, item.color]));
+
+  return (
+    <div className="grid gap-4 xl:grid-cols-[minmax(320px,380px)_minmax(0,1fr)] xl:items-start">
+      {chartItems.length ? (
+        <OwnershipDonutChart items={chartItems} className="h-full" />
+      ) : (
+        <EmptyInline message="Not enough weighted holder data for chart." />
+      )}
+      <div className="space-y-2">
+        {holders.map((holder) => {
+          const accentColor = colorByHolderId.get(holder.id) ?? null;
+
+          return (
+            <HolderRow
+              key={holder.id}
+              label={holder.label}
+              meta={holder.meta}
+              value={holder.value}
+              labelColor={accentColor}
+              accentColor={accentColor}
+            />
+          );
+        })}
+      </div>
     </div>
   );
 }
@@ -611,4 +654,16 @@ function formatQuarterlyTrendDatum(periodEnd: string, revenue: number | null): B
     value: revenue,
     a11yLabel: `${quarter} ${meta}: ${formatCurrency(revenue, "USD", 0)}`,
   };
+}
+
+function buildWeightedOwnershipRows(
+  holders: OwnershipResponse["institutionalHolders"] | OwnershipResponse["mutualFundHolders"],
+): WeightedOwnershipRow[] {
+  return holders.map((holder, index) => ({
+    id: `${holder.holder}-${holder.dateReported}-${index}`,
+    label: holder.holder,
+    meta: `${formatDate(holder.dateReported)} · ${formatNumber(holder.shares)} shares`,
+    value: formatPercent(holder.pctHeld, 2),
+    pctHeld: holder.pctHeld,
+  }));
 }
