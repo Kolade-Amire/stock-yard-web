@@ -66,6 +66,15 @@ describe("ChatPanel", () => {
     expect(screen.getByDisplayValue("Line one")).toBeInTheDocument();
   });
 
+  it("opens the mobile chat drawer when the chat button is clicked", () => {
+    render(<ChatPanel symbol="AAPL" />);
+
+    fireEvent.click(screen.getByRole("button", { name: /^chat$/i }));
+
+    expect(screen.getAllByText("AI Chat")[0]).toBeVisible();
+    expect(screen.getByRole("dialog")).toBeVisible();
+  });
+
   it("reveals assistant responses progressively and disables send during reveal", async () => {
     vi.useFakeTimers();
 

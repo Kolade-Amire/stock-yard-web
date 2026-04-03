@@ -382,7 +382,6 @@ select {
 }
 
 .glass-drawer {
-  position: relative;
   overflow: hidden;
   border: 1px solid var(--glass-rim-strong);
   background:

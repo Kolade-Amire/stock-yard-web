@@ -210,13 +210,17 @@ export function ChatPanel({ symbol }: ChatPanelProps) {
           </Card>
         )}
       </div>
+      <Button
+        type="button"
+        aria-haspopup="dialog"
+        aria-expanded={open}
+        onClick={() => setOpen(true)}
+        className="safe-bottom-offset fixed right-4 z-30 shadow-[var(--shadow-fab)] xl:hidden"
+      >
+        <MessageSquarePlus className="mr-2 size-4" />
+        Chat
+      </Button>
       <Dialog.Root open={open} onOpenChange={setOpen}>
-        <Dialog.Trigger asChild>
-          <Button className="safe-bottom-offset fixed right-4 z-30 shadow-[var(--shadow-fab)] xl:hidden">
-            <MessageSquarePlus className="mr-2 size-4" />
-            Chat
-          </Button>
-        </Dialog.Trigger>
         <Dialog.Portal>
           <Dialog.Overlay className="fixed inset-0 z-40 bg-(--overlay)" />
           <Dialog.Content className="glass-drawer safe-drawer-max-h safe-bottom-pad fixed inset-x-0 bottom-0 z-50 flex flex-col overflow-hidden rounded-t-2xl p-4">
