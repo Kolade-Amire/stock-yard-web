@@ -23,7 +23,7 @@ export function HeaderCommandSearch() {
   });
 
   return (
-    <div className="relative w-[390px] shrink-0 lg:w-[440px]">
+    <div className="relative w-[290px] shrink-0 lg:w-[320px]">
       <form
         onSubmit={(event) => {
           event.preventDefault();
