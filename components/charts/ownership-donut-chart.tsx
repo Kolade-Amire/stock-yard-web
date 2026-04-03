@@ -61,7 +61,7 @@ export function OwnershipDonutChart({
 
       <div className="mt-3 flex justify-center xl:justify-start">
         <div
-          className="relative aspect-square w-full max-w-[360px]"
+          className="relative aspect-square w-full max-w-[320px] sm:max-w-[360px]"
           onMouseLeave={() => setActiveId(items[0]?.id ?? null)}
         >
           <svg
@@ -110,7 +110,7 @@ export function OwnershipDonutChart({
           <div className="pointer-events-none absolute inset-0 flex items-center justify-center px-8">
             <div className="max-w-[10rem] text-center">
               <p className="text-[10px] font-medium uppercase tracking-[0.18em] text-(--ink-soft)">{resolvedValueLabel}</p>
-              <p className="mt-1 text-[28px] font-semibold tracking-tight text-(--ink-strong)">
+              <p className="mt-1 text-[24px] font-semibold tracking-tight text-(--ink-strong) sm:text-[28px]">
                 {activeValue !== null ? formatPercent(activeValue, 2) : "Unavailable"}
               </p>
               <p

@@ -4,8 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import dynamic from "next/dynamic";
 import { Search, X } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { startTransition, useEffect, useRef, useState } from "react";
-import { createPortal } from "react-dom";
+import { startTransition, useState } from "react";
 
 import { TickerResolverResults } from "@/components/search/ticker-resolver-results";
 import { getOptionId, useTickerResolverSearch } from "@/components/search/use-ticker-resolver-search";
@@ -40,8 +39,6 @@ export function CompareWorkspace({ configured, initialData, initialSymbols, init
   const [symbols, setSymbols] = useState(initialSymbols);
   const [period, setPeriod] = useState(initialPeriod);
   const [interval, setInterval] = useState(initialInterval);
-  const searchAnchorRef = useRef<HTMLDivElement | null>(null);
-  const [searchOverlayRect, setSearchOverlayRect] = useState<{ top: number; left: number; width: number } | null>(null);
   const resolver = useTickerResolverSearch({
     maxResults: 5,
     onResolveAction(result) {
@@ -104,43 +101,11 @@ export function CompareWorkspace({ configured, initialData, initialSymbols, init
     syncUrl(symbols, period, nextInterval);
   }
 
-  useEffect(() => {
-    if (!resolver.shouldShowResults) {
-      setSearchOverlayRect(null);
-      return;
-    }
-
-    function updateSearchOverlayRect() {
-      const nextRect = searchAnchorRef.current?.getBoundingClientRect();
-
-      if (!nextRect) {
-        setSearchOverlayRect(null);
-        return;
-      }
-
-      setSearchOverlayRect({
-        top: nextRect.bottom + 10,
-        left: nextRect.left,
-        width: nextRect.width,
-      });
-    }
-
-    updateSearchOverlayRect();
-
-    window.addEventListener("resize", updateSearchOverlayRect);
-    window.addEventListener("scroll", updateSearchOverlayRect, true);
-
-    return () => {
-      window.removeEventListener("resize", updateSearchOverlayRect);
-      window.removeEventListener("scroll", updateSearchOverlayRect, true);
-    };
-  }, [resolver.shouldShowResults]);
-
   return (
     <div className="relative isolate space-y-4">
-      <Card variant="band" material="glass" className="relative z-30 overflow-visible px-5 py-5">
-        <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_300px]">
-          <div className="space-y-4">
+      <Card variant="band" material="glass" className="relative z-30 overflow-visible px-4 py-4 sm:px-5 sm:py-5">
+        <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_300px]">
+          <div className="min-w-0 space-y-4">
             <div>
               <h1 className="text-2xl font-bold tracking-tight text-(--ink-strong)">Compare</h1>
               <p className="mt-1 text-sm text-(--ink-muted)">
@@ -161,7 +126,7 @@ export function CompareWorkspace({ configured, initialData, initialSymbols, init
                 </div>
               ))}
             </div>
-            <div ref={searchAnchorRef} className="relative z-40 max-w-[430px]">
+            <div className="relative z-40 w-full max-w-none sm:max-w-[430px]">
               <form
                 onSubmit={(event) => {
                   event.preventDefault();
@@ -176,6 +141,7 @@ export function CompareWorkspace({ configured, initialData, initialSymbols, init
                     onChange={(event) => resolver.setQuery(event.target.value)}
                     onFocus={resolver.handleInputFocus}
                     onKeyDown={resolver.handleInputKeyDown}
+                    aria-label="Compare symbol search"
                     placeholder="Add a symbol or company…"
                     aria-autocomplete="list"
                     aria-haspopup="listbox"
@@ -186,14 +152,29 @@ export function CompareWorkspace({ configured, initialData, initialSymbols, init
                   />
                 </div>
               </form>
+              <TickerResolverResults
+                activeIndex={resolver.activeIndex}
+                className="top-[calc(100%+10px)]"
+                displayMode="overlay"
+                emptyMessage="No matching symbols."
+                errorMessage={resolver.errorMessage}
+                getOptionId={(index) => getOptionId(resolver.listboxId, index)}
+                isPending={resolver.isPending}
+                isOpen={resolver.shouldShowResults}
+                listboxId={resolver.listboxId}
+                onHover={resolver.handleResultMouseEnter}
+                onPrefetchSymbol={(symbol) => router.prefetch(tickerRoute(symbol))}
+                onSelect={resolver.handleResultSelect}
+                results={resolver.results}
+              />
             </div>
           </div>
-          <div className="glass-subcard space-y-3 rounded-xl px-4 py-4">
+          <div className="glass-subcard min-w-0 space-y-3 rounded-xl px-4 py-4">
             <div className="space-y-2">
               <p className="text-xs font-medium uppercase tracking-wider text-(--ink-soft)">Period</p>
-              <div className="glass-pill-nav flex flex-wrap gap-1.5 p-1.5">
+              <div className="glass-pill-nav touch-scroll-row md:flex-wrap md:overflow-visible p-1.5">
                 {HISTORY_PERIODS.map((item) => (
-                  <Button key={item} variant={period === item ? "primary" : "secondary"} size="compact" onClick={() => choosePeriod(item)}>
+                  <Button key={item} variant={period === item ? "primary" : "secondary"} size="compact" className="shrink-0" onClick={() => choosePeriod(item)}>
                     {item}
                   </Button>
                 ))}
@@ -201,9 +182,9 @@ export function CompareWorkspace({ configured, initialData, initialSymbols, init
             </div>
             <div className="space-y-2">
               <p className="text-xs font-medium uppercase tracking-wider text-(--ink-soft)">Interval</p>
-              <div className="glass-pill-nav flex flex-wrap gap-1.5 p-1.5">
+              <div className="glass-pill-nav touch-scroll-row md:flex-wrap md:overflow-visible p-1.5">
                 {HISTORY_INTERVALS_BY_PERIOD[period].map((item) => (
-                  <Button key={item} variant={interval === item ? "primary" : "ghost"} size="compact" onClick={() => chooseInterval(item)}>
+                  <Button key={item} variant={interval === item ? "primary" : "ghost"} size="compact" className="shrink-0" onClick={() => chooseInterval(item)}>
                     {item}
                   </Button>
                 ))}
@@ -213,7 +194,7 @@ export function CompareWorkspace({ configured, initialData, initialSymbols, init
         </div>
       </Card>
 
-      <Card variant="panel" material="glass" className="relative z-10 px-5 py-5">
+      <Card variant="panel" material="glass" className="relative z-10 px-4 py-4 sm:px-5 sm:py-5">
         {compareQuery.data?.series.length ? (
           <>
             <div className="mb-4">
@@ -222,7 +203,7 @@ export function CompareWorkspace({ configured, initialData, initialSymbols, init
             <div className="rounded-lg border border-(--line) bg-(--surface-muted) px-3 py-3">
               <TimeSeriesChart
                 mode="line"
-                height={420}
+                height={340}
                 series={compareQuery.data.series.map((series, index) => ({
                   key: series.symbol,
                   label: series.symbol,
@@ -234,7 +215,7 @@ export function CompareWorkspace({ configured, initialData, initialSymbols, init
                 }))}
               />
             </div>
-            <div className="mt-4 grid gap-2 md:grid-cols-2 xl:grid-cols-4">
+            <div className="mt-4 grid gap-2 sm:grid-cols-2 xl:grid-cols-4">
               {compareQuery.data.series.map((series, index) => (
                 <div key={series.symbol} className="glass-subcard rounded-lg px-3 py-3">
                   <p
@@ -268,37 +249,6 @@ export function CompareWorkspace({ configured, initialData, initialSymbols, init
           <p className="text-sm text-(--ink-muted)">Comparison data will appear once the API is available and two or more valid symbols are selected.</p>
         )}
       </Card>
-      {searchOverlayRect && typeof document !== "undefined"
-        ? createPortal(
-            <div
-              className="fixed z-[80]"
-              style={{
-                top: searchOverlayRect.top,
-                left: searchOverlayRect.left,
-                width: searchOverlayRect.width,
-              }}
-            >
-              <div className="relative">
-                <TickerResolverResults
-                  activeIndex={resolver.activeIndex}
-                  className="top-0"
-                  displayMode="overlay"
-                  emptyMessage="No matching symbols."
-                  errorMessage={resolver.errorMessage}
-                  getOptionId={(index) => getOptionId(resolver.listboxId, index)}
-                  isPending={resolver.isPending}
-                  isOpen={resolver.shouldShowResults}
-                  listboxId={resolver.listboxId}
-                  onHover={resolver.handleResultMouseEnter}
-                  onPrefetchSymbol={(symbol) => router.prefetch(tickerRoute(symbol))}
-                  onSelect={resolver.handleResultSelect}
-                  results={resolver.results}
-                />
-              </div>
-            </div>,
-            document.body,
-          )
-        : null}
     </div>
   );
 }

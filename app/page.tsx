@@ -42,9 +42,9 @@ export default async function HomePage() {
       <HeroSearch />
       {!configured ? <SetupPanel /> : null}
 
-      <div className="grid gap-6 xl:grid-cols-[minmax(0,1.25fr)_360px]">
-        <div className="space-y-6">
-          <section className="grid gap-4 2xl:grid-cols-3 xl:grid-cols-2">
+      <div className="grid gap-6 xl:grid-cols-[minmax(0,1.25fr)_minmax(280px,360px)]">
+        <div className="min-w-0 space-y-6">
+          <section className="grid gap-4 sm:grid-cols-2 2xl:grid-cols-3">
             {HOME_MOVER_SCREENS.map((screen, index) => (
               <MoversBoard
                 key={screen.key}
@@ -55,7 +55,7 @@ export default async function HomePage() {
           </section>
           <EarningsCalendarTable data={earnings} />
         </div>
-        <aside className="space-y-6">
+        <aside className="min-w-0 space-y-6">
           <BenchmarkGrid data={benchmarks} />
           <SectorPulseGrid data={sectorPulse} />
         </aside>

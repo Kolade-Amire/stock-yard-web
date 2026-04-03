@@ -562,6 +562,31 @@ select {
   transform: translateY(-1px);
 }
 
+.touch-scroll-row {
+  display: flex;
+  gap: 0.375rem;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.touch-scroll-row::-webkit-scrollbar {
+  display: none;
+}
+
+.safe-bottom-offset {
+  bottom: calc(env(safe-area-inset-bottom) + 1rem);
+}
+
+.safe-bottom-pad {
+  padding-bottom: calc(env(safe-area-inset-bottom) + 1rem);
+}
+
+.safe-drawer-max-h {
+  max-height: calc(100dvh - 1rem);
+}
+
 .chart-bar-rise {
   animation: bar-chart-rise 520ms cubic-bezier(0.22, 1, 0.36, 1) both;
 }

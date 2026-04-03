@@ -259,11 +259,11 @@ function TemporalBarChart({
           );
         })}
       </svg>
-      <div className="flex items-center justify-between gap-3 rounded-xl border border-(--chart-detail-border) bg-(--chart-detail-surface) px-3 py-2.5 shadow-[var(--shadow-muted)]">
+      <div className="flex flex-col items-start gap-1.5 rounded-xl border border-(--chart-detail-border) bg-(--chart-detail-surface) px-3 py-2.5 shadow-[var(--shadow-muted)] sm:flex-row sm:items-center sm:justify-between sm:gap-3">
         <div className="min-w-0">
           <p className="truncate text-[15px] font-medium text-(--ink-strong)">{activeItem.meta ?? activeItem.label}</p>
         </div>
-        <p className="shrink-0 text-[18px] font-semibold text-(--ink-strong)">{detailValue}</p>
+        <p className="text-[18px] font-semibold text-(--ink-strong) sm:shrink-0">{detailValue}</p>
       </div>
     </div>
   );
@@ -296,7 +296,7 @@ function RankedBarChart({
             key={item.id}
             className="rounded-xl border border-(--line) bg-(--surface) px-3 py-3 shadow-[var(--shadow-muted)] transition-[border-color,transform] duration-150 hover:border-(--line-strong) hover:-translate-y-0.5"
           >
-            <div className="flex items-start justify-between gap-4">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-3">
                   <span className="inline-flex min-w-7 text-[10px] font-medium uppercase tracking-[0.18em] text-(--ink-soft)">
@@ -310,7 +310,7 @@ function RankedBarChart({
                   </p>
                 ) : null}
               </div>
-              <p className="shrink-0 text-sm font-semibold text-(--ink-strong)">{valueFormatter(item.value, item)}</p>
+              <p className="text-sm font-semibold text-(--ink-strong) sm:shrink-0 sm:text-right">{valueFormatter(item.value, item)}</p>
             </div>
             <div className="mt-3 rounded-full bg-(--chart-bar-track)">
               <div

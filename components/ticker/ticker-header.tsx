@@ -29,9 +29,9 @@ export function TickerHeader({ data }: TickerHeaderProps) {
   const isPositive = priceChange !== null && priceChange >= 0;
 
   return (
-    <Card variant="band" material="glass" className="px-5 py-5 md:px-6">
-      <div className="grid gap-5 xl:grid-cols-[minmax(0,1.2fr)_340px]">
-        <div className="space-y-4">
+    <Card variant="band" material="glass" className="px-4 py-4 sm:px-5 sm:py-5 md:px-6">
+      <div className="grid gap-4 xl:grid-cols-[minmax(0,1.2fr)_340px]">
+        <div className="min-w-0 space-y-4">
           <div className="flex flex-wrap items-center gap-1.5">
             {identityTags.map((tag) => (
               <span
@@ -48,30 +48,30 @@ export function TickerHeader({ data }: TickerHeaderProps) {
             ) : null}
           </div>
           <div className="space-y-1">
-            <div className="flex items-start gap-4 md:gap-5">
+            <div className="flex items-start gap-3 sm:gap-4 md:gap-5">
               <TickerLogo
                 symbol={data.symbol}
                 variant="ticker"
-                className="mt-1"
+                className="mt-1 size-14 sm:size-16"
               />
               <div className="min-w-0 pt-0.5">
-                <h1 className="text-3xl font-bold tracking-tight text-(--ink-strong) md:text-4xl">{data.symbol}</h1>
+                <h1 className="text-2xl font-bold tracking-tight text-(--ink-strong) sm:text-3xl md:text-4xl">{data.symbol}</h1>
                 <p className="mt-1 text-sm text-(--ink-muted)">{overview.display_name}</p>
               </div>
             </div>
             <p className="max-w-3xl text-sm leading-relaxed text-(--ink-muted)">{overview.summary ?? "Summary unavailable from the data provider."}</p>
           </div>
-          <div className="grid gap-2 md:grid-cols-2 xl:grid-cols-4">
+          <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-4">
             <InfoChip label="Day range" value={formatRange(overview.day_low, overview.day_high, overview.currency ?? "USD")} />
             <InfoChip label="52W range" value={formatRange(overview.fifty_two_week_low, overview.fifty_two_week_high, overview.currency ?? "USD")} />
             <InfoChip label="Market cap" value={formatCurrency(overview.market_cap, overview.currency ?? "USD")} />
             <InfoChip label="Dividend yield" value={formatPercent(overview.dividend_yield, 2)} />
           </div>
         </div>
-        <div className="space-y-3">
+        <div className="min-w-0 space-y-3">
           <div className="glass-subcard rounded-xl px-4 py-4">
             <p className="text-xs font-medium uppercase tracking-wider text-(--ink-soft)">Current price</p>
-            <p className="mt-2 text-3xl font-bold text-(--ink-strong)">{formatCurrency(overview.current_price, overview.currency ?? "USD")}</p>
+            <p className="mt-2 text-2xl font-bold text-(--ink-strong) sm:text-3xl">{formatCurrency(overview.current_price, overview.currency ?? "USD")}</p>
             {priceChange !== null ? (
               <p className={`mt-1 text-sm font-medium ${isPositive ? "text-(--positive)" : "text-(--negative)"}`}>
                 {isPositive ? "+" : ""}{priceChange.toFixed(2)} ({priceChangePercent !== null ? `${isPositive ? "+" : ""}${priceChangePercent.toFixed(2)}%` : ""})

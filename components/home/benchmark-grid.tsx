@@ -25,15 +25,15 @@ export function BenchmarkGrid({ data }: BenchmarkGridProps) {
               href={tickerRoute(fund.symbol)}
               className="block rounded-lg border border-(--line) bg-(--surface) px-3 py-3 transition-colors hover:border-(--line-heavy) hover:bg-(--surface-float)"
             >
-              <div className="flex items-start justify-between gap-3">
-                <div>
+              <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+                <div className="min-w-0">
                   <p className="text-[11px] font-medium uppercase tracking-wider text-(--ink-soft)">{fund.benchmarkName}</p>
-                  <div className="mt-1.5 flex items-baseline gap-2">
+                  <div className="mt-1.5 flex flex-wrap items-baseline gap-2">
                     <h4 className="text-base font-bold text-(--ink-strong)">{fund.symbol}</h4>
-                    <p className="text-xs text-(--ink-muted)">{fund.displayName}</p>
+                    <p className="min-w-0 text-xs text-(--ink-muted)">{fund.displayName}</p>
                   </div>
                 </div>
-                <div className="text-right">
+                <div className="text-left sm:text-right">
                   <p className="text-sm font-semibold text-(--ink)">{formatCurrency(fund.currentPrice)}</p>
                   <p className={fund.dayChangePercent !== null && fund.dayChangePercent >= 0 ? "text-xs font-medium text-(--positive)" : "text-xs font-medium text-(--negative)"}>
                     {formatPercent(fund.dayChangePercent, 2)}

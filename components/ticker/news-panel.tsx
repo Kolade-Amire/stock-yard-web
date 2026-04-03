@@ -23,7 +23,7 @@ export function NewsPanel({ data }: NewsPanelProps) {
         <div className="space-y-2">
           <article className="rounded-xl border border-(--line) bg-(--surface) p-4">
             <p className="text-[11px] font-medium uppercase tracking-wider text-(--ink-soft)">{lead.publisher ?? formatDateTime(lead.published_at)}</p>
-            <h3 className="mt-2 text-base font-bold leading-snug text-(--ink-strong)">{lead.title}</h3>
+            <h3 className="mt-2 text-sm font-bold leading-snug text-(--ink-strong) sm:text-base">{lead.title}</h3>
             <p className="mt-2 text-sm leading-relaxed text-(--ink-muted)">{lead.summary ?? "Summary unavailable."}</p>
             {lead.link ? (
               <a href={lead.link} target="_blank" rel="noreferrer" className="mt-3 inline-flex items-center gap-2 text-sm font-medium text-(--accent)">
@@ -34,7 +34,7 @@ export function NewsPanel({ data }: NewsPanelProps) {
           {remainder.map((item) => (
             <article key={`${item.title}-${item.published_at}`} className="rounded-lg border border-(--line) bg-(--surface) px-4 py-3">
               <p className="text-[11px] font-medium uppercase tracking-wider text-(--ink-soft)">{item.publisher ?? formatDateTime(item.published_at)}</p>
-              <h4 className="mt-1.5 text-sm font-semibold text-(--ink)">{item.title}</h4>
+              <h4 className="mt-1.5 text-sm font-semibold leading-snug text-(--ink)">{item.title}</h4>
               {item.link ? (
                 <a href={item.link} target="_blank" rel="noreferrer" className="mt-2 inline-flex items-center gap-2 text-xs text-(--ink-muted) hover:text-(--accent)">
                   Open <ArrowUpRight className="size-3.5" />

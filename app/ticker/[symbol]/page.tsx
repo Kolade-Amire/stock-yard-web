@@ -41,9 +41,9 @@ export default async function TickerPage({ params }: TickerPageProps) {
   ]);
 
   return (
-    <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_360px]">
+    <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(280px,360px)]">
       <RecentSymbolTracker symbol={normalizedSymbol} />
-      <div className="space-y-6">
+      <div className="min-w-0 space-y-6">
         <TickerHeader data={overview} />
         <HistoryPanel
           symbol={normalizedSymbol}
@@ -52,7 +52,7 @@ export default async function TickerPage({ params }: TickerPageProps) {
         />
         <ResearchSections symbol={normalizedSymbol} nextEarningsDate={overview.overview.earnings_date} />
       </div>
-      <div className="space-y-6">
+      <div className="min-w-0 space-y-6">
         <NewsPanel data={newsResult.status === "fulfilled" ? newsResult.value : null} />
         <ChatPanel key={normalizedSymbol} symbol={normalizedSymbol} />
       </div>

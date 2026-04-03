@@ -50,8 +50,8 @@ export function HistoryPanel({ symbol, currency, initialData }: HistoryPanelProp
   const chartTokens = getTickerHistoryChartTokens(chartDirection);
 
   return (
-    <Card variant="panel" material="glass" className="px-5 py-5">
-      <div className="mb-4 flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
+    <Card variant="panel" material="glass" className="px-4 py-4 sm:px-5 sm:py-5">
+      <div className="mb-4 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
         <div className="space-y-1">
           <p className="text-xs font-medium uppercase tracking-wider text-(--ink-soft)">Price chart</p>
           <div className="flex flex-wrap items-end gap-3">
@@ -60,13 +60,13 @@ export function HistoryPanel({ symbol, currency, initialData }: HistoryPanelProp
           </div>
         </div>
         <div className="space-y-2">
-          <div className="glass-pill-nav flex flex-wrap gap-1.5 p-1.5">
+          <div className="glass-pill-nav touch-scroll-row md:flex-wrap md:overflow-visible p-1.5">
             {HISTORY_PERIODS.map((item) => (
               <Button
                 key={item}
                 variant={item === period ? "primary" : "secondary"}
                 size="compact"
-                className={item === period ? "shadow-none" : GLASS_SEGMENTED_BUTTON_CLASS}
+                className={item === period ? "shrink-0 shadow-none" : `shrink-0 ${GLASS_SEGMENTED_BUTTON_CLASS}`}
                 onClick={() => {
                   const nextInterval = HISTORY_INTERVALS_BY_PERIOD[item].includes(activeInterval)
                     ? activeInterval
@@ -80,13 +80,13 @@ export function HistoryPanel({ symbol, currency, initialData }: HistoryPanelProp
               </Button>
             ))}
           </div>
-          <div className="glass-pill-nav flex flex-wrap gap-1.5 p-1.5">
+          <div className="glass-pill-nav touch-scroll-row md:flex-wrap md:overflow-visible p-1.5">
             {HISTORY_INTERVALS_BY_PERIOD[period].map((item) => (
               <Button
                 key={item}
                 variant={item === activeInterval ? "primary" : "ghost"}
                 size="compact"
-                className={item === activeInterval ? "shadow-none" : GLASS_SEGMENTED_BUTTON_CLASS}
+                className={item === activeInterval ? "shrink-0 shadow-none" : `shrink-0 ${GLASS_SEGMENTED_BUTTON_CLASS}`}
                 onClick={() => setInterval(item)}
               >
                 {item}
@@ -99,7 +99,7 @@ export function HistoryPanel({ symbol, currency, initialData }: HistoryPanelProp
         <>
           <div className="rounded-lg border border-(--line) bg-(--surface-muted) px-3 py-3">
             <TimeSeriesChart
-              height={360}
+              height={320}
               series={[
                 {
                   key: symbol,
@@ -114,7 +114,7 @@ export function HistoryPanel({ symbol, currency, initialData }: HistoryPanelProp
               ]}
             />
           </div>
-          <div className="mt-4 grid gap-2 md:grid-cols-4">
+          <div className="mt-4 grid gap-2 sm:grid-cols-2 xl:grid-cols-4">
             <Stat label="Last close" value={formatCurrency(latestBar?.close ?? null, currency)} />
             <Stat label="Open" value={formatCurrency(latestBar?.open ?? null, currency)} />
             <Stat label="Volume" value={formatNumber(latestBar?.volume ?? null)} />

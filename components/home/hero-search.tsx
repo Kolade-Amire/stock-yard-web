@@ -34,18 +34,18 @@ export function HeroSearch() {
   });
 
   return (
-    <Card variant="band" className="relative z-20 px-5 py-5 md:px-6 md:py-6">
-      <div className="grid gap-6 xl:grid-cols-[minmax(0,1.4fr)_320px]">
-        <div className="space-y-5">
+    <Card variant="band" className="relative z-20 px-4 py-4 sm:px-5 sm:py-5 md:px-6 md:py-6">
+      <div className="grid gap-5 xl:grid-cols-[minmax(0,1.4fr)_320px]">
+        <div className="min-w-0 space-y-5">
           <div className="space-y-2">
-            <h1 className="text-3xl font-bold tracking-tight text-(--ink-strong) md:text-4xl">
+            <h1 className="text-2xl font-bold tracking-tight text-(--ink-strong) sm:text-3xl md:text-4xl">
               Market Intelligence
             </h1>
             <p className="max-w-2xl text-sm leading-relaxed text-(--ink-muted)">
               Search any symbol to open a research workspace with charts, news, financials, and AI-powered chat.
             </p>
           </div>
-          <div className="relative z-20 max-w-[430px]">
+          <div className="relative z-20 w-full max-w-none sm:max-w-[430px]">
             <form
               onSubmit={(event) => {
                 event.preventDefault();
@@ -99,8 +99,8 @@ export function HeroSearch() {
             />
           </div>
         </div>
-        <div className="grid gap-3 content-start">
-          <Link href={compareRoute}>
+        <div className="grid content-start gap-3">
+          <Link href={compareRoute} aria-label="Open compare workspace">
             <div className="rounded-xl border border-(--line-strong) bg-gradient-to-br from-(--accent-soft) to-transparent px-5 py-5 transition-transform duration-150 hover:-translate-y-0.5">
               <p className="text-xs font-medium uppercase tracking-wider text-(--ink-soft)">Compare</p>
               <h2 className="mt-2 text-xl font-bold text-(--ink-strong)">Basket view</h2>

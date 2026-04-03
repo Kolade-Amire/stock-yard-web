@@ -42,11 +42,11 @@ const OWNERSHIP_TABS = [
 
 type ResearchTab = (typeof RESEARCH_TABS)[number]["key"];
 
-const GLASS_SEGMENTED_LIST_CLASS = "glass-pill-nav flex w-fit flex-wrap gap-1.5 p-1.5";
+const GLASS_SEGMENTED_LIST_CLASS = "glass-pill-nav touch-scroll-row w-full md:w-fit md:flex-wrap md:overflow-visible p-1.5";
 const GLASS_SEGMENTED_TRIGGER_CLASS =
-  "rounded-lg border border-transparent bg-transparent px-3 py-1.5 text-sm text-(--ink-muted) transition-colors hover:bg-(--glass-active-wash) hover:text-(--ink) data-[state=active]:border-(--accent) data-[state=active]:bg-(--accent) data-[state=active]:text-(--accent-contrast)";
+  "shrink-0 rounded-lg border border-transparent bg-transparent px-3 py-1.5 text-sm text-(--ink-muted) transition-colors hover:bg-(--glass-active-wash) hover:text-(--ink) data-[state=active]:border-(--accent) data-[state=active]:bg-(--accent) data-[state=active]:text-(--accent-contrast)";
 const GLASS_SEGMENTED_DATA_BUTTON_CLASS =
-  "rounded-lg border border-transparent bg-transparent px-3 py-1.5 text-sm text-(--ink-muted) transition-colors hover:bg-(--glass-active-wash) hover:text-(--ink) data-[active=true]:border-(--accent) data-[active=true]:bg-(--accent) data-[active=true]:text-(--accent-contrast)";
+  "shrink-0 rounded-lg border border-transparent bg-transparent px-3 py-1.5 text-sm text-(--ink-muted) transition-colors hover:bg-(--glass-active-wash) hover:text-(--ink) data-[active=true]:border-(--accent) data-[active=true]:bg-(--accent) data-[active=true]:text-(--accent-contrast)";
 
 export function ResearchSections({ symbol, nextEarningsDate }: ResearchSectionsProps) {
   const [activeTab, setActiveTab] = useState<ResearchTab>("financials");
@@ -103,13 +103,13 @@ export function ResearchSections({ symbol, nextEarningsDate }: ResearchSectionsP
 
   return (
     <Tabs.Root value={activeTab} onValueChange={(value) => setActiveTab(value as ResearchTab)} className="space-y-4">
-      <Card variant="band" material="glass" className="px-5 py-4">
-        <div className="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
+      <Card variant="band" material="glass" className="px-4 py-4 sm:px-5">
+        <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
           <div>
             <h2 className="text-xl font-bold text-(--ink-strong)">Research</h2>
             <p className="mt-1 text-sm text-(--ink-muted)">Financials, earnings, analyst sentiment, ownership, and options data.</p>
           </div>
-          <Tabs.List className={cn(GLASS_SEGMENTED_LIST_CLASS, "xl:justify-end")}>
+          <Tabs.List className={cn(GLASS_SEGMENTED_LIST_CLASS, "lg:justify-end")}>
             {RESEARCH_TABS.map((tab) => (
               <Tabs.Trigger
                 key={tab.key}
@@ -125,11 +125,11 @@ export function ResearchSections({ symbol, nextEarningsDate }: ResearchSectionsP
 
       <Tabs.Content value="financials">
         <div className="grid gap-3 xl:grid-cols-[0.95fr_1.05fr]">
-          <Card variant="panel" material="glass" className="px-5 py-4">
+          <Card variant="panel" material="glass" className="px-4 py-4 sm:px-5">
             <ResearchPanelHeader title="Summary" subtitle="TTM and capital structure" />
             {financialSummary.data ? (
               <>
-                <div className="grid gap-2 md:grid-cols-2 xl:grid-cols-3">
+                <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-3">
                   <MetricCard label="Revenue TTM" value={formatCurrency(financialSummary.data.financialSummary.revenue_ttm)} />
                   <MetricCard label="Net income TTM" value={formatCurrency(financialSummary.data.financialSummary.net_income_ttm)} />
                   <MetricCard label="Free cash flow" value={formatCurrency(financialSummary.data.financialSummary.free_cash_flow)} />
@@ -145,7 +145,7 @@ export function ResearchSections({ symbol, nextEarningsDate }: ResearchSectionsP
               <SectionFallback query={financialSummary} emptyMessage="Financial statements are not materially available for this symbol." />
             )}
           </Card>
-          <Card variant="panel" material="glass" className="px-5 py-4">
+          <Card variant="panel" material="glass" className="px-4 py-4 sm:px-5">
             <ResearchPanelHeader title="Trend" subtitle="Annual and quarterly revenue" layout="inline" />
             {financialTrends.data?.annual.length || financialTrends.data?.quarterly.length ? (
               <>
@@ -172,7 +172,7 @@ export function ResearchSections({ symbol, nextEarningsDate }: ResearchSectionsP
 
       <Tabs.Content value="earnings">
         <div className="grid gap-3 xl:grid-cols-[0.9fr_1.1fr]">
-          <Card variant="panel" material="glass" className="px-5 py-4">
+          <Card variant="panel" material="glass" className="px-4 py-4 sm:px-5">
             <ResearchPanelHeader title="History" subtitle="Surprise cadence" />
             <div className="mb-3 rounded-lg border border-(--line) bg-(--surface-muted) px-4 py-3">
               <p className="text-[11px] font-medium uppercase tracking-wider text-(--ink-soft)">Next earnings date</p>
@@ -181,12 +181,12 @@ export function ResearchSections({ symbol, nextEarningsDate }: ResearchSectionsP
             {earningsHistory.data?.events.length ? (
               <div className="space-y-2">
                 {earningsHistory.data.events.slice(-4).reverse().map((event) => (
-                  <div key={event.reportDate} className="flex items-center justify-between gap-4 rounded-lg border border-(--line) bg-(--surface-muted) px-3 py-2.5">
+                  <div key={event.reportDate} className="flex flex-col gap-2 rounded-lg border border-(--line) bg-(--surface-muted) px-3 py-2.5 sm:flex-row sm:items-center sm:justify-between">
                     <div>
                       <p className="font-medium text-(--ink)">{event.quarter}</p>
                       <p className="text-xs text-(--ink-muted)">{formatDate(event.reportDate)}</p>
                     </div>
-                    <div className="text-right text-sm">
+                    <div className="text-left text-sm sm:text-right">
                       <p className="text-(--ink)">Actual: {event.epsActual ?? "—"}</p>
                       <p className="text-(--ink-muted)">Est: {event.epsEstimate ?? "—"}</p>
                       <p className={event.surprisePercent !== null && event.surprisePercent >= 0 ? "font-medium text-(--positive)" : "font-medium text-(--negative)"}>
@@ -201,11 +201,11 @@ export function ResearchSections({ symbol, nextEarningsDate }: ResearchSectionsP
               <SectionFallback query={earningsHistory} emptyMessage="Earnings history is limited or unavailable for this symbol." />
             )}
           </Card>
-          <Card variant="panel" material="glass" className="px-5 py-4">
+          <Card variant="panel" material="glass" className="px-4 py-4 sm:px-5">
             <ResearchPanelHeader title="Estimates" subtitle="Forward EPS and revenue" />
             {earningsEstimates.data?.epsEstimates.length || earningsEstimates.data?.revenueEstimates.length ? (
               <>
-                <div className="grid gap-2 md:grid-cols-2 xl:grid-cols-4">
+                <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-4">
                   {(earningsEstimates.data?.epsEstimates ?? []).slice(0, 4).map((estimate) => (
                     <MetricCard
                       key={estimate.period}
@@ -215,7 +215,7 @@ export function ResearchSections({ symbol, nextEarningsDate }: ResearchSectionsP
                     />
                   ))}
                 </div>
-                <div className="mt-3 grid gap-2 md:grid-cols-2">
+                <div className="mt-3 grid gap-2 sm:grid-cols-2">
                   {(earningsEstimates.data?.revenueEstimates ?? []).slice(0, 2).map((estimate) => (
                     <MetricCard
                       key={`rev-${estimate.period}`}
@@ -246,17 +246,17 @@ export function ResearchSections({ symbol, nextEarningsDate }: ResearchSectionsP
 
       <Tabs.Content value="analyst">
         <div className="grid gap-3 xl:grid-cols-[0.95fr_1.05fr]">
-          <Card variant="panel" material="glass" className="px-5 py-4">
+          <Card variant="panel" material="glass" className="px-4 py-4 sm:px-5">
             <ResearchPanelHeader title="Summary" subtitle="Targets and recommendations" />
             {analystSummary.data ? (
               <>
-                <div className="grid gap-2 md:grid-cols-2">
+                <div className="grid gap-2 sm:grid-cols-2">
                   <MetricCard label="Target mean" value={formatCurrency(analystSummary.data.analystSummary.targetMean)} />
                   <MetricCard label="Current target" value={formatCurrency(analystSummary.data.analystSummary.currentPriceTarget)} />
                   <MetricCard label="Target low" value={formatCurrency(analystSummary.data.analystSummary.targetLow)} />
                   <MetricCard label="Target high" value={formatCurrency(analystSummary.data.analystSummary.targetHigh)} />
                 </div>
-                <div className="mt-3 grid gap-1.5 md:grid-cols-2 xl:grid-cols-5">
+                <div className="mt-3 grid gap-1.5 sm:grid-cols-2 xl:grid-cols-5">
                   <MetricCard label="Strong buy" value={formatNumber(analystSummary.data.analystSummary.recommendationSummary.strongBuy)} />
                   <MetricCard label="Buy" value={formatNumber(analystSummary.data.analystSummary.recommendationSummary.buy)} />
                   <MetricCard label="Hold" value={formatNumber(analystSummary.data.analystSummary.recommendationSummary.hold)} />
@@ -271,13 +271,13 @@ export function ResearchSections({ symbol, nextEarningsDate }: ResearchSectionsP
               <SectionFallback query={analystSummary} emptyMessage="Analyst coverage is limited for this symbol." />
             )}
           </Card>
-          <Card variant="panel" material="glass" className="px-5 py-4">
+          <Card variant="panel" material="glass" className="px-4 py-4 sm:px-5">
             <ResearchPanelHeader title="Recent actions" subtitle="Firm activity and target changes" />
             {analystHistory.data?.actions.length ? (
               <div className="space-y-2">
                 {analystHistory.data.actions.slice(0, 5).map((action) => (
                   <div key={`${action.gradedAt}-${action.firm ?? action.toGrade ?? "action"}`} className="rounded-lg border border-(--line) bg-(--surface-muted) px-3 py-2.5">
-                    <div className="flex items-center justify-between gap-4">
+                    <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
                       <div>
                         <p className="font-medium text-(--ink)">{action.firm ?? "Research firm"}</p>
                         <p className="mt-0.5 text-xs text-(--ink-muted)">{formatDateTime(action.gradedAt)}</p>
@@ -298,11 +298,11 @@ export function ResearchSections({ symbol, nextEarningsDate }: ResearchSectionsP
       </Tabs.Content>
 
       <Tabs.Content value="ownership">
-        <Card variant="panel" material="glass" className="px-5 py-4">
+        <Card variant="panel" material="glass" className="px-4 py-4 sm:px-5">
           <ResearchPanelHeader title="Ownership" subtitle="Major holders and roster" />
           {ownership.data ? (
             <Tabs.Root defaultValue="institutional" className="space-y-3">
-              <div className="grid gap-2 md:grid-cols-2 xl:grid-cols-4">
+              <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-4">
                 {ownership.data.majorHolders.slice(0, 4).map((holder) => (
                   <MetricCard key={holder.key} label={holder.label} value={formatPercent(holder.value, 2)} />
                 ))}
@@ -355,11 +355,11 @@ export function ResearchSections({ symbol, nextEarningsDate }: ResearchSectionsP
       </Tabs.Content>
 
       <Tabs.Content value="options">
-        <Card variant="panel" material="glass" className="px-5 py-4">
+        <Card variant="panel" material="glass" className="px-4 py-4 sm:px-5">
           <ResearchPanelHeader title="Options" subtitle="Chain and expiration deck" />
           {expirations.data?.expirations.length ? (
             <div className="space-y-3">
-              <div className="flex flex-wrap items-center gap-1.5">
+              <div className="flex flex-col gap-2 lg:flex-row lg:items-center">
                 <div className="rounded-lg border border-(--line) bg-(--surface-muted) px-3 py-1.5 text-xs text-(--ink-soft)">
                   Underlying {formatCurrency(optionChain.data?.underlyingPrice ?? null)}
                 </div>
@@ -416,9 +416,9 @@ type ResearchPanelHeaderProps = {
 function ResearchPanelHeader({ title, subtitle, layout = "stacked" }: ResearchPanelHeaderProps) {
   if (layout === "inline") {
     return (
-      <div className="mb-2 flex flex-wrap items-baseline gap-x-2 gap-y-1">
+      <div className="mb-2 flex flex-col gap-1 sm:flex-row sm:flex-wrap sm:items-baseline sm:gap-x-2 sm:gap-y-1">
         <h3 className="text-xl font-bold text-(--ink-strong)">{title}</h3>
-        <span aria-hidden="true" className="text-[15px] text-(--ink-soft)">•</span>
+        <span aria-hidden="true" className="hidden text-[15px] text-(--ink-soft) sm:inline">•</span>
         <p className="text-[15px] font-normal text-(--ink-muted)">{subtitle}</p>
       </div>
     );
@@ -440,7 +440,7 @@ type MetricCardProps = {
 
 function MetricCard({ label, value, meta }: MetricCardProps) {
   return (
-    <div className="rounded-lg border border-(--line) bg-(--surface-muted) px-3 py-3">
+    <div className="min-w-0 rounded-lg border border-(--line) bg-(--surface-muted) px-3 py-3">
       <p className="text-[11px] font-medium uppercase tracking-wider text-(--ink-soft)">{label}</p>
       <p className="mt-1 text-sm font-medium text-(--ink)">{value}</p>
       {meta ? <p className="mt-1 text-xs text-(--ink-muted)">{meta}</p> : null}
@@ -482,7 +482,7 @@ type HolderRowProps = {
 
 function HolderRow({ label, meta, value, labelColor, accentColor }: HolderRowProps) {
   return (
-    <div className="flex items-center justify-between gap-4 rounded-lg border border-(--line) bg-(--surface-muted) px-3 py-2.5">
+    <div className="flex flex-col gap-2 rounded-lg border border-(--line) bg-(--surface-muted) px-3 py-2.5 sm:flex-row sm:items-center sm:justify-between">
       <div>
         <p className="flex items-center gap-2 font-medium text-(--ink)">
           {accentColor ? <span className="size-2 shrink-0 rounded-full" style={{ backgroundColor: accentColor }} aria-hidden="true" /> : null}
@@ -616,35 +616,37 @@ function VirtualOptionsTable({ rows }: VirtualOptionsTableProps) {
   }
 
   return (
-    <div>
-      <div className="grid grid-cols-6 gap-2 border-b border-(--line) pb-2 text-[11px] font-medium uppercase tracking-wider text-(--ink-soft)">
-        <span>Strike</span>
-        <span>Last</span>
-        <span>Bid</span>
-        <span>Ask</span>
-        <span>IV</span>
-        <span>Volume</span>
-      </div>
-      <div ref={parentRef} className="mt-1.5 h-[280px] overflow-auto">
-        <div style={{ height: virtualizer.getTotalSize(), position: "relative" }}>
-          {virtualizer.getVirtualItems().map((item) => {
-            const row = rows[item.index];
+    <div className="overflow-x-auto pb-1">
+      <div className="min-w-[36rem]">
+        <div className="grid grid-cols-[repeat(6,minmax(4.5rem,1fr))] gap-2 border-b border-(--line) pb-2 text-[10px] font-medium uppercase tracking-wider text-(--ink-soft) sm:text-[11px]">
+          <span>Strike</span>
+          <span>Last</span>
+          <span>Bid</span>
+          <span>Ask</span>
+          <span>IV</span>
+          <span>Volume</span>
+        </div>
+        <div ref={parentRef} className="mt-1.5 h-[280px] overflow-y-auto overflow-x-hidden">
+          <div style={{ height: virtualizer.getTotalSize(), position: "relative" }}>
+            {virtualizer.getVirtualItems().map((item) => {
+              const row = rows[item.index];
 
-            return (
-              <div
-                key={row.contractSymbol}
-                className="absolute inset-x-0 grid grid-cols-6 gap-2 rounded-lg border border-(--line) bg-(--surface-muted) px-3 py-2.5 text-sm text-(--ink)"
-                style={{ transform: `translateY(${item.start}px)` }}
-              >
-                <span>{formatNumber(row.strike, 2)}</span>
-                <span>{formatNumber(row.lastPrice, 2)}</span>
-                <span>{formatNumber(row.bid, 2)}</span>
-                <span>{formatNumber(row.ask, 2)}</span>
-                <span>{formatPercent(row.impliedVolatility, 1)}</span>
-                <span>{formatNumber(row.volume)}</span>
-              </div>
-            );
-          })}
+              return (
+                <div
+                  key={row.contractSymbol}
+                  className="absolute inset-x-0 grid grid-cols-[repeat(6,minmax(4.5rem,1fr))] gap-2 rounded-lg border border-(--line) bg-(--surface-muted) px-3 py-2.5 text-xs text-(--ink) sm:text-sm"
+                  style={{ transform: `translateY(${item.start}px)` }}
+                >
+                  <span>{formatNumber(row.strike, 2)}</span>
+                  <span>{formatNumber(row.lastPrice, 2)}</span>
+                  <span>{formatNumber(row.bid, 2)}</span>
+                  <span>{formatNumber(row.ask, 2)}</span>
+                  <span>{formatPercent(row.impliedVolatility, 1)}</span>
+                  <span>{formatNumber(row.volume)}</span>
+                </div>
+              );
+            })}
+          </div>
         </div>
       </div>
     </div>

@@ -39,7 +39,9 @@ export default function RootLayout({ children }: RootLayoutProps) {
         <Providers>
           <div className="min-h-screen text-(--ink)">
             <SiteHeader />
-            <main className="relative mx-auto flex max-w-[1520px] flex-col gap-8 px-4 py-6 md:px-6 md:py-8 xl:px-8">{children}</main>
+            <main className="relative mx-auto flex max-w-[1520px] flex-col gap-6 px-3 py-4 sm:gap-7 sm:px-4 sm:py-5 md:px-6 md:py-8 xl:gap-8 xl:px-8">
+              {children}
+            </main>
           </div>
         </Providers>
       </body>

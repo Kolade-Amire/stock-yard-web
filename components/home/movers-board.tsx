@@ -14,7 +14,7 @@ type MoversBoardProps = {
 export function MoversBoard({ data, label }: MoversBoardProps) {
   return (
     <Card variant="panel" className="px-4 py-4">
-      <div className="mb-3 flex items-center justify-between">
+      <div className="mb-3 flex items-start justify-between gap-3">
         <h3 className="text-lg font-semibold text-(--ink-strong)">{label}</h3>
         <p className="text-xs font-medium uppercase tracking-wider text-(--ink-soft)">Movers</p>
       </div>
@@ -24,7 +24,7 @@ export function MoversBoard({ data, label }: MoversBoardProps) {
             <Link
               key={item.symbol}
               href={tickerRoute(item.symbol)}
-              className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-4 rounded-lg border border-(--line) bg-(--surface-muted) px-3 py-2.5 transition-colors hover:border-(--line-heavy) hover:bg-(--surface-float)"
+              className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-3 rounded-lg border border-(--line) bg-(--surface-muted) px-3 py-2.5 transition-colors hover:border-(--line-heavy) hover:bg-(--surface-float) sm:items-center"
             >
               <div className="min-w-0">
                 <p className="font-semibold text-(--ink-strong)">{item.symbol}</p>

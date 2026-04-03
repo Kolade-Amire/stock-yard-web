@@ -212,15 +212,15 @@ export function ChatPanel({ symbol }: ChatPanelProps) {
       </div>
       <Dialog.Root open={open} onOpenChange={setOpen}>
         <Dialog.Trigger asChild>
-          <Button className="fixed bottom-4 right-4 z-30 shadow-[var(--shadow-fab)] xl:hidden">
+          <Button className="safe-bottom-offset fixed right-4 z-30 shadow-[var(--shadow-fab)] xl:hidden">
             <MessageSquarePlus className="mr-2 size-4" />
             Chat
           </Button>
         </Dialog.Trigger>
         <Dialog.Portal>
           <Dialog.Overlay className="fixed inset-0 z-40 bg-(--overlay)" />
-          <Dialog.Content className="glass-drawer fixed inset-x-0 bottom-0 z-50 rounded-t-2xl p-4">
-            <div className="mb-4 flex items-center justify-between">
+          <Dialog.Content className="glass-drawer safe-drawer-max-h safe-bottom-pad fixed inset-x-0 bottom-0 z-50 flex flex-col overflow-hidden rounded-t-2xl p-4">
+            <div className="mb-4 flex items-center justify-between gap-3">
               <Dialog.Title className="text-lg font-bold text-(--ink-strong)">AI Chat</Dialog.Title>
               <Dialog.Close asChild>
                 <button type="button" className="glass-control rounded-lg p-2 text-(--ink-muted)">
@@ -297,7 +297,7 @@ function ChatSurface({ symbol, conversation, draft, setDraft, isSubmitting, isBu
     <Card
       variant="rail"
       material={mobile ? "default" : "glass"}
-      className={mobile ? "border-transparent bg-transparent px-0 py-0 shadow-none backdrop-blur-0" : "sticky top-24 px-4 py-4"}
+      className={mobile ? "flex min-h-0 flex-1 flex-col border-transparent bg-transparent px-0 py-0 shadow-none backdrop-blur-0" : "sticky top-24 px-4 py-4"}
     >
       <div className="mb-3">
         <div className="flex items-start justify-between gap-3">
@@ -314,8 +314,8 @@ function ChatSurface({ symbol, conversation, draft, setDraft, isSubmitting, isBu
         </div>
         <p className="mt-1 text-sm text-(--ink-muted)">Ticker-scoped chat. Sessions reset when the symbol changes.</p>
       </div>
-      <div className="space-y-2">
-        <div ref={scrollContainerRef} className="max-h-[420px] space-y-2 overflow-auto pr-1">
+      <div className={mobile ? "flex min-h-0 flex-1 flex-col gap-2" : "space-y-2"}>
+        <div ref={scrollContainerRef} className={mobile ? "min-h-0 flex-1 space-y-2 overflow-auto pr-1" : "max-h-[420px] space-y-2 overflow-auto pr-1"}>
           {conversation.length === 0 ? (
             <div className="rounded-lg border border-dashed border-(--line-strong) bg-(--surface) px-4 py-5 text-sm text-(--ink-muted)">
               Ask about risks, earnings, analyst tone, ownership, or recent headlines.
@@ -324,7 +324,13 @@ function ChatSurface({ symbol, conversation, draft, setDraft, isSubmitting, isBu
             conversation.map((turn) => (
               <div
                 key={turn.id}
-                className={turn.role === "assistant" ? "rounded-lg border border-(--line) bg-(--surface) px-4 py-3" : "ml-auto max-w-[85%] rounded-lg bg-(--accent) px-4 py-3 text-(--accent-contrast)"}
+                className={
+                  turn.role === "assistant"
+                    ? "rounded-lg border border-(--line) bg-(--surface) px-4 py-3"
+                    : mobile
+                      ? "ml-auto max-w-[90%] rounded-lg bg-(--accent) px-4 py-3 text-(--accent-contrast)"
+                      : "ml-auto max-w-[85%] rounded-lg bg-(--accent) px-4 py-3 text-(--accent-contrast)"
+                }
               >
                 <p className="mb-1 text-[11px] font-medium uppercase tracking-wider opacity-60">{turn.role}</p>
                 <p className="text-sm leading-relaxed">
@@ -347,7 +353,7 @@ function ChatSurface({ symbol, conversation, draft, setDraft, isSubmitting, isBu
             onChange={(event) => setDraft(event.target.value)}
             onKeyDown={handleTextareaKeyDown}
             placeholder={`Ask about ${symbol}…`}
-            className="min-h-24 w-full resize-none bg-transparent text-sm text-(--ink) outline-none placeholder:text-(--ink-soft)"
+            className={mobile ? "min-h-20 w-full resize-none bg-transparent text-sm text-(--ink) outline-none placeholder:text-(--ink-soft)" : "min-h-24 w-full resize-none bg-transparent text-sm text-(--ink) outline-none placeholder:text-(--ink-soft)"}
           />
           <div className="mt-2 flex items-center justify-between gap-3">
             <p className="text-xs text-(--ink-soft)">Enter to send • Shift+Enter for newline</p>
