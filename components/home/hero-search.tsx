@@ -24,7 +24,7 @@ export function HeroSearch() {
   const recentSymbols = useSyncExternalStore(subscribeRecentSymbols, readRecentSymbols, readRecentSymbolsServerSnapshot);
   const resolver = useTickerResolverSearch({
     maxResults: 6,
-    onResolve(result) {
+    onResolveAction(result) {
       pushRecentSymbol(result.symbol);
 
       startTransition(() => {

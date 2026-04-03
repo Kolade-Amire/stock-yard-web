@@ -13,7 +13,7 @@ export function HeaderCommandSearch() {
   const router = useRouter();
   const resolver = useTickerResolverSearch({
     maxResults: 5,
-    onResolve(result) {
+    onResolveAction(result) {
       pushRecentSymbol(result.symbol);
 
       startTransition(() => {

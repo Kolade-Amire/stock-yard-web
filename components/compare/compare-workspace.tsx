@@ -4,7 +4,8 @@ import { useQuery } from "@tanstack/react-query";
 import dynamic from "next/dynamic";
 import { Search, X } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { startTransition, useState } from "react";
+import { startTransition, useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 
 import { TickerResolverResults } from "@/components/search/ticker-resolver-results";
 import { getOptionId, useTickerResolverSearch } from "@/components/search/use-ticker-resolver-search";
@@ -39,9 +40,11 @@ export function CompareWorkspace({ configured, initialData, initialSymbols, init
   const [symbols, setSymbols] = useState(initialSymbols);
   const [period, setPeriod] = useState(initialPeriod);
   const [interval, setInterval] = useState(initialInterval);
+  const searchAnchorRef = useRef<HTMLDivElement | null>(null);
+  const [searchOverlayRect, setSearchOverlayRect] = useState<{ top: number; left: number; width: number } | null>(null);
   const resolver = useTickerResolverSearch({
     maxResults: 5,
-    onResolve(result) {
+    onResolveAction(result) {
       return addSymbol(result.symbol);
     },
   });
@@ -101,9 +104,41 @@ export function CompareWorkspace({ configured, initialData, initialSymbols, init
     syncUrl(symbols, period, nextInterval);
   }
 
+  useEffect(() => {
+    if (!resolver.shouldShowResults) {
+      setSearchOverlayRect(null);
+      return;
+    }
+
+    function updateSearchOverlayRect() {
+      const nextRect = searchAnchorRef.current?.getBoundingClientRect();
+
+      if (!nextRect) {
+        setSearchOverlayRect(null);
+        return;
+      }
+
+      setSearchOverlayRect({
+        top: nextRect.bottom + 10,
+        left: nextRect.left,
+        width: nextRect.width,
+      });
+    }
+
+    updateSearchOverlayRect();
+
+    window.addEventListener("resize", updateSearchOverlayRect);
+    window.addEventListener("scroll", updateSearchOverlayRect, true);
+
+    return () => {
+      window.removeEventListener("resize", updateSearchOverlayRect);
+      window.removeEventListener("scroll", updateSearchOverlayRect, true);
+    };
+  }, [resolver.shouldShowResults]);
+
   return (
-    <div className="space-y-4">
-      <Card variant="band" material="glass" className="relative z-20 overflow-visible px-5 py-5">
+    <div className="relative isolate space-y-4">
+      <Card variant="band" material="glass" className="relative z-30 overflow-visible px-5 py-5">
         <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_300px]">
           <div className="space-y-4">
             <div>
@@ -126,7 +161,7 @@ export function CompareWorkspace({ configured, initialData, initialSymbols, init
                 </div>
               ))}
             </div>
-            <div className="relative z-20 max-w-[430px]">
+            <div ref={searchAnchorRef} className="relative z-40 max-w-[430px]">
               <form
                 onSubmit={(event) => {
                   event.preventDefault();
@@ -151,21 +186,6 @@ export function CompareWorkspace({ configured, initialData, initialSymbols, init
                   />
                 </div>
               </form>
-              <TickerResolverResults
-                activeIndex={resolver.activeIndex}
-                className="top-[calc(100%+10px)]"
-                displayMode="overlay"
-                emptyMessage="No matching symbols."
-                errorMessage={resolver.errorMessage}
-                getOptionId={(index) => getOptionId(resolver.listboxId, index)}
-                isPending={resolver.isPending}
-                isOpen={resolver.shouldShowResults}
-                listboxId={resolver.listboxId}
-                onHover={resolver.handleResultMouseEnter}
-                onPrefetchSymbol={(symbol) => router.prefetch(tickerRoute(symbol))}
-                onSelect={resolver.handleResultSelect}
-                results={resolver.results}
-              />
             </div>
           </div>
           <div className="glass-subcard space-y-3 rounded-xl px-4 py-4">
@@ -193,7 +213,7 @@ export function CompareWorkspace({ configured, initialData, initialSymbols, init
         </div>
       </Card>
 
-      <Card variant="panel" material="glass" className="px-5 py-5">
+      <Card variant="panel" material="glass" className="relative z-10 px-5 py-5">
         {compareQuery.data?.series.length ? (
           <>
             <div className="mb-4">
@@ -248,6 +268,37 @@ export function CompareWorkspace({ configured, initialData, initialSymbols, init
           <p className="text-sm text-(--ink-muted)">Comparison data will appear once the API is available and two or more valid symbols are selected.</p>
         )}
       </Card>
+      {searchOverlayRect && typeof document !== "undefined"
+        ? createPortal(
+            <div
+              className="fixed z-[80]"
+              style={{
+                top: searchOverlayRect.top,
+                left: searchOverlayRect.left,
+                width: searchOverlayRect.width,
+              }}
+            >
+              <div className="relative">
+                <TickerResolverResults
+                  activeIndex={resolver.activeIndex}
+                  className="top-0"
+                  displayMode="overlay"
+                  emptyMessage="No matching symbols."
+                  errorMessage={resolver.errorMessage}
+                  getOptionId={(index) => getOptionId(resolver.listboxId, index)}
+                  isPending={resolver.isPending}
+                  isOpen={resolver.shouldShowResults}
+                  listboxId={resolver.listboxId}
+                  onHover={resolver.handleResultMouseEnter}
+                  onPrefetchSymbol={(symbol) => router.prefetch(tickerRoute(symbol))}
+                  onSelect={resolver.handleResultSelect}
+                  results={resolver.results}
+                />
+              </div>
+            </div>,
+            document.body,
+          )
+        : null}
     </div>
   );
 }

@@ -44,7 +44,7 @@ export default async function HomePage() {
 
       <div className="grid gap-6 xl:grid-cols-[minmax(0,1.25fr)_360px]">
         <div className="space-y-6">
-          <section className="grid gap-4 xl:grid-cols-3">
+          <section className="grid gap-4 2xl:grid-cols-3 xl:grid-cols-2">
             {HOME_MOVER_SCREENS.map((screen, index) => (
               <MoversBoard
                 key={screen.key}

@@ -11,10 +11,10 @@ const EMPTY_RESULTS: SearchResult[] = [];
 
 type UseTickerResolverSearchOptions = {
   maxResults?: number;
-  onResolve: (result: SearchResult) => boolean | void;
+  onResolveAction: (result: SearchResult) => boolean | void;
 };
 
-export function useTickerResolverSearch({ maxResults = 6, onResolve }: UseTickerResolverSearchOptions) {
+export function useTickerResolverSearch({ maxResults = 6, onResolveAction }: UseTickerResolverSearchOptions) {
   const [query, setQuery] = useState("");
   const [isOpen, setIsOpen] = useState(false);
   const [activeIndex, setActiveIndex] = useState(0);
@@ -48,7 +48,7 @@ export function useTickerResolverSearch({ maxResults = 6, onResolve }: UseTicker
   }
 
   function resolveSelection(result: SearchResult) {
-    const shouldReset = onResolve(result);
+    const shouldReset = onResolveAction(result);
 
     if (shouldReset === false) {
       return false;

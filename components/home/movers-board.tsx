@@ -24,13 +24,13 @@ export function MoversBoard({ data, label }: MoversBoardProps) {
             <Link
               key={item.symbol}
               href={tickerRoute(item.symbol)}
-              className="grid grid-cols-[1fr_auto] items-center gap-4 rounded-lg border border-(--line) bg-(--surface-muted) px-3 py-2.5 transition-colors hover:border-(--line-heavy) hover:bg-(--surface-float)"
+              className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-4 rounded-lg border border-(--line) bg-(--surface-muted) px-3 py-2.5 transition-colors hover:border-(--line-heavy) hover:bg-(--surface-float)"
             >
-              <div>
+              <div className="min-w-0">
                 <p className="font-semibold text-(--ink-strong)">{item.symbol}</p>
                 <p className="truncate text-xs text-(--ink-muted)">{item.name}</p>
               </div>
-              <div className="text-right">
+              <div className="shrink-0 text-right">
                 <p className="text-sm font-medium text-(--ink)">{formatCurrency(item.currentPrice)}</p>
                 <p className={item.percentChange !== null && item.percentChange >= 0 ? "text-xs font-medium text-(--positive)" : "text-xs font-medium text-(--negative)"}>
                   {formatSignedPercent(item.percentChange)}

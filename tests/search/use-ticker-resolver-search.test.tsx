@@ -41,7 +41,7 @@ function TestWrapper({ children }: { children: ReactNode }) {
 }
 
 function SearchHarness({ onResolve }: { onResolve: (result: SearchResult) => boolean | void }) {
-  const resolver = useTickerResolverSearch({ onResolve });
+  const resolver = useTickerResolverSearch({ onResolveAction: onResolve });
 
   return (
     <form
