@@ -28,12 +28,13 @@ export function SiteHeader() {
   const activeRoute = getActiveHeaderRoute(pathname);
 
   return (
-    <header className="sticky top-0 z-40 border-b border-(--line) bg-(--surface-header) backdrop-blur-xl">
+    <header className="sticky top-0 z-40 px-3 pt-3 md:px-5 xl:px-7">
+      <div className="glass-header-bar mx-auto max-w-[1540px] rounded-[1.35rem]">
       <div className="mx-auto grid max-w-[1520px] grid-cols-[auto_1fr_auto] items-center gap-4 px-4 py-3 md:px-6 xl:px-8">
         <Link href={homeRoute} className="shrink-0">
           <LogoMark />
         </Link>
-        <nav className="justify-self-center rounded-lg border border-(--line) bg-(--surface-float) px-1.5 py-1 text-sm text-(--ink-muted)">
+        <nav className="glass-pill-nav justify-self-center rounded-xl px-1.5 py-1 text-sm text-(--ink-muted)">
           <div className="flex items-center gap-0.5">
             {NAV_LINKS.map((link) => (
               <Link
@@ -50,10 +51,10 @@ export function SiteHeader() {
                     : undefined
                 }
                 className={cn(
-                  "rounded-md border px-3 py-1.5 transition-colors",
+                  "rounded-lg border px-3 py-1.5 transition-colors",
                   activeRoute === link.href
-                    ? "text-[inherit]"
-                    : "border-transparent text-(--ink-muted) hover:bg-(--surface-strong) hover:text-(--ink)",
+                    ? "text-[inherit] shadow-[var(--shadow-muted)]"
+                    : "glass-pill-link border-transparent text-(--ink-muted)",
                 )}
               >
                 {link.label}
@@ -66,10 +67,17 @@ export function SiteHeader() {
             <HeaderCommandSearch />
           </div>
           <Link href={homeRoute} className="md:hidden">
-            <Button variant="secondary" size="compact">Search</Button>
+            <Button
+              variant="secondary"
+              size="compact"
+              className="glass-control border-(--glass-rim) bg-transparent px-3.5 py-2 text-(--ink) shadow-none"
+            >
+              Search
+            </Button>
           </Link>
           <ThemeToggle />
         </div>
+      </div>
       </div>
     </header>
   );

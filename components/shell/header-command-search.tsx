@@ -23,15 +23,15 @@ export function HeaderCommandSearch() {
   });
 
   return (
-    <div className="relative min-w-[380px] lg:min-w-[440px]">
+    <div className="relative w-[390px] shrink-0 lg:w-[440px]">
       <form
         onSubmit={(event) => {
           event.preventDefault();
           resolver.submitActiveResult();
         }}
-        className="flex items-center gap-2 rounded-lg border border-(--line) bg-(--surface) px-3 py-2"
+        className="glass-shell glass-input-shell flex items-center gap-2.5 rounded-xl px-3.5 py-2.5"
       >
-        <Search className="size-4 text-(--ink-soft)" />
+        <Search className="size-4 shrink-0 text-(--ink-soft)" />
         <input
           role="combobox"
           value={resolver.query}

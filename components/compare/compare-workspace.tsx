@@ -129,8 +129,8 @@ export function CompareWorkspace({ configured, initialData, initialSymbols, init
                   resolver.submitActiveResult();
                 }}
               >
-                <div className="flex items-center gap-3 rounded-lg border border-(--line-strong) bg-(--surface) px-4 py-2.5">
-                  <Search className="size-4 text-(--ink-soft)" />
+                <div className="glass-shell glass-input-shell flex items-center gap-3 rounded-xl px-4 py-3">
+                  <Search className="size-4 shrink-0 text-(--ink-soft)" />
                   <input
                     role="combobox"
                     value={resolver.query}
@@ -197,19 +197,19 @@ export function CompareWorkspace({ configured, initialData, initialSymbols, init
               <h2 className="text-lg font-bold text-(--ink-strong)">Performance</h2>
             </div>
             <div className="rounded-lg border border-(--line) bg-(--surface-muted) px-3 py-3">
-            <TimeSeriesChart
-              mode="line"
-              height={420}
-              series={compareQuery.data.series.map((series, index) => ({
-                key: series.symbol,
-                label: series.symbol,
-                color: getCompareSeriesColor(index),
-                points: series.bars.map((bar) => ({
-                  timestamp: bar.timestamp,
-                  value: bar.close,
-                })),
-              }))}
-            />
+              <TimeSeriesChart
+                mode="line"
+                height={420}
+                series={compareQuery.data.series.map((series, index) => ({
+                  key: series.symbol,
+                  label: series.symbol,
+                  color: getCompareSeriesColor(index),
+                  points: series.bars.map((bar) => ({
+                    timestamp: bar.timestamp,
+                    value: bar.close,
+                  })),
+                }))}
+              />
             </div>
             <div className="mt-4 grid gap-2 md:grid-cols-2 xl:grid-cols-4">
               {compareQuery.data.series.map((series, index) => (

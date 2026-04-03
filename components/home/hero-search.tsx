@@ -7,7 +7,6 @@ import { startTransition, useSyncExternalStore } from "react";
 
 import { TickerResolverResults } from "@/components/search/ticker-resolver-results";
 import { getOptionId, useTickerResolverSearch } from "@/components/search/use-ticker-resolver-search";
-import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { compareRoute, tickerRoute } from "@/lib/routes";
 import {
@@ -35,7 +34,7 @@ export function HeroSearch() {
   });
 
   return (
-    <Card variant="band" className="px-5 py-5 md:px-6 md:py-6">
+    <Card variant="band" className="relative z-20 px-5 py-5 md:px-6 md:py-6">
       <div className="grid gap-6 xl:grid-cols-[minmax(0,1.4fr)_320px]">
         <div className="space-y-5">
           <div className="space-y-2">
@@ -46,15 +45,15 @@ export function HeroSearch() {
               Search any symbol to open a research workspace with charts, news, financials, and AI-powered chat.
             </p>
           </div>
-          <div className="max-w-3xl">
+          <div className="relative z-20 max-w-[430px]">
             <form
               onSubmit={(event) => {
                 event.preventDefault();
                 resolver.submitActiveResult();
               }}
-              className="flex items-center gap-3 rounded-xl border border-(--line-strong) bg-(--surface) px-4 py-3"
+              className="glass-shell glass-input-shell flex items-center gap-3 rounded-[1.35rem] px-4 py-3.5"
             >
-              <Search className="size-5 text-(--ink-soft)" />
+              <Search className="size-5 shrink-0 text-(--ink-soft)" />
               <input
                 role="combobox"
                 value={resolver.query}
@@ -69,13 +68,11 @@ export function HeroSearch() {
                 aria-expanded={resolver.shouldShowResults}
                 className="w-full bg-transparent text-base text-(--ink) outline-none placeholder:text-(--ink-soft)"
               />
-              <Button type="submit" disabled={!resolver.canSubmit}>
-                Search
-              </Button>
             </form>
             <TickerResolverResults
               activeIndex={resolver.activeIndex}
-              displayMode="inline"
+              className="top-[calc(100%+10px)]"
+              displayMode="overlay"
               emptyMessage="No matches found."
               errorMessage={resolver.errorMessage}
               getOptionId={(index) => getOptionId(resolver.listboxId, index)}

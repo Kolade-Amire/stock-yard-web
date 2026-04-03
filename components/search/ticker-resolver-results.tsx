@@ -47,11 +47,12 @@ export function TickerResolverResults({
     <div
       id={listboxId}
       role="listbox"
+      data-display-mode={displayMode}
       className={cn(
-        "rounded-xl border border-(--line) bg-(--surface-overlay) p-2 backdrop-blur-xl",
+        "glass-results-panel rounded-[1.35rem] p-2.5",
         displayMode === "overlay"
           ? "absolute inset-x-0 z-20 shadow-[var(--shadow-popover)]"
-          : "mt-2 w-full shadow-[var(--shadow-panel)]",
+          : "relative mt-2 w-full shadow-[var(--shadow-panel)]",
         className,
       )}
     >
@@ -67,6 +68,7 @@ export function TickerResolverResults({
                 id={getOptionId(index)}
                 role="option"
                 aria-selected={index === activeIndex}
+                data-active={index === activeIndex ? "true" : "false"}
                 type="button"
                 onMouseEnter={() => {
                   onHover(index);
@@ -74,9 +76,8 @@ export function TickerResolverResults({
                 }}
                 onClick={() => onSelect(result)}
                 className={cn(
-                  "flex w-full items-center justify-between gap-3 rounded-lg text-left transition-colors",
+                  "glass-results-row flex w-full items-center justify-between gap-3 rounded-xl text-left transition-colors",
                   compact ? "px-3 py-2" : "px-3 py-2.5",
-                  index === activeIndex ? "bg-(--surface-strong)" : "hover:bg-(--surface-strong)",
                 )}
               >
                 <div className="flex min-w-0 items-center gap-3">

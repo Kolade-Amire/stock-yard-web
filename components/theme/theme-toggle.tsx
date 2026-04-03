@@ -9,7 +9,7 @@ export function ThemeToggle() {
   const { mounted, resolvedTheme, toggleTheme } = useTheme();
 
   if (!mounted) {
-    return <div aria-hidden="true" className="size-9 shrink-0 rounded-lg border border-(--line) bg-(--surface-float)" />;
+    return <div aria-hidden="true" className="glass-control size-9 shrink-0 rounded-xl" />;
   }
 
   const nextTheme = resolvedTheme === "dark" ? "light" : "dark";
@@ -21,7 +21,7 @@ export function ThemeToggle() {
       type="button"
       variant="secondary"
       size="compact"
-      className="size-9 shrink-0 p-0"
+      className="glass-control size-9 shrink-0 rounded-xl border-(--glass-rim) bg-transparent p-0 text-(--ink) shadow-none"
       aria-label={label}
       title={label}
       onClick={toggleTheme}
