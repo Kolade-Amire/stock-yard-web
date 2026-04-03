@@ -20,6 +20,9 @@ const TimeSeriesChart = dynamic(
   },
 );
 
+const GLASS_SEGMENTED_BUTTON_CLASS =
+  "border-transparent bg-transparent text-(--ink-muted) shadow-none hover:border-transparent hover:bg-(--glass-active-wash) hover:text-(--ink)";
+
 type HistoryPanelProps = {
   symbol: string;
   currency: string;
@@ -47,7 +50,7 @@ export function HistoryPanel({ symbol, currency, initialData }: HistoryPanelProp
   const chartTokens = getTickerHistoryChartTokens(chartDirection);
 
   return (
-    <Card variant="panel" className="px-5 py-5">
+    <Card variant="panel" material="glass" className="px-5 py-5">
       <div className="mb-4 flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
         <div className="space-y-1">
           <p className="text-xs font-medium uppercase tracking-wider text-(--ink-soft)">Price chart</p>
@@ -57,12 +60,13 @@ export function HistoryPanel({ symbol, currency, initialData }: HistoryPanelProp
           </div>
         </div>
         <div className="space-y-2">
-          <div className="flex flex-wrap gap-1.5">
+          <div className="glass-pill-nav flex flex-wrap gap-1.5 p-1.5">
             {HISTORY_PERIODS.map((item) => (
               <Button
                 key={item}
                 variant={item === period ? "primary" : "secondary"}
                 size="compact"
+                className={item === period ? "shadow-none" : GLASS_SEGMENTED_BUTTON_CLASS}
                 onClick={() => {
                   const nextInterval = HISTORY_INTERVALS_BY_PERIOD[item].includes(activeInterval)
                     ? activeInterval
@@ -76,9 +80,15 @@ export function HistoryPanel({ symbol, currency, initialData }: HistoryPanelProp
               </Button>
             ))}
           </div>
-          <div className="flex flex-wrap gap-1.5">
+          <div className="glass-pill-nav flex flex-wrap gap-1.5 p-1.5">
             {HISTORY_INTERVALS_BY_PERIOD[period].map((item) => (
-              <Button key={item} variant={item === activeInterval ? "primary" : "ghost"} size="compact" onClick={() => setInterval(item)}>
+              <Button
+                key={item}
+                variant={item === activeInterval ? "primary" : "ghost"}
+                size="compact"
+                className={item === activeInterval ? "shadow-none" : GLASS_SEGMENTED_BUTTON_CLASS}
+                onClick={() => setInterval(item)}
+              >
                 {item}
               </Button>
             ))}
@@ -130,7 +140,7 @@ type StatProps = {
 
 function Stat({ label, value }: StatProps) {
   return (
-    <div className="rounded-lg border border-(--line) bg-(--surface-muted) px-3 py-2.5">
+    <div className="glass-subcard rounded-lg px-3 py-2.5">
       <p className="text-[11px] font-medium uppercase tracking-wider text-(--ink-soft)">{label}</p>
       <p className="mt-1 text-sm font-medium text-(--ink)">{value}</p>
     </div>

@@ -61,6 +61,14 @@
   --glass-focus-glow: rgba(24, 18, 11, 0.08);
   --glass-overlay-bg: rgba(255, 251, 245, 0.76);
   --glass-shadow: 0 16px 40px rgba(67, 47, 19, 0.16);
+  --glass-card-bg: rgba(255, 250, 243, 0.34);
+  --glass-card-bg-strong: rgba(255, 251, 245, 0.46);
+  --glass-card-bg-soft: rgba(255, 248, 239, 0.26);
+  --glass-card-rim: rgba(109, 83, 46, 0.16);
+  --glass-card-highlight: rgba(255, 255, 255, 0.42);
+  --glass-card-sheen: rgba(255, 255, 255, 0.12);
+  --glass-card-shadow: 0 12px 30px rgba(67, 47, 19, 0.1);
+  --glass-drawer-bg: rgba(250, 244, 235, 0.84);
   --overlay: rgba(24, 18, 11, 0.42);
   --shadow-panel: 0 8px 30px rgba(54, 40, 18, 0.08);
   --shadow-band: 0 10px 36px rgba(54, 40, 18, 0.12);
@@ -134,6 +142,14 @@
     --glass-focus-glow: rgba(255, 255, 255, 0.08);
     --glass-overlay-bg: rgba(20, 24, 33, 0.84);
     --glass-shadow: 0 20px 48px rgba(0, 0, 0, 0.36);
+    --glass-card-bg: rgba(255, 255, 255, 0.05);
+    --glass-card-bg-strong: rgba(255, 255, 255, 0.07);
+    --glass-card-bg-soft: rgba(255, 255, 255, 0.04);
+    --glass-card-rim: rgba(255, 255, 255, 0.1);
+    --glass-card-highlight: rgba(255, 255, 255, 0.14);
+    --glass-card-sheen: rgba(255, 255, 255, 0.05);
+    --glass-card-shadow: 0 16px 36px rgba(0, 0, 0, 0.24);
+    --glass-drawer-bg: rgba(18, 23, 31, 0.9);
     --overlay: rgba(0, 0, 0, 0.6);
     --shadow-panel: 0 4px 24px rgba(0, 0, 0, 0.2);
     --shadow-band: 0 4px 32px rgba(0, 0, 0, 0.24);
@@ -207,6 +223,14 @@
   --glass-focus-glow: rgba(255, 255, 255, 0.08);
   --glass-overlay-bg: rgba(20, 24, 33, 0.84);
   --glass-shadow: 0 20px 48px rgba(0, 0, 0, 0.36);
+  --glass-card-bg: rgba(255, 255, 255, 0.05);
+  --glass-card-bg-strong: rgba(255, 255, 255, 0.07);
+  --glass-card-bg-soft: rgba(255, 255, 255, 0.04);
+  --glass-card-rim: rgba(255, 255, 255, 0.1);
+  --glass-card-highlight: rgba(255, 255, 255, 0.14);
+  --glass-card-sheen: rgba(255, 255, 255, 0.05);
+  --glass-card-shadow: 0 16px 36px rgba(0, 0, 0, 0.24);
+  --glass-drawer-bg: rgba(18, 23, 31, 0.9);
   --overlay: rgba(0, 0, 0, 0.6);
   --shadow-panel: 0 4px 24px rgba(0, 0, 0, 0.2);
   --shadow-band: 0 4px 32px rgba(0, 0, 0, 0.24);
@@ -274,6 +298,99 @@ select {
   backdrop-filter: blur(28px) saturate(180%);
   -webkit-backdrop-filter: blur(28px) saturate(180%);
   box-shadow: var(--glass-shadow);
+}
+
+.glass-card {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--glass-card-rim);
+  background:
+    linear-gradient(180deg, var(--glass-card-sheen), transparent 74%),
+    var(--glass-card-bg);
+  backdrop-filter: blur(18px) saturate(150%);
+  -webkit-backdrop-filter: blur(18px) saturate(150%);
+  box-shadow: var(--glass-card-shadow);
+}
+
+.glass-card::before,
+.glass-subcard::before,
+.glass-micro-pill::before,
+.glass-drawer::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-radius: inherit;
+  box-shadow:
+    inset 0 1px 0 var(--glass-card-highlight),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.03);
+}
+
+.glass-card::after,
+.glass-drawer::after {
+  content: "";
+  position: absolute;
+  inset: 1px 1px auto;
+  height: 34%;
+  pointer-events: none;
+  border-radius: inherit;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.08), transparent 100%);
+  opacity: 0.72;
+}
+
+.glass-card > *,
+.glass-subcard > *,
+.glass-micro-pill > *,
+.glass-drawer > * {
+  position: relative;
+  z-index: 1;
+}
+
+.glass-card-strong {
+  background:
+    linear-gradient(180deg, var(--glass-card-sheen), transparent 74%),
+    var(--glass-card-bg-strong);
+}
+
+.glass-card-soft {
+  background:
+    linear-gradient(180deg, var(--glass-card-sheen), transparent 74%),
+    var(--glass-card-bg-soft);
+}
+
+.glass-subcard {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--glass-rim);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.06), transparent 100%),
+    var(--glass-sheet-bg);
+  backdrop-filter: blur(18px) saturate(160%);
+  -webkit-backdrop-filter: blur(18px) saturate(160%);
+  box-shadow: var(--shadow-muted);
+}
+
+.glass-micro-pill {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--glass-rim);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.06), transparent 100%),
+    var(--glass-sheet-bg);
+  backdrop-filter: blur(16px) saturate(150%);
+  -webkit-backdrop-filter: blur(16px) saturate(150%);
+}
+
+.glass-drawer {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--glass-rim-strong);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.08), transparent 70%),
+    var(--glass-drawer-bg);
+  backdrop-filter: blur(28px) saturate(180%);
+  -webkit-backdrop-filter: blur(28px) saturate(180%);
+  box-shadow: var(--shadow-drawer);
 }
 
 .glass-header-bar::before,

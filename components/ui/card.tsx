@@ -25,12 +25,33 @@ const cardVariants = cva(
   },
 );
 
-type CardProps = HTMLAttributes<HTMLDivElement> & VariantProps<typeof cardVariants>;
+const glassCardVariants = cva(
+  "rounded-xl border transition-colors",
+  {
+    variants: {
+      variant: {
+        panel: "glass-card",
+        band: "glass-card glass-card-strong",
+        rail: "glass-card glass-card-soft",
+        muted: "glass-card glass-card-soft",
+        ghost: "border-transparent bg-transparent shadow-none backdrop-blur-0",
+      },
+    },
+    defaultVariants: {
+      variant: "panel",
+    },
+  },
+);
 
-export function Card({ className, variant, ...props }: CardProps) {
+type CardProps = HTMLAttributes<HTMLDivElement> &
+  VariantProps<typeof cardVariants> & {
+    material?: "default" | "glass";
+  };
+
+export function Card({ className, material = "default", variant, ...props }: CardProps) {
   return (
     <div
-      className={cn(cardVariants({ variant }), className)}
+      className={cn(material === "glass" ? glassCardVariants({ variant }) : cardVariants({ variant }), className)}
       {...props}
     />
   );

@@ -193,7 +193,7 @@ export function ChatPanel({ symbol }: ChatPanelProps) {
             onToggleCollapse={() => setDesktopExpanded(false)}
           />
         ) : (
-          <Card variant="rail" className="sticky top-24 px-4 py-4">
+          <Card variant="rail" material="glass" className="sticky top-24 px-4 py-4">
             <div className="space-y-2">
               <div className="flex items-center justify-between gap-3">
                 <div>
@@ -219,11 +219,11 @@ export function ChatPanel({ symbol }: ChatPanelProps) {
         </Dialog.Trigger>
         <Dialog.Portal>
           <Dialog.Overlay className="fixed inset-0 z-40 bg-(--overlay)" />
-          <Dialog.Content className="fixed inset-x-0 bottom-0 z-50 rounded-t-2xl border border-(--line) bg-(--surface-overlay) p-4 shadow-[var(--shadow-drawer)]">
+          <Dialog.Content className="glass-drawer fixed inset-x-0 bottom-0 z-50 rounded-t-2xl p-4">
             <div className="mb-4 flex items-center justify-between">
               <Dialog.Title className="text-lg font-bold text-(--ink-strong)">AI Chat</Dialog.Title>
               <Dialog.Close asChild>
-                <button type="button" className="rounded-lg border border-(--line) p-2 text-(--ink-muted) hover:bg-(--surface)">
+                <button type="button" className="glass-control rounded-lg p-2 text-(--ink-muted)">
                   <X className="size-4" />
                 </button>
               </Dialog.Close>
@@ -294,7 +294,11 @@ function ChatSurface({ symbol, conversation, draft, setDraft, isSubmitting, isBu
   }
 
   return (
-    <Card variant="rail" className={mobile ? "px-0 py-0 shadow-none" : "sticky top-24 px-4 py-4"}>
+    <Card
+      variant="rail"
+      material={mobile ? "default" : "glass"}
+      className={mobile ? "border-transparent bg-transparent px-0 py-0 shadow-none backdrop-blur-0" : "sticky top-24 px-4 py-4"}
+    >
       <div className="mb-3">
         <div className="flex items-start justify-between gap-3">
           <div>
@@ -337,7 +341,7 @@ function ChatSurface({ symbol, conversation, draft, setDraft, isSubmitting, isBu
             </div>
           ) : null}
         </div>
-        <div className="rounded-lg border border-(--line) bg-(--surface) p-3">
+        <div className="glass-subcard glass-input-shell rounded-xl p-3">
           <textarea
             value={draft}
             onChange={(event) => setDraft(event.target.value)}

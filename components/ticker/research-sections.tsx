@@ -14,6 +14,7 @@ import { stockYardClient } from "@/lib/stock-yard/client";
 import { formatCurrency, formatDate, formatDateTime, formatNumber, formatPercent, formatSignedPercent } from "@/lib/stock-yard/format";
 import { isStockYardApiError } from "@/lib/stock-yard/fetch";
 import type { OwnershipResponse } from "@/lib/stock-yard/schemas";
+import { cn } from "@/lib/utils";
 
 type ResearchSectionsProps = {
   symbol: string;
@@ -40,6 +41,12 @@ const OWNERSHIP_TABS = [
 ] as const;
 
 type ResearchTab = (typeof RESEARCH_TABS)[number]["key"];
+
+const GLASS_SEGMENTED_LIST_CLASS = "glass-pill-nav flex w-fit flex-wrap gap-1.5 p-1.5";
+const GLASS_SEGMENTED_TRIGGER_CLASS =
+  "rounded-lg border border-transparent bg-transparent px-3 py-1.5 text-sm text-(--ink-muted) transition-colors hover:bg-(--glass-active-wash) hover:text-(--ink) data-[state=active]:border-(--accent) data-[state=active]:bg-(--accent) data-[state=active]:text-(--accent-contrast)";
+const GLASS_SEGMENTED_DATA_BUTTON_CLASS =
+  "rounded-lg border border-transparent bg-transparent px-3 py-1.5 text-sm text-(--ink-muted) transition-colors hover:bg-(--glass-active-wash) hover:text-(--ink) data-[active=true]:border-(--accent) data-[active=true]:bg-(--accent) data-[active=true]:text-(--accent-contrast)";
 
 export function ResearchSections({ symbol, nextEarningsDate }: ResearchSectionsProps) {
   const [activeTab, setActiveTab] = useState<ResearchTab>("financials");
@@ -96,18 +103,18 @@ export function ResearchSections({ symbol, nextEarningsDate }: ResearchSectionsP
 
   return (
     <Tabs.Root value={activeTab} onValueChange={(value) => setActiveTab(value as ResearchTab)} className="space-y-4">
-      <Card variant="band" className="px-5 py-4">
+      <Card variant="band" material="glass" className="px-5 py-4">
         <div className="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
           <div>
             <h2 className="text-xl font-bold text-(--ink-strong)">Research</h2>
             <p className="mt-1 text-sm text-(--ink-muted)">Financials, earnings, analyst sentiment, ownership, and options data.</p>
           </div>
-          <Tabs.List className="flex flex-wrap gap-1.5">
+          <Tabs.List className={cn(GLASS_SEGMENTED_LIST_CLASS, "xl:justify-end")}>
             {RESEARCH_TABS.map((tab) => (
               <Tabs.Trigger
                 key={tab.key}
                 value={tab.key}
-                className="rounded-lg border border-(--line) bg-(--surface-float) px-3 py-1.5 text-sm text-(--ink-muted) transition-colors data-[state=active]:border-(--accent) data-[state=active]:bg-(--accent) data-[state=active]:text-(--accent-contrast)"
+                className={GLASS_SEGMENTED_TRIGGER_CLASS}
               >
                 {tab.label}
               </Tabs.Trigger>
@@ -118,7 +125,7 @@ export function ResearchSections({ symbol, nextEarningsDate }: ResearchSectionsP
 
       <Tabs.Content value="financials">
         <div className="grid gap-3 xl:grid-cols-[0.95fr_1.05fr]">
-          <Card variant="panel" className="px-5 py-4">
+          <Card variant="panel" material="glass" className="px-5 py-4">
             <ResearchPanelHeader title="Summary" subtitle="TTM and capital structure" />
             {financialSummary.data ? (
               <>
@@ -138,7 +145,7 @@ export function ResearchSections({ symbol, nextEarningsDate }: ResearchSectionsP
               <SectionFallback query={financialSummary} emptyMessage="Financial statements are not materially available for this symbol." />
             )}
           </Card>
-          <Card variant="panel" className="px-5 py-4">
+          <Card variant="panel" material="glass" className="px-5 py-4">
             <ResearchPanelHeader title="Trend" subtitle="Annual and quarterly revenue" layout="inline" />
             {financialTrends.data?.annual.length || financialTrends.data?.quarterly.length ? (
               <>
@@ -165,7 +172,7 @@ export function ResearchSections({ symbol, nextEarningsDate }: ResearchSectionsP
 
       <Tabs.Content value="earnings">
         <div className="grid gap-3 xl:grid-cols-[0.9fr_1.1fr]">
-          <Card variant="panel" className="px-5 py-4">
+          <Card variant="panel" material="glass" className="px-5 py-4">
             <ResearchPanelHeader title="History" subtitle="Surprise cadence" />
             <div className="mb-3 rounded-lg border border-(--line) bg-(--surface-muted) px-4 py-3">
               <p className="text-[11px] font-medium uppercase tracking-wider text-(--ink-soft)">Next earnings date</p>
@@ -194,7 +201,7 @@ export function ResearchSections({ symbol, nextEarningsDate }: ResearchSectionsP
               <SectionFallback query={earningsHistory} emptyMessage="Earnings history is limited or unavailable for this symbol." />
             )}
           </Card>
-          <Card variant="panel" className="px-5 py-4">
+          <Card variant="panel" material="glass" className="px-5 py-4">
             <ResearchPanelHeader title="Estimates" subtitle="Forward EPS and revenue" />
             {earningsEstimates.data?.epsEstimates.length || earningsEstimates.data?.revenueEstimates.length ? (
               <>
@@ -239,7 +246,7 @@ export function ResearchSections({ symbol, nextEarningsDate }: ResearchSectionsP
 
       <Tabs.Content value="analyst">
         <div className="grid gap-3 xl:grid-cols-[0.95fr_1.05fr]">
-          <Card variant="panel" className="px-5 py-4">
+          <Card variant="panel" material="glass" className="px-5 py-4">
             <ResearchPanelHeader title="Summary" subtitle="Targets and recommendations" />
             {analystSummary.data ? (
               <>
@@ -264,7 +271,7 @@ export function ResearchSections({ symbol, nextEarningsDate }: ResearchSectionsP
               <SectionFallback query={analystSummary} emptyMessage="Analyst coverage is limited for this symbol." />
             )}
           </Card>
-          <Card variant="panel" className="px-5 py-4">
+          <Card variant="panel" material="glass" className="px-5 py-4">
             <ResearchPanelHeader title="Recent actions" subtitle="Firm activity and target changes" />
             {analystHistory.data?.actions.length ? (
               <div className="space-y-2">
@@ -291,7 +298,7 @@ export function ResearchSections({ symbol, nextEarningsDate }: ResearchSectionsP
       </Tabs.Content>
 
       <Tabs.Content value="ownership">
-        <Card variant="panel" className="px-5 py-4">
+        <Card variant="panel" material="glass" className="px-5 py-4">
           <ResearchPanelHeader title="Ownership" subtitle="Major holders and roster" />
           {ownership.data ? (
             <Tabs.Root defaultValue="institutional" className="space-y-3">
@@ -300,12 +307,12 @@ export function ResearchSections({ symbol, nextEarningsDate }: ResearchSectionsP
                   <MetricCard key={holder.key} label={holder.label} value={formatPercent(holder.value, 2)} />
                 ))}
               </div>
-              <Tabs.List className="flex flex-wrap gap-1.5">
+              <Tabs.List className={GLASS_SEGMENTED_LIST_CLASS}>
                 {OWNERSHIP_TABS.map((tab) => (
                   <Tabs.Trigger
                     key={tab.key}
                     value={tab.key}
-                    className="rounded-lg border border-(--line) bg-(--surface-float) px-3 py-1.5 text-sm text-(--ink-muted) data-[state=active]:border-(--accent) data-[state=active]:bg-(--accent) data-[state=active]:text-(--accent-contrast)"
+                    className={GLASS_SEGMENTED_TRIGGER_CLASS}
                   >
                     {tab.label}
                   </Tabs.Trigger>
@@ -348,7 +355,7 @@ export function ResearchSections({ symbol, nextEarningsDate }: ResearchSectionsP
       </Tabs.Content>
 
       <Tabs.Content value="options">
-        <Card variant="panel" className="px-5 py-4">
+        <Card variant="panel" material="glass" className="px-5 py-4">
           <ResearchPanelHeader title="Options" subtitle="Chain and expiration deck" />
           {expirations.data?.expirations.length ? (
             <div className="space-y-3">
@@ -356,25 +363,27 @@ export function ResearchSections({ symbol, nextEarningsDate }: ResearchSectionsP
                 <div className="rounded-lg border border-(--line) bg-(--surface-muted) px-3 py-1.5 text-xs text-(--ink-soft)">
                   Underlying {formatCurrency(optionChain.data?.underlyingPrice ?? null)}
                 </div>
-                {expirations.data.expirations.slice(0, 6).map((item) => (
-                  <button
-                    key={item}
-                    type="button"
-                    onClick={() => setSelectedExpiration(item)}
-                    className="rounded-lg border border-(--line) bg-(--surface-float) px-3 py-1.5 text-sm text-(--ink-muted) transition-colors hover:border-(--accent) data-[active=true]:border-(--accent) data-[active=true]:bg-(--accent) data-[active=true]:text-(--accent-contrast)"
-                    data-active={item === expiration}
-                  >
-                    {item}
-                  </button>
-                ))}
+                <div className={GLASS_SEGMENTED_LIST_CLASS}>
+                  {expirations.data.expirations.slice(0, 6).map((item) => (
+                    <button
+                      key={item}
+                      type="button"
+                      onClick={() => setSelectedExpiration(item)}
+                      className={GLASS_SEGMENTED_DATA_BUTTON_CLASS}
+                      data-active={item === expiration}
+                    >
+                      {item}
+                    </button>
+                  ))}
+                </div>
               </div>
               <Tabs.Root defaultValue="calls" className="space-y-3">
-                <Tabs.List className="flex gap-1.5">
+                <Tabs.List className={GLASS_SEGMENTED_LIST_CLASS}>
                   {OPTION_TABS.map((tab) => (
                     <Tabs.Trigger
                       key={tab.key}
                       value={tab.key}
-                      className="rounded-lg border border-(--line) bg-(--surface-float) px-3 py-1.5 text-sm text-(--ink-muted) data-[state=active]:border-(--accent) data-[state=active]:bg-(--accent) data-[state=active]:text-(--accent-contrast)"
+                      className={GLASS_SEGMENTED_TRIGGER_CLASS}
                     >
                       {tab.label}
                     </Tabs.Trigger>

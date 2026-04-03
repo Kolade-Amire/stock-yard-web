@@ -14,14 +14,14 @@ export function NewsPanel({ data }: NewsPanelProps) {
   const remainder = data?.news.slice(1, 4) ?? [];
 
   return (
-    <Card variant="rail" className="px-4 py-4">
+    <Card variant="rail" material="glass" className="px-4 py-4">
       <div className="mb-3">
         <p className="text-xs font-medium uppercase tracking-wider text-(--ink-soft)">News</p>
         <h2 className="mt-1 text-lg font-semibold text-(--ink-strong)">Latest headlines</h2>
       </div>
       {lead ? (
         <div className="space-y-2">
-          <article className="rounded-xl border border-(--line-strong) bg-gradient-to-br from-(--accent-soft) to-transparent p-4">
+          <article className="rounded-xl border border-(--line) bg-(--surface) p-4">
             <p className="text-[11px] font-medium uppercase tracking-wider text-(--ink-soft)">{lead.publisher ?? formatDateTime(lead.published_at)}</p>
             <h3 className="mt-2 text-base font-bold leading-snug text-(--ink-strong)">{lead.title}</h3>
             <p className="mt-2 text-sm leading-relaxed text-(--ink-muted)">{lead.summary ?? "Summary unavailable."}</p>

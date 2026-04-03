@@ -29,14 +29,14 @@ export function TickerHeader({ data }: TickerHeaderProps) {
   const isPositive = priceChange !== null && priceChange >= 0;
 
   return (
-    <Card variant="band" className="px-5 py-5 md:px-6">
+    <Card variant="band" material="glass" className="px-5 py-5 md:px-6">
       <div className="grid gap-5 xl:grid-cols-[minmax(0,1.2fr)_340px]">
         <div className="space-y-4">
           <div className="flex flex-wrap items-center gap-1.5">
             {identityTags.map((tag) => (
               <span
                 key={tag}
-                className="rounded-md border border-(--line) bg-(--surface) px-2 py-1 text-[11px] font-medium uppercase tracking-wider text-(--ink-soft)"
+                className="glass-micro-pill rounded-md px-2 py-1 text-[11px] font-medium uppercase tracking-wider text-(--ink-soft)"
               >
                 {tag}
               </span>
@@ -69,7 +69,7 @@ export function TickerHeader({ data }: TickerHeaderProps) {
           </div>
         </div>
         <div className="space-y-3">
-          <div className="rounded-xl border border-(--line) bg-(--surface-float) px-4 py-4">
+          <div className="glass-subcard rounded-xl px-4 py-4">
             <p className="text-xs font-medium uppercase tracking-wider text-(--ink-soft)">Current price</p>
             <p className="mt-2 text-3xl font-bold text-(--ink-strong)">{formatCurrency(overview.current_price, overview.currency ?? "USD")}</p>
             {priceChange !== null ? (
@@ -92,7 +92,7 @@ export function TickerHeader({ data }: TickerHeaderProps) {
               href={overview.website}
               target="_blank"
               rel="noreferrer"
-              className="flex items-center justify-between rounded-lg border border-(--line) bg-(--surface-float) px-4 py-3 text-sm text-(--ink) transition-colors hover:border-(--accent)"
+              className="glass-control flex items-center justify-between rounded-xl px-4 py-3 text-sm text-(--ink) transition-colors hover:border-(--accent)"
             >
               <div className="flex items-center gap-3">
                 <Globe2 className="size-4 text-(--accent)" />
@@ -115,7 +115,7 @@ type InfoChipProps = {
 
 function InfoChip({ label, value }: InfoChipProps) {
   return (
-    <div className="rounded-lg border border-(--line) bg-(--surface-float) px-3 py-3">
+    <div className="glass-subcard rounded-lg px-3 py-3">
       <p className="text-[11px] font-medium uppercase tracking-wider text-(--ink-soft)">{label}</p>
       <p className="mt-1.5 text-sm font-medium text-(--ink)">{value}</p>
     </div>
