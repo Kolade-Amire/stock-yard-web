@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { formatCurrency, formatDate, formatPercent, formatSignedPercent } from "@/lib/stock-yard/format";
+import { formatCurrency, formatDate, formatDateTime, formatPercent, formatSignedPercent } from "@/lib/stock-yard/format";
 import { compareRouteWithQuery, compareRoute, homeRoute, tickerRoute } from "@/lib/routes";
 
 describe("stock-yard format helpers", () => {
@@ -13,6 +13,11 @@ describe("stock-yard format helpers", () => {
   it("handles missing values gracefully", () => {
     expect(formatCurrency(null)).toBe("Unavailable");
     expect(formatDate(null)).toBe("Unavailable");
+  });
+
+  it("handles invalid date strings gracefully", () => {
+    expect(formatDate("not-a-date")).toBe("Unavailable");
+    expect(formatDateTime("not-a-date")).toBe("Unavailable");
   });
 });
 

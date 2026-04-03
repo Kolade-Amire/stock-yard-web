@@ -50,7 +50,9 @@ export function formatSignedPercent(value: number | null, digits = 1) {
 }
 
 export function formatDate(value: string | null, options?: Intl.DateTimeFormatOptions) {
-  if (!value) {
+  const date = parseDateValue(value);
+
+  if (!date) {
     return "Unavailable";
   }
 
@@ -59,11 +61,13 @@ export function formatDate(value: string | null, options?: Intl.DateTimeFormatOp
     day: "numeric",
     year: "numeric",
     ...options,
-  }).format(new Date(value));
+  }).format(date);
 }
 
 export function formatDateTime(value: string | null) {
-  if (!value) {
+  const date = parseDateValue(value);
+
+  if (!date) {
     return "Unavailable";
   }
 
@@ -72,7 +76,7 @@ export function formatDateTime(value: string | null) {
     day: "numeric",
     hour: "numeric",
     minute: "2-digit",
-  }).format(new Date(value));
+  }).format(date);
 }
 
 export function formatRange(low: number | null, high: number | null, currency = "USD") {
@@ -81,4 +85,18 @@ export function formatRange(low: number | null, high: number | null, currency = 
   }
 
   return `${formatCurrency(low, currency)} - ${formatCurrency(high, currency)}`;
+}
+
+function parseDateValue(value: string | null) {
+  if (!value) {
+    return null;
+  }
+
+  const date = new Date(value);
+
+  if (Number.isNaN(date.getTime())) {
+    return null;
+  }
+
+  return date;
 }

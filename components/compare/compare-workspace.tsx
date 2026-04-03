@@ -103,7 +103,7 @@ export function CompareWorkspace({ configured, initialData, initialSymbols, init
 
   return (
     <div className="space-y-4">
-      <Card variant="band" className="px-5 py-5">
+      <Card variant="band" material="glass" className="relative z-20 overflow-visible px-5 py-5">
         <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_300px]">
           <div className="space-y-4">
             <div>
@@ -114,23 +114,27 @@ export function CompareWorkspace({ configured, initialData, initialSymbols, init
             </div>
             <div className="flex flex-wrap gap-1.5">
               {symbols.map((symbol) => (
-                <div key={symbol} className="inline-flex items-center gap-1.5 rounded-lg border border-(--line-strong) bg-(--surface-float) px-3 py-1.5 text-sm font-medium text-(--ink)">
+                <div key={symbol} className="glass-micro-pill inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium text-(--ink)">
                   {symbol}
-                  <button type="button" onClick={() => removeSymbol(symbol)} className="rounded p-0.5 text-(--ink-soft) hover:text-(--ink)">
+                  <button
+                    type="button"
+                    onClick={() => removeSymbol(symbol)}
+                    className="rounded p-0.5 text-(--ink-soft) transition-colors hover:text-(--ink)"
+                  >
                     <X className="size-3.5" />
                   </button>
                 </div>
               ))}
             </div>
-            <div>
+            <div className="relative z-20 max-w-[430px]">
               <form
                 onSubmit={(event) => {
                   event.preventDefault();
                   resolver.submitActiveResult();
                 }}
               >
-                <div className="glass-shell glass-input-shell flex items-center gap-3 rounded-xl px-4 py-3">
-                  <Search className="size-4 shrink-0 text-(--ink-soft)" />
+                <div className="glass-shell glass-input-shell flex items-center gap-3 rounded-[1.35rem] px-4 py-3.5">
+                  <Search className="size-5 shrink-0 text-(--ink-soft)" />
                   <input
                     role="combobox"
                     value={resolver.query}
@@ -143,15 +147,14 @@ export function CompareWorkspace({ configured, initialData, initialSymbols, init
                     aria-controls={resolver.listboxId}
                     aria-activedescendant={resolver.activeDescendantId}
                     aria-expanded={resolver.shouldShowResults}
-                    className="w-full bg-transparent text-sm text-(--ink) outline-none placeholder:text-(--ink-soft)"
+                    className="w-full bg-transparent text-base text-(--ink) outline-none placeholder:text-(--ink-soft)"
                   />
                 </div>
               </form>
               <TickerResolverResults
                 activeIndex={resolver.activeIndex}
-                className="rounded-lg"
-                compact
-                displayMode="inline"
+                className="top-[calc(100%+10px)]"
+                displayMode="overlay"
                 emptyMessage="No matching symbols."
                 errorMessage={resolver.errorMessage}
                 getOptionId={(index) => getOptionId(resolver.listboxId, index)}
@@ -165,10 +168,10 @@ export function CompareWorkspace({ configured, initialData, initialSymbols, init
               />
             </div>
           </div>
-          <div className="space-y-3 rounded-xl border border-(--line) bg-(--surface-float) px-4 py-4">
+          <div className="glass-subcard space-y-3 rounded-xl px-4 py-4">
             <div className="space-y-2">
               <p className="text-xs font-medium uppercase tracking-wider text-(--ink-soft)">Period</p>
-              <div className="flex flex-wrap gap-1.5">
+              <div className="glass-pill-nav flex flex-wrap gap-1.5 p-1.5">
                 {HISTORY_PERIODS.map((item) => (
                   <Button key={item} variant={period === item ? "primary" : "secondary"} size="compact" onClick={() => choosePeriod(item)}>
                     {item}
@@ -178,7 +181,7 @@ export function CompareWorkspace({ configured, initialData, initialSymbols, init
             </div>
             <div className="space-y-2">
               <p className="text-xs font-medium uppercase tracking-wider text-(--ink-soft)">Interval</p>
-              <div className="flex flex-wrap gap-1.5">
+              <div className="glass-pill-nav flex flex-wrap gap-1.5 p-1.5">
                 {HISTORY_INTERVALS_BY_PERIOD[period].map((item) => (
                   <Button key={item} variant={interval === item ? "primary" : "ghost"} size="compact" onClick={() => chooseInterval(item)}>
                     {item}
@@ -190,7 +193,7 @@ export function CompareWorkspace({ configured, initialData, initialSymbols, init
         </div>
       </Card>
 
-      <Card variant="panel" className="px-5 py-5">
+      <Card variant="panel" material="glass" className="px-5 py-5">
         {compareQuery.data?.series.length ? (
           <>
             <div className="mb-4">
@@ -213,7 +216,7 @@ export function CompareWorkspace({ configured, initialData, initialSymbols, init
             </div>
             <div className="mt-4 grid gap-2 md:grid-cols-2 xl:grid-cols-4">
               {compareQuery.data.series.map((series, index) => (
-                <div key={series.symbol} className="rounded-lg border border-(--line) bg-(--surface-muted) px-3 py-3">
+                <div key={series.symbol} className="glass-subcard rounded-lg px-3 py-3">
                   <p
                     className="text-[11px] font-medium uppercase tracking-wider"
                     style={{ color: getCompareSeriesColor(index) }}
