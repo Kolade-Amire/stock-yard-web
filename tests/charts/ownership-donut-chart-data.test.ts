@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { buildOwnershipDonutChartItems, getOwnershipChartColor } from "@/components/charts/ownership-donut-chart-data";
+import { buildOwnershipDonutChartItems, buildOwnershipDonutChartItemsFromShares, getOwnershipChartColor } from "@/components/charts/ownership-donut-chart-data";
 
 describe("ownership donut chart data", () => {
   it("normalizes the visible weighted rows and assigns stable colors", () => {
@@ -42,5 +42,19 @@ describe("ownership donut chart data", () => {
     expect(items).toHaveLength(5);
     expect(items[4]?.color).toBe("var(--ownership-5)");
     expect(getOwnershipChartColor(9)).toBe("var(--ownership-5)");
+  });
+
+  it("normalizes insider share totals from the visible rows", () => {
+    const items = buildOwnershipDonutChartItemsFromShares([
+      { id: "andreessen", label: "Andreessen", value: 69_170 },
+      { id: "killefer", label: "Killefer", value: 12_244 },
+      { id: "li", label: "Li", value: 8_000 },
+    ]);
+
+    expect(items).toHaveLength(3);
+    expect(items[0]?.rawValue).toBe(69_170);
+    expect(items[1]?.rawValue).toBe(12_244);
+    expect(items[2]?.rawValue).toBe(8_000);
+    expect(items.reduce((sum, item) => sum + item.normalizedValue, 0)).toBeCloseTo(1, 6);
   });
 });

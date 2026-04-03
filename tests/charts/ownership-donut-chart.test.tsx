@@ -37,4 +37,27 @@ describe("OwnershipDonutChart", () => {
     expect(screen.getByText("50.09%")).toBeInTheDocument();
     expect(screen.getByText("Blackrock")).toBeInTheDocument();
   });
+
+  it("can show normalized displayed-total percentages for share-based charts", () => {
+    render(
+      <OwnershipDonutChart
+        valueMode="normalized_percent"
+        valueLabel="Share of displayed total"
+        subtitle="Normalized from displayed insider share totals"
+        items={[
+          { id: "andreessen", label: "Andreessen", rawValue: 69_170, normalizedValue: 0.63, color: "var(--ownership-1)" },
+          { id: "bosworth", label: "Bosworth", rawValue: 24_000, normalizedValue: 0.22, color: "var(--ownership-2)" },
+          { id: "killefer", label: "Killefer", rawValue: 16_500, normalizedValue: 0.15, color: "var(--ownership-3)" },
+        ]}
+      />,
+    );
+
+    expect(screen.getByText("Share of displayed total")).toBeInTheDocument();
+    expect(screen.getByText("63.00%")).toBeInTheDocument();
+
+    fireEvent.focus(screen.getByRole("button", { name: "Bosworth: 22.00% of displayed insider total" }));
+
+    expect(screen.getByText("22.00%")).toBeInTheDocument();
+    expect(screen.getByText("Bosworth")).toBeInTheDocument();
+  });
 });

@@ -11,6 +11,8 @@ type OwnershipDonutChartProps = {
   items: OwnershipDonutChartItem[];
   title?: string;
   subtitle?: string;
+  valueLabel?: string;
+  valueMode?: "raw_percent" | "normalized_percent";
   className?: string;
 };
 
@@ -33,12 +35,16 @@ export function OwnershipDonutChart({
   items,
   title = "Holder mix",
   subtitle = "Breakdown of displayed holders",
+  valueLabel,
+  valueMode = "raw_percent",
   className,
 }: OwnershipDonutChartProps) {
   const [activeId, setActiveId] = useState<string | null>(null);
 
   const segments = useMemo(() => buildOwnershipDonutSegments(items), [items]);
   const activeItem = items.find((item) => item.id === activeId) ?? items[0] ?? null;
+  const activeValue = valueMode === "normalized_percent" ? activeItem?.normalizedValue ?? null : activeItem?.rawValue ?? null;
+  const resolvedValueLabel = valueLabel ?? (valueMode === "normalized_percent" ? "Share of displayed total" : "Reported held");
 
   if (!items.length || activeItem === null) {
     return null;
@@ -80,7 +86,11 @@ export function OwnershipDonutChart({
                     opacity={isActive ? 1 : 0.94}
                     tabIndex={0}
                     role="button"
-                    aria-label={`${segment.item.label}: ${formatPercent(segment.item.rawValue, 2)} reported held`}
+                    aria-label={
+                      valueMode === "normalized_percent"
+                        ? `${segment.item.label}: ${formatPercent(segment.item.normalizedValue, 2)} of displayed insider total`
+                        : `${segment.item.label}: ${formatPercent(segment.item.rawValue, 2)} reported held`
+                    }
                     onMouseEnter={() => setActiveId(segment.item.id)}
                     onFocus={() => setActiveId(segment.item.id)}
                     className="cursor-pointer outline-none transition-opacity duration-200"
@@ -99,9 +109,9 @@ export function OwnershipDonutChart({
 
           <div className="pointer-events-none absolute inset-0 flex items-center justify-center px-8">
             <div className="max-w-[10rem] text-center">
-              <p className="text-[10px] font-medium uppercase tracking-[0.18em] text-(--ink-soft)">Reported held</p>
+              <p className="text-[10px] font-medium uppercase tracking-[0.18em] text-(--ink-soft)">{resolvedValueLabel}</p>
               <p className="mt-1 text-[28px] font-semibold tracking-tight text-(--ink-strong)">
-                {formatPercent(activeItem.rawValue, 2)}
+                {activeValue !== null ? formatPercent(activeValue, 2) : "Unavailable"}
               </p>
               <p
                 className="mt-1 text-sm font-medium leading-snug text-(--ink-muted)"

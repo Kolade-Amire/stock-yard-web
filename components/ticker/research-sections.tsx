@@ -7,7 +7,7 @@ import { useRef, useState } from "react";
 
 import { MicroBarChart, type BarDatum } from "@/components/charts/micro-bar-chart";
 import { OwnershipDonutChart } from "@/components/charts/ownership-donut-chart";
-import { buildOwnershipDonutChartItems } from "@/components/charts/ownership-donut-chart-data";
+import { buildOwnershipDonutChartItems, buildOwnershipDonutChartItemsFromShares } from "@/components/charts/ownership-donut-chart-data";
 import { Card } from "@/components/ui/card";
 import { DataLimitations } from "@/components/ui/data-limitations";
 import { stockYardClient } from "@/lib/stock-yard/client";
@@ -313,28 +313,28 @@ export function ResearchSections({ symbol, nextEarningsDate }: ResearchSectionsP
               </Tabs.List>
               <Tabs.Content value="institutional" className="space-y-2">
                 {ownership.data.institutionalHolders.length ? (
-                  <WeightedOwnershipTabContent holders={buildWeightedOwnershipRows(ownership.data.institutionalHolders)} />
+                  <OwnershipChartTabContent holders={buildWeightedOwnershipRows(ownership.data.institutionalHolders)} chartBasis="percent" />
                 ) : (
                   <EmptyInline message="No institutional holder rows returned." />
                 )}
               </Tabs.Content>
               <Tabs.Content value="mutual_funds" className="space-y-2">
                 {ownership.data.mutualFundHolders.length ? (
-                  <WeightedOwnershipTabContent holders={buildWeightedOwnershipRows(ownership.data.mutualFundHolders)} />
+                  <OwnershipChartTabContent holders={buildWeightedOwnershipRows(ownership.data.mutualFundHolders)} chartBasis="percent" />
                 ) : (
                   <EmptyInline message="No mutual fund holder rows returned." />
                 )}
               </Tabs.Content>
               <Tabs.Content value="insider_roster" className="space-y-2">
                 {ownership.data.insiderRoster.length ? (
-                  ownership.data.insiderRoster.map((holder, index) => (
-                    <HolderRow
-                      key={`${holder.name}-${index}`}
-                      label={holder.name}
-                      meta={holder.relation ?? "Insider"}
-                      value={formatNumber(holder.sharesOwnedDirectly)}
-                    />
-                  ))
+                  <OwnershipChartTabContent
+                    holders={buildInsiderOwnershipRows(ownership.data.insiderRoster)}
+                    chartBasis="shares"
+                    chartTitle="Insider mix"
+                    chartSubtitle="Normalized from displayed insider share totals"
+                    chartValueMode="normalized_percent"
+                    chartValueLabel="Share of displayed total"
+                  />
                 ) : (
                   <EmptyInline message="No insider roster rows returned." />
                 )}
@@ -486,34 +486,55 @@ function HolderRow({ label, meta, value, labelColor, accentColor }: HolderRowPro
   );
 }
 
-type WeightedOwnershipRow = {
+type OwnershipChartRow = {
   id: string;
   label: string;
   meta: string;
   value: string;
-  pctHeld: number | null;
+  chartValue: number | null;
 };
 
-type WeightedOwnershipTabContentProps = {
-  holders: WeightedOwnershipRow[];
+type OwnershipChartTabContentProps = {
+  holders: OwnershipChartRow[];
+  chartBasis: "percent" | "shares";
+  chartTitle?: string;
+  chartSubtitle?: string;
+  chartValueMode?: "raw_percent" | "normalized_percent";
+  chartValueLabel?: string;
 };
 
-function WeightedOwnershipTabContent({ holders }: WeightedOwnershipTabContentProps) {
-  const chartItems = buildOwnershipDonutChartItems(
-    holders.map((holder) => ({
-      id: holder.id,
-      label: holder.label,
-      value: holder.pctHeld,
-    })),
-  );
+function OwnershipChartTabContent({
+  holders,
+  chartBasis,
+  chartTitle,
+  chartSubtitle,
+  chartValueMode,
+  chartValueLabel,
+}: OwnershipChartTabContentProps) {
+  const chartSourceItems = holders.map((holder) => ({
+    id: holder.id,
+    label: holder.label,
+    value: holder.chartValue,
+  }));
+  const chartItems =
+    chartBasis === "shares"
+      ? buildOwnershipDonutChartItemsFromShares(chartSourceItems)
+      : buildOwnershipDonutChartItems(chartSourceItems);
   const colorByHolderId = new Map(chartItems.map((item) => [item.id, item.color]));
 
   return (
     <div className="grid gap-4 xl:grid-cols-[minmax(320px,380px)_minmax(0,1fr)] xl:items-start">
       {chartItems.length ? (
-        <OwnershipDonutChart items={chartItems} className="h-full" />
+        <OwnershipDonutChart
+          items={chartItems}
+          title={chartTitle}
+          subtitle={chartSubtitle}
+          valueMode={chartValueMode}
+          valueLabel={chartValueLabel}
+          className="h-full"
+        />
       ) : (
-        <EmptyInline message="Not enough weighted holder data for chart." />
+        <EmptyInline message="Not enough displayed holder data for chart." />
       )}
       <div className="space-y-2">
         {holders.map((holder) => {
@@ -658,12 +679,38 @@ function formatQuarterlyTrendDatum(periodEnd: string, revenue: number | null): B
 
 function buildWeightedOwnershipRows(
   holders: OwnershipResponse["institutionalHolders"] | OwnershipResponse["mutualFundHolders"],
-): WeightedOwnershipRow[] {
+): OwnershipChartRow[] {
   return holders.map((holder, index) => ({
     id: `${holder.holder}-${holder.dateReported}-${index}`,
     label: holder.holder,
     meta: `${formatDate(holder.dateReported)} · ${formatNumber(holder.shares)} shares`,
     value: formatPercent(holder.pctHeld, 2),
-    pctHeld: holder.pctHeld,
+    chartValue: holder.pctHeld,
   }));
+}
+
+function buildInsiderOwnershipRows(holders: OwnershipResponse["insiderRoster"]): OwnershipChartRow[] {
+  return holders.map((holder, index) => {
+    const totalShares = sumOwnershipShares(holder.sharesOwnedDirectly, holder.sharesOwnedIndirectly);
+    const relation = holder.relation ?? "Insider";
+    const referenceDate = holder.latestTransDate ?? holder.positionDirectDate ?? holder.positionIndirectDate;
+
+    return {
+      id: `${holder.name}-${index}`,
+      label: holder.name,
+      meta: referenceDate ? `${relation} · ${formatDate(referenceDate)}` : relation,
+      value: formatNumber(totalShares),
+      chartValue: totalShares,
+    };
+  });
+}
+
+function sumOwnershipShares(...values: Array<number | null>) {
+  const numericValues = values.filter((value): value is number => value !== null && Number.isFinite(value));
+
+  if (!numericValues.length) {
+    return null;
+  }
+
+  return numericValues.reduce((sum, value) => sum + value, 0);
 }

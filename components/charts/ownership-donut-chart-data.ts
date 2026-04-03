@@ -25,6 +25,14 @@ export function getOwnershipChartColor(index: number) {
 }
 
 export function buildOwnershipDonutChartItems(items: OwnershipDonutChartSourceItem[], limit = 5): OwnershipDonutChartItem[] {
+  return buildNormalizedOwnershipDonutChartItems(items, limit);
+}
+
+export function buildOwnershipDonutChartItemsFromShares(items: OwnershipDonutChartSourceItem[], limit = 5): OwnershipDonutChartItem[] {
+  return buildNormalizedOwnershipDonutChartItems(items, limit);
+}
+
+function buildNormalizedOwnershipDonutChartItems(items: OwnershipDonutChartSourceItem[], limit: number): OwnershipDonutChartItem[] {
   const validItems = items
     .slice(0, limit)
     .filter((item): item is OwnershipDonutChartSourceItem & { value: number } => item.value !== null && Number.isFinite(item.value) && item.value > 0);
