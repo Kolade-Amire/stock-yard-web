@@ -22,6 +22,52 @@ test("home layout stays inside the viewport", async ({ page }) => {
   }
 });
 
+test("iphone xr dark theme keeps hero search shell readable", async ({ page, browserName }, testInfo) => {
+  test.skip(browserName !== "webkit" || testInfo.project.name !== "webkit-iphone-xr");
+
+  await page.addInitScript(() => {
+    window.localStorage.setItem("stock-yard:theme", "dark");
+  });
+
+  await page.goto("/");
+  await expect(page.getByText("Market Intelligence")).toBeVisible();
+
+  const heroSearchShell = page.locator("main form.glass-shell.glass-input-shell").first();
+  const heroSearchInput = heroSearchShell.getByRole("combobox");
+
+  await expect(heroSearchShell).toBeVisible();
+  await expect(heroSearchInput).toBeVisible();
+
+  const shellStyles = await page.evaluate(() => {
+    const shell = document.querySelector("main form.glass-shell.glass-input-shell");
+    const input = shell?.querySelector("input");
+
+    if (!(shell instanceof HTMLElement) || !(input instanceof HTMLInputElement)) {
+      return null;
+    }
+
+    const shellStyles = getComputedStyle(shell);
+    const inputStyles = getComputedStyle(input);
+    const backdropFilter = shellStyles.backdropFilter.trim();
+    const webkitBackdropFilter = shellStyles.getPropertyValue("-webkit-backdrop-filter").trim();
+
+    return {
+      backdropFilter,
+      webkitBackdropFilter,
+      filterDisabled: backdropFilter === "none" || webkitBackdropFilter === "none",
+      base: shellStyles.getPropertyValue("--glass-input-shell-base").trim(),
+      textColor: inputStyles.color,
+      placeholderColor: inputStyles.getPropertyValue("color").trim(),
+    };
+  });
+
+  expect(shellStyles).not.toBeNull();
+  expect(shellStyles?.filterDisabled).toBe(true);
+  expect(shellStyles?.base).toMatch(/^(rgba\(20, 24, 33, 0\.94\)|#141821f0)$/);
+  expect(shellStyles?.textColor).not.toBe("rgba(0, 0, 0, 0)");
+  expect(shellStyles?.placeholderColor).not.toBe("rgba(0, 0, 0, 0)");
+});
+
 test("compare layout stays inside the viewport", async ({ page }) => {
   await page.goto("/compare");
 
