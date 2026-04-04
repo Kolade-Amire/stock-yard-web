@@ -61,11 +61,11 @@ export function SiteHeader() {
       <div className="glass-header-bar mx-auto max-w-[1540px] rounded-[1.2rem] sm:rounded-[1.35rem]">
         <div className="mx-auto max-w-[1520px] px-3 py-3 sm:px-4 md:px-6 xl:px-8">
           <div className="relative flex flex-col gap-3 lg:min-h-[3rem] lg:justify-center">
-            <div className="relative z-10 flex items-center justify-between gap-3 sm:gap-4">
-              <Link href={homeRoute} className="min-w-0 shrink">
+            <div className="relative z-10 flex items-center justify-between gap-3 pointer-events-none sm:gap-4">
+              <Link href={homeRoute} className="min-w-0 shrink pointer-events-auto">
                 <LogoMark />
               </Link>
-              <div className="flex items-center gap-2 justify-self-end">
+              <div className="flex items-center gap-2 justify-self-end pointer-events-auto">
                 <div className="hidden xl:block">
                   <HeaderCommandSearch />
                 </div>

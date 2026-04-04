@@ -3,7 +3,7 @@ import { expect, test } from "@playwright/test";
 test("renders the discovery shell", async ({ page }) => {
   await page.goto("/");
 
-  await expect(page.getByText("Market Intelligence")).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Market Intelligence" })).toBeVisible();
   await expect(page.locator("header").getByRole("link", { name: "Discover" })).toBeVisible();
   await expect(page.locator("header").getByRole("link", { name: "Compare" })).toBeVisible();
 });
@@ -15,7 +15,17 @@ test("desktop wordmark returns to home from compare", async ({ page, browserName
   await page.getByRole("link", { name: "Stock Yard" }).click();
 
   await expect(page).toHaveURL(/\/$/);
-  await expect(page.getByText("Market Intelligence")).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Market Intelligence" })).toBeVisible();
+});
+
+test("desktop compare nav is clickable from home", async ({ page, browserName }, testInfo) => {
+  test.skip(browserName !== "chromium" || testInfo.project.name !== "chromium");
+
+  await page.goto("/");
+  await page.locator("header").getByRole("link", { name: "Compare" }).click();
+
+  await expect(page).toHaveURL(/\/compare$/);
+  await expect(page.getByRole("heading", { name: "Compare" })).toBeVisible();
 });
 
 test("desktop theme toggle flips the runtime theme and stored preference", async ({ page, browserName }, testInfo) => {
