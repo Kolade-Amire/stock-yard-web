@@ -61,7 +61,7 @@ export function SiteHeader() {
       <div className="glass-header-bar mx-auto max-w-[1540px] rounded-[1.2rem] sm:rounded-[1.35rem]">
         <div className="mx-auto max-w-[1520px] px-3 py-3 sm:px-4 md:px-6 xl:px-8">
           <div className="relative flex flex-col gap-3 lg:min-h-[3rem] lg:justify-center">
-            <div className="flex items-center justify-between gap-3 sm:gap-4">
+            <div className="relative z-10 flex items-center justify-between gap-3 sm:gap-4">
               <Link href={homeRoute} className="min-w-0 shrink">
                 <LogoMark />
               </Link>
@@ -81,7 +81,7 @@ export function SiteHeader() {
                 <ThemeToggle />
               </div>
             </div>
-            <div className="flex justify-center lg:absolute lg:inset-x-0 lg:top-1/2 lg:-translate-y-1/2">
+            <div className="pointer-events-none flex justify-center lg:absolute lg:inset-x-0 lg:top-1/2 lg:-translate-y-1/2">
               <nav className="pointer-events-auto glass-pill-nav w-full max-w-full rounded-xl px-1.5 py-1 text-sm text-(--ink-muted) lg:w-auto">
                 {navLinks}
               </nav>

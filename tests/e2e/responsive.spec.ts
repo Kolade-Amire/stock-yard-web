@@ -52,3 +52,57 @@ test("ticker route shell stays inside the viewport", async ({ page }) => {
     expect(box!.y + box!.height).toBeLessThanOrEqual((page.viewportSize()?.height ?? 0) + 1);
   }
 });
+
+test("iphone xr dark theme keeps ticker glass surfaces readable", async ({ page, browserName }, testInfo) => {
+  test.skip(browserName !== "webkit" || testInfo.project.name !== "webkit-iphone-xr");
+
+  await page.addInitScript(() => {
+    window.localStorage.setItem("stock-yard:theme", "dark");
+  });
+
+  await page.goto("/ticker/AAPL");
+  await expect(page.locator("body")).toContainText(/Research|Current price/);
+
+  const microPill = page.locator(".glass-micro-pill").first();
+  const subcard = page.locator(".glass-subcard").first();
+
+  await expect(microPill).toBeVisible();
+  await expect(subcard).toBeVisible();
+
+  const surfaceStyles = await page.evaluate(() => {
+    function readSurface(selector: string) {
+      const element = document.querySelector(selector);
+
+      if (!(element instanceof HTMLElement)) {
+        return null;
+      }
+
+      const styles = getComputedStyle(element);
+      const backdropFilter = styles.backdropFilter.trim();
+      const webkitBackdropFilter = styles.getPropertyValue("-webkit-backdrop-filter").trim();
+
+      return {
+        backdropFilter,
+        webkitBackdropFilter,
+        filterDisabled: backdropFilter === "none" || webkitBackdropFilter === "none",
+        base: styles.getPropertyValue("--glass-subsurface-base").trim(),
+        textColor: styles.color,
+        textLength: (element.textContent ?? "").trim().length,
+      };
+    }
+
+    return {
+      microPill: readSurface(".glass-micro-pill"),
+      subcard: readSurface(".glass-subcard"),
+    };
+  });
+
+  expect(surfaceStyles.microPill?.filterDisabled).toBe(true);
+  expect(surfaceStyles.subcard?.filterDisabled).toBe(true);
+  expect(surfaceStyles.microPill?.base).toMatch(/^(rgba\(20, 24, 33, 0\.94\)|#141821f0)$/);
+  expect(surfaceStyles.subcard?.base).toMatch(/^(rgba\(20, 24, 33, 0\.94\)|#141821f0)$/);
+  expect(surfaceStyles.microPill?.textLength ?? 0).toBeGreaterThan(0);
+  expect(surfaceStyles.subcard?.textLength ?? 0).toBeGreaterThan(0);
+  expect(surfaceStyles.microPill?.textColor).not.toBe("rgba(0, 0, 0, 0)");
+  expect(surfaceStyles.subcard?.textColor).not.toBe("rgba(0, 0, 0, 0)");
+});

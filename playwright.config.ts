@@ -13,6 +13,10 @@ export default defineConfig({
       use: { ...devices["Desktop Chrome"] },
     },
     {
+      name: "webkit-iphone-xr",
+      use: { ...devices["iPhone XR"] },
+    },
+    {
       name: "mobile-chromium",
       use: { ...devices["Pixel 5"] },
     },
