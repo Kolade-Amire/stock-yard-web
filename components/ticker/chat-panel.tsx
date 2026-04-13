@@ -365,33 +365,43 @@ function ChatSurface({
         <p className="mt-1 text-sm text-(--ink-muted)">Ticker-scoped chat. Sessions reset when the symbol changes.</p>
       </div>
       <div className={mobile || isWorkspace ? "flex min-h-0 flex-1 flex-col gap-3 px-5 py-5" : "space-y-2"}>
-        <div ref={scrollContainerRef} className={mobile || isWorkspace ? "min-h-0 flex-1 space-y-2 overflow-auto pr-1" : "max-h-[420px] space-y-2 overflow-auto pr-1"}>
+        <div
+          ref={scrollContainerRef}
+          className={mobile || isWorkspace ? "min-h-0 flex-1 space-y-4 overflow-auto pr-1" : "max-h-[420px] space-y-4 overflow-auto pr-1"}
+        >
           {conversation.length === 0 ? (
-            <div className="rounded-lg border border-dashed border-(--line-strong) bg-(--surface) px-4 py-5 text-sm text-(--ink-muted)">
+            <div className="max-w-[38rem] text-sm leading-7 text-(--ink-muted)">
               Ask about risks, earnings, analyst tone, ownership, or recent headlines.
             </div>
           ) : (
             conversation.map((turn) => (
-              <div
-                key={turn.id}
-                className={
-                  turn.role === "assistant"
-                    ? "rounded-lg border border-(--line) bg-(--surface) px-4 py-3"
-                    : mobile
-                      ? "ml-auto max-w-[90%] rounded-lg bg-(--accent) px-4 py-3 text-(--accent-contrast)"
-                      : "ml-auto max-w-[85%] rounded-lg bg-(--accent) px-4 py-3 text-(--accent-contrast)"
-                }
-              >
-                <p className="mb-1 text-[11px] font-medium uppercase tracking-wider opacity-60">{turn.role}</p>
-                <p className="text-sm leading-relaxed">
-                  {turn.content}
-                  {turn.status === "revealing" ? <span className="inline-block w-2 animate-pulse text-(--ink-soft)">|</span> : null}
-                </p>
+              <div key={turn.id} className={turn.role === "assistant" ? "max-w-[44rem]" : "flex justify-end"}>
+                <div
+                  className={
+                    turn.role === "assistant"
+                      ? "text-[15px] leading-8 text-(--ink)"
+                      : mobile
+                        ? "max-w-[90%] rounded-[1.25rem] bg-(--accent) px-4 py-2.5 text-sm leading-relaxed text-(--accent-contrast)"
+                        : "max-w-[68%] rounded-[1.25rem] bg-(--accent) px-4 py-2.5 text-sm leading-relaxed text-(--accent-contrast)"
+                  }
+                >
+                  <p className="whitespace-pre-wrap">
+                    {turn.content}
+                    {turn.status === "revealing" ? (
+                      <span
+                        aria-label="Assistant response is still revealing"
+                        className={turn.role === "assistant" ? "ml-1 inline-block w-2 animate-pulse text-(--ink-soft)" : "ml-1 inline-block w-2 animate-pulse opacity-70"}
+                      >
+                        |
+                      </span>
+                    ) : null}
+                  </p>
+                </div>
               </div>
             ))
           )}
           {isSubmitting ? (
-            <div className="flex items-center gap-2 rounded-lg border border-(--line) bg-(--surface) px-4 py-3 text-sm text-(--ink-muted)">
+            <div className="inline-flex items-center gap-2 text-sm text-(--ink-muted)">
               <LoaderCircle className="size-4 animate-spin" />
               Thinking…
             </div>

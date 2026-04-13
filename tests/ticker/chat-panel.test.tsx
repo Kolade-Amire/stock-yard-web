@@ -163,4 +163,28 @@ describe("ChatPanel", () => {
 
     expect(screen.queryByText("abcdefghij")).not.toBeInTheDocument();
   });
+
+  it("keeps response metadata hidden in the minimal transcript", async () => {
+    const sendChatMessage = vi.mocked(stockYardClient.sendChatMessage);
+    sendChatMessage.mockResolvedValue({
+      ...buildChatResponse("Here is the concise answer."),
+      highlights: ["Demand remains strong"],
+      usedTools: ["financial-summary"],
+      limitations: ["Coverage is delayed"],
+    });
+
+    render(<ChatPanel symbol="AAPL" />);
+
+    const textarea = screen.getByPlaceholderText("Ask about AAPL…");
+    fireEvent.change(textarea, { target: { value: "Quick take?" } });
+    fireEvent.click(screen.getAllByRole("button", { name: /send/i })[0]);
+
+    await waitFor(() => {
+      expect(screen.getByText("Here is the concise answer.")).toBeInTheDocument();
+    });
+
+    expect(screen.queryByText("Demand remains strong")).not.toBeInTheDocument();
+    expect(screen.queryByText("financial-summary")).not.toBeInTheDocument();
+    expect(screen.queryByText("Coverage is delayed")).not.toBeInTheDocument();
+  });
 });
