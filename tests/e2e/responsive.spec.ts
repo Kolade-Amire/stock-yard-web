@@ -79,12 +79,24 @@ test("compare layout stays inside the viewport", async ({ page }) => {
 test("ticker route shell stays inside the viewport", async ({ page }) => {
   await page.goto("/ticker/PL");
 
-  await expect(page.locator("body")).toContainText(/Connect the Stock Yard API|Research|Current price/);
+  await expect(page.locator("body")).toContainText(/Connect the Stock Yard API|Overview|Current price/);
   await expectNoHorizontalOverflow(page);
 
   const viewportWidth = page.viewportSize()?.width ?? 1280;
+  const configured = !((await page.locator("body").textContent())?.includes("Connect the Stock Yard API"));
 
-  if (viewportWidth < 1280 && !(await page.locator("body").textContent())?.includes("Connect the Stock Yard API")) {
+  if (configured) {
+    const newsTab = page.getByRole("tab", { name: "News" });
+
+    await expect(page.getByRole("tab", { name: "Overview" })).toBeVisible();
+    await newsTab.scrollIntoViewIfNeeded();
+    await newsTab.click();
+    await expect(page).toHaveURL(/tab=news/);
+    await expect(page.locator("body")).toContainText(/Latest headlines|No ticker news available right now/);
+  }
+
+  if (viewportWidth < 1280 && configured) {
+    await expect(page.getByRole("tab", { name: "AI Chat" })).toBeHidden();
     await page.getByRole("button", { name: /^chat$/i }).tap();
     const dialog = page.getByRole("dialog");
 
@@ -107,7 +119,7 @@ test("iphone xr dark theme keeps ticker glass surfaces readable", async ({ page,
   });
 
   await page.goto("/ticker/AAPL");
-  await expect(page.locator("body")).toContainText(/Research|Current price/);
+  await expect(page.locator("body")).toContainText(/Overview|Current price/);
 
   const microPill = page.locator(".glass-micro-pill").first();
   const subcard = page.locator(".glass-subcard").first();

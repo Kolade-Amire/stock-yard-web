@@ -1,11 +1,8 @@
 import { notFound } from "next/navigation";
 
-import { ChatPanel } from "@/components/ticker/chat-panel";
-import { HistoryPanel } from "@/components/ticker/history-panel";
-import { NewsPanel } from "@/components/ticker/news-panel";
 import { RecentSymbolTracker } from "@/components/ticker/recent-symbol-tracker";
-import { ResearchSections } from "@/components/ticker/research-sections";
 import { TickerHeader } from "@/components/ticker/ticker-header";
+import { TickerWorkspace } from "@/components/ticker/ticker-workspace";
 import { SetupPanel } from "@/components/ui/setup-panel";
 import {
   DEFAULT_TICKER_HISTORY_INTERVAL,
@@ -14,14 +11,18 @@ import {
 import { isStockYardConfigured } from "@/lib/stock-yard/env";
 import { isStockYardApiError } from "@/lib/stock-yard/fetch";
 import { stockYardServer } from "@/lib/stock-yard/server";
+import { DEFAULT_TICKER_TAB, isTickerWorkspaceTab } from "@/lib/ticker-tabs";
 
 type TickerPageProps = {
   params: Promise<{ symbol: string }>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
 };
 
-export default async function TickerPage({ params }: TickerPageProps) {
+export default async function TickerPage({ params, searchParams }: TickerPageProps) {
   const { symbol } = await params;
+  const resolvedSearchParams = await searchParams;
   const normalizedSymbol = symbol.toUpperCase();
+  const initialTab = isTickerWorkspaceTab(resolvedSearchParams.tab) ? resolvedSearchParams.tab : DEFAULT_TICKER_TAB;
 
   if (!isStockYardConfigured()) {
     return <SetupPanel />;
@@ -41,21 +42,17 @@ export default async function TickerPage({ params }: TickerPageProps) {
   ]);
 
   return (
-    <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(280px,360px)]">
+    <div className="space-y-6">
       <RecentSymbolTracker symbol={normalizedSymbol} />
-      <div className="min-w-0 space-y-6">
-        <TickerHeader data={overview} />
-        <HistoryPanel
-          symbol={normalizedSymbol}
-          currency={overview.overview.currency ?? "USD"}
-          initialData={historyResult.status === "fulfilled" ? historyResult.value : null}
-        />
-        <ResearchSections symbol={normalizedSymbol} nextEarningsDate={overview.overview.earnings_date} />
-      </div>
-      <div className="min-w-0 space-y-6">
-        <NewsPanel data={newsResult.status === "fulfilled" ? newsResult.value : null} />
-        <ChatPanel key={normalizedSymbol} symbol={normalizedSymbol} />
-      </div>
+      <TickerHeader data={overview} />
+      <TickerWorkspace
+        symbol={normalizedSymbol}
+        currency={overview.overview.currency ?? "USD"}
+        nextEarningsDate={overview.overview.earnings_date}
+        initialHistoryData={historyResult.status === "fulfilled" ? historyResult.value : null}
+        initialNewsData={newsResult.status === "fulfilled" ? newsResult.value : null}
+        initialTab={initialTab}
+      />
     </div>
   );
 }
