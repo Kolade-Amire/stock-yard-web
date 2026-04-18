@@ -187,4 +187,65 @@ describe("ChatPanel", () => {
     expect(screen.queryByText("financial-summary")).not.toBeInTheDocument();
     expect(screen.queryByText("Coverage is delayed")).not.toBeInTheDocument();
   });
+
+  it("renders assistant markdown formatting once a response is final", async () => {
+    const sendChatMessage = vi.mocked(stockYardClient.sendChatMessage);
+    sendChatMessage.mockResolvedValue(buildChatResponse("Use the **buy the dip** setup."));
+
+    render(<ChatPanel symbol="AAPL" />);
+
+    const textarea = screen.getByPlaceholderText("Ask about AAPL…");
+    fireEvent.change(textarea, { target: { value: "What setup?" } });
+    fireEvent.click(screen.getAllByRole("button", { name: /send/i })[0]);
+
+    await waitFor(() => {
+      expect(screen.getByText("buy the dip").tagName).toBe("STRONG");
+    });
+
+    expect(screen.queryByText("**buy the dip**")).not.toBeInTheDocument();
+  });
+
+  it("renders assistant markdown lists as list structure", async () => {
+    const sendChatMessage = vi.mocked(stockYardClient.sendChatMessage);
+    sendChatMessage.mockResolvedValue(buildChatResponse("- First catalyst\n- Second catalyst"));
+
+    render(<ChatPanel symbol="AAPL" />);
+
+    const textarea = screen.getByPlaceholderText("Ask about AAPL…");
+    fireEvent.change(textarea, { target: { value: "List catalysts." } });
+    fireEvent.click(screen.getAllByRole("button", { name: /send/i })[0]);
+
+    await waitFor(() => {
+      expect(screen.getByRole("list")).toBeInTheDocument();
+    });
+
+    expect(screen.getAllByRole("listitem")).toHaveLength(2);
+  });
+
+  it("keeps revealing assistant output as plain text before switching to markdown", async () => {
+    vi.useFakeTimers();
+
+    const sendChatMessage = vi.mocked(stockYardClient.sendChatMessage);
+    sendChatMessage.mockResolvedValue(buildChatResponse("Use the **buy the dip** setup."));
+
+    render(<ChatPanel symbol="AAPL" />);
+
+    const textarea = screen.getByPlaceholderText("Ask about AAPL…");
+    fireEvent.change(textarea, { target: { value: "Give me markdown." } });
+    fireEvent.click(screen.getAllByRole("button", { name: /send/i })[0]);
+
+    await flushAsyncWork();
+
+    expect(screen.getByLabelText("Assistant response is still revealing").parentElement).toHaveTextContent(/^Use /);
+    expect(screen.queryByText("buy the dip")?.tagName).not.toBe("STRONG");
+
+    await act(async () => {
+      vi.runAllTimers();
+    });
+
+    await flushAsyncWork();
+
+    expect(screen.getByText("buy the dip").tagName).toBe("STRONG");
+    expect(screen.queryByText("**buy the dip**")).not.toBeInTheDocument();
+  });
 });

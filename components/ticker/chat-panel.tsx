@@ -4,6 +4,7 @@ import * as Dialog from "@radix-ui/react-dialog";
 import { ChevronDown, ChevronUp, LoaderCircle, MessageSquarePlus, Send, X } from "lucide-react";
 import { type KeyboardEvent, useEffect, useRef, useState } from "react";
 
+import { ChatMarkdown } from "@/components/ticker/chat-markdown";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { stockYardClient } from "@/lib/stock-yard/client";
@@ -370,32 +371,38 @@ function ChatSurface({
           className={mobile || isWorkspace ? "min-h-0 flex-1 space-y-4 overflow-auto pr-1" : "max-h-[420px] space-y-4 overflow-auto pr-1"}
         >
           {conversation.length === 0 ? (
-            <div className="max-w-[38rem] text-sm leading-7 text-(--ink-muted)">
+            <div className="w-full max-w-[88ch] text-sm leading-7 text-(--ink-muted)">
               Ask about risks, earnings, analyst tone, ownership, or recent headlines.
             </div>
           ) : (
             conversation.map((turn) => (
-              <div key={turn.id} className={turn.role === "assistant" ? "max-w-[44rem]" : "flex justify-end"}>
+              <div key={turn.id} className={turn.role === "assistant" ? "w-full" : "flex justify-end"}>
                 <div
                   className={
                     turn.role === "assistant"
-                      ? "text-[15px] leading-8 text-(--ink)"
+                      ? mobile
+                        ? "w-full text-[15px] leading-8 text-(--ink)"
+                        : "w-full max-w-[88ch] text-[15px] leading-8 text-(--ink)"
                       : mobile
                         ? "max-w-[90%] rounded-[1.25rem] bg-(--accent) px-4 py-2.5 text-sm leading-relaxed text-(--accent-contrast)"
                         : "max-w-[68%] rounded-[1.25rem] bg-(--accent) px-4 py-2.5 text-sm leading-relaxed text-(--accent-contrast)"
                   }
                 >
-                  <p className="whitespace-pre-wrap">
-                    {turn.content}
-                    {turn.status === "revealing" ? (
-                      <span
-                        aria-label="Assistant response is still revealing"
-                        className={turn.role === "assistant" ? "ml-1 inline-block w-2 animate-pulse text-(--ink-soft)" : "ml-1 inline-block w-2 animate-pulse opacity-70"}
-                      >
-                        |
-                      </span>
-                    ) : null}
-                  </p>
+                  {turn.role === "assistant" && turn.status === "final" ? (
+                    <ChatMarkdown content={turn.content} />
+                  ) : (
+                    <p className="whitespace-pre-wrap">
+                      {turn.content}
+                      {turn.status === "revealing" ? (
+                        <span
+                          aria-label="Assistant response is still revealing"
+                          className={turn.role === "assistant" ? "ml-1 inline-block w-2 animate-pulse text-(--ink-soft)" : "ml-1 inline-block w-2 animate-pulse opacity-70"}
+                        >
+                          |
+                        </span>
+                      ) : null}
+                    </p>
+                  )}
                 </div>
               </div>
             ))
