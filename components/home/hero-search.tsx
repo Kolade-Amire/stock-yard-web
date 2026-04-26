@@ -1,77 +1,90 @@
 "use client";
 
-import { ArrowUpRight, Search } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { startTransition, useSyncExternalStore } from "react";
+import { startTransition } from "react";
 
 import { TickerResolverResults } from "@/components/search/ticker-resolver-results";
 import { getOptionId, useTickerResolverSearch } from "@/components/search/use-ticker-resolver-search";
-import { Card } from "@/components/ui/card";
-import { compareRoute, tickerRoute } from "@/lib/routes";
-import {
-  pushRecentSymbol,
-  readRecentSymbols,
-  readRecentSymbolsServerSnapshot,
-  subscribeRecentSymbols,
-} from "@/lib/recent-symbols";
-import { cn } from "@/lib/utils";
+import { HeroBenchmarks } from "@/components/home/benchmark-grid";
+import { tickerRoute } from "@/lib/routes";
+import { pushRecentSymbol } from "@/lib/recent-symbols";
+import type { BenchmarksResponse } from "@/lib/stock-yard/schemas";
 
-const FEATURED_SYMBOLS = ["AAPL", "MSFT", "NVDA", "SPY", "QQQ"];
+const HINT_SYMBOLS = ["AAPL", "NVDA", "TSLA", "SPY", "MSFT", "QQQ"];
 
-export function HeroSearch() {
+type HeroSearchProps = {
+  benchmarks: BenchmarksResponse | null;
+};
+
+export function HeroSearch({ benchmarks }: HeroSearchProps) {
   const router = useRouter();
-  const recentSymbols = useSyncExternalStore(subscribeRecentSymbols, readRecentSymbols, readRecentSymbolsServerSnapshot);
   const resolver = useTickerResolverSearch({
     maxResults: 6,
     onResolveAction(result) {
       pushRecentSymbol(result.symbol);
-
       startTransition(() => {
         router.push(tickerRoute(result.symbol));
       });
     },
   });
 
+  const today = new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+
   return (
-    <Card variant="band" className="relative z-20 px-4 py-4 sm:px-5 sm:py-5 md:px-6 md:py-6">
-      <div className="grid gap-5 xl:grid-cols-[minmax(0,1.4fr)_320px]">
-        <div className="min-w-0 space-y-5">
-          <div className="space-y-2">
-            <h1 className="text-2xl font-bold tracking-tight text-(--ink-strong) sm:text-3xl md:text-4xl">
-              Market Intelligence
-            </h1>
-            <p className="max-w-2xl text-sm leading-relaxed text-(--ink-muted)">
-              Search any symbol to open a research workspace with charts, news, financials, and AI-powered chat.
-            </p>
-          </div>
-          <div className="relative z-20 w-full max-w-none sm:max-w-[430px]">
+    <section className="border-b border-(--line) px-4 py-12 md:px-6 xl:px-8">
+      <div className="grid gap-12 xl:grid-cols-[minmax(0,1fr)_340px]">
+        <div className="min-w-0">
+          <p
+            className="text-[10px] font-medium tracking-[0.14em] uppercase mb-3.5"
+            style={{ fontFamily: "var(--font-mono)", color: "var(--gold)" }}
+          >
+            Market Intelligence · {today}
+          </p>
+          <h1
+            className="text-[36px] leading-[1.1] tracking-[-0.03em] text-(--ink-strong) mb-4 font-normal sm:text-[44px]"
+            style={{ fontFamily: "var(--font-serif), serif" }}
+          >
+            Your edge starts<br />
+            with <em className="italic" style={{ color: "var(--gold)" }}>the right data</em>
+          </h1>
+          <p className="text-[13px] leading-[1.7] text-(--ink-muted) max-w-[460px] mb-7">
+            Search any US equity or ETF. Get grounded AI analysis, earnings context, analyst consensus, and ownership data — all from one place.
+          </p>
+
+          <div className="relative z-20 max-w-[480px] mb-5">
             <form
               onSubmit={(event) => {
                 event.preventDefault();
                 resolver.submitActiveResult();
               }}
-              className="glass-shell glass-input-shell flex items-center gap-3 rounded-[1.35rem] px-4 py-3.5"
+              className="flex items-center bg-(--surface-muted) border border-(--line-strong) rounded-xl overflow-hidden"
             >
-              <Search className="size-5 shrink-0 text-(--ink-soft)" />
               <input
                 role="combobox"
                 value={resolver.query}
                 onChange={(event) => resolver.setQuery(event.target.value)}
                 onFocus={resolver.handleInputFocus}
                 onKeyDown={resolver.handleInputKeyDown}
-                placeholder="Search symbols or companies…"
+                placeholder="Search ticker or company name…"
                 aria-autocomplete="list"
                 aria-haspopup="listbox"
                 aria-controls={resolver.listboxId}
                 aria-activedescendant={resolver.activeDescendantId}
                 aria-expanded={resolver.shouldShowResults}
-                className="w-full bg-transparent text-base text-(--ink) outline-none placeholder:text-(--ink-soft)"
+                className="flex-1 px-4 py-3 text-[13px] text-(--ink) bg-transparent outline-none placeholder:text-(--ink-soft)"
               />
+              <button
+                type="submit"
+                className="px-5 py-3 text-[11px] font-medium tracking-[0.06em] text-(--canvas) shrink-0 cursor-pointer border-0"
+                style={{ background: "var(--ink)", fontFamily: "var(--font-mono)" }}
+              >
+                SEARCH
+              </button>
             </form>
             <TickerResolverResults
               activeIndex={resolver.activeIndex}
-              className="top-[calc(100%+10px)]"
+              className="top-[calc(100%+8px)]"
               displayMode="overlay"
               emptyMessage="No matches found."
               errorMessage={resolver.errorMessage}
@@ -85,67 +98,26 @@ export function HeroSearch() {
               results={resolver.results}
             />
           </div>
-          <div className="grid gap-3 lg:grid-cols-2">
-            <SymbolCluster
-              label="Pinned"
-              description="Commonly referenced symbols."
-              symbols={FEATURED_SYMBOLS}
-            />
-            <SymbolCluster
-              label="Recent"
-              description="Last opened in this browser."
-              symbols={recentSymbols}
-              emptyMessage="No recent symbols yet."
-            />
+
+          <div className="flex flex-wrap gap-1.5">
+            {HINT_SYMBOLS.map((sym) => (
+              <Link
+                key={sym}
+                href={tickerRoute(sym)}
+                onClick={() => pushRecentSymbol(sym)}
+                className="text-[10px] border border-(--line-strong) rounded-full px-2.5 py-1 text-(--ink-muted) hover:bg-(--surface-muted) transition-colors"
+                style={{ fontFamily: "var(--font-mono)" }}
+              >
+                {sym}
+              </Link>
+            ))}
           </div>
         </div>
-        <div className="grid content-start gap-3">
-          <Link href={compareRoute} aria-label="Open compare workspace">
-            <div className="rounded-xl border border-(--line-strong) bg-gradient-to-br from-(--accent-soft) to-transparent px-5 py-5 transition-transform duration-150 hover:-translate-y-0.5">
-              <p className="text-xs font-medium uppercase tracking-wider text-(--ink-soft)">Compare</p>
-              <h2 className="mt-2 text-xl font-bold text-(--ink-strong)">Basket view</h2>
-              <p className="mt-2 text-sm leading-relaxed text-(--ink-muted)">Compare 2–5 symbols side-by-side with multi-line charts and key metrics.</p>
-              <div className="mt-4 inline-flex items-center gap-2 text-sm font-medium text-(--accent)">
-                Open compare <ArrowUpRight className="size-4" />
-              </div>
-            </div>
-          </Link>
+
+        <div className="min-w-0 pt-1">
+          <HeroBenchmarks data={benchmarks} />
         </div>
       </div>
-    </Card>
-  );
-}
-
-type SymbolClusterProps = {
-  label: string;
-  description: string;
-  symbols: string[];
-  emptyMessage?: string;
-};
-
-function SymbolCluster({ label, description, symbols, emptyMessage }: SymbolClusterProps) {
-  return (
-    <div className="rounded-xl border border-(--line) bg-(--surface-float) px-4 py-4">
-      <p className="text-xs font-medium uppercase tracking-wider text-(--ink-soft)">{label}</p>
-      <p className="mt-1.5 text-sm text-(--ink-muted)">{description}</p>
-      {symbols.length ? (
-        <div className="mt-3 flex flex-wrap gap-2">
-          {symbols.map((symbol) => (
-            <Link
-              key={symbol}
-              href={tickerRoute(symbol)}
-              onClick={() => pushRecentSymbol(symbol)}
-              className={cn(
-                "rounded-lg border border-(--line-strong) bg-(--surface) px-3 py-1.5 text-sm font-medium text-(--ink) transition-colors hover:border-(--accent) hover:bg-(--accent-soft)",
-              )}
-            >
-              {symbol}
-            </Link>
-          ))}
-        </div>
-      ) : (
-        <p className="mt-3 text-sm text-(--ink-soft)">{emptyMessage}</p>
-      )}
-    </div>
+    </section>
   );
 }

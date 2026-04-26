@@ -50,17 +50,17 @@ export function HistoryPanel({ symbol, currency, initialData }: HistoryPanelProp
   const chartTokens = getTickerHistoryChartTokens(chartDirection);
 
   return (
-    <Card variant="panel" material="glass" className="px-4 py-4 sm:px-5 sm:py-5">
-      <div className="mb-4 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+    <Card variant="band" className="px-5 py-5">
+      <div className="mb-5 flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
         <div className="space-y-1">
-          <p className="text-xs font-medium uppercase tracking-wider text-(--ink-soft)">Price chart</p>
+          <p className="text-xs font-medium uppercase tracking-[0.18em] text-(--ink-soft)">Price action</p>
           <div className="flex flex-wrap items-end gap-3">
-            <h2 className="text-2xl font-bold text-(--ink-strong)">Chart</h2>
+            <h2 className="text-2xl font-bold tracking-tight text-(--ink-strong)">History</h2>
             <p className="text-sm text-(--ink-muted)">{formatCurrency(latestBar?.close ?? null, currency)} latest close</p>
           </div>
         </div>
         <div className="space-y-2">
-          <div className="glass-pill-nav touch-scroll-row md:flex-wrap md:overflow-visible p-1.5">
+          <div className="glass-pill-nav touch-scroll-row p-1.5 md:flex-wrap md:overflow-visible">
             {HISTORY_PERIODS.map((item) => (
               <Button
                 key={item}
@@ -80,7 +80,7 @@ export function HistoryPanel({ symbol, currency, initialData }: HistoryPanelProp
               </Button>
             ))}
           </div>
-          <div className="glass-pill-nav touch-scroll-row md:flex-wrap md:overflow-visible p-1.5">
+          <div className="glass-pill-nav touch-scroll-row p-1.5 md:flex-wrap md:overflow-visible">
             {HISTORY_INTERVALS_BY_PERIOD[period].map((item) => (
               <Button
                 key={item}
@@ -97,7 +97,7 @@ export function HistoryPanel({ symbol, currency, initialData }: HistoryPanelProp
       </div>
       {bars.length ? (
         <>
-          <div className="rounded-lg border border-(--line) bg-(--surface-muted) px-3 py-3">
+          <div className="rounded-[1.35rem] border border-(--line) bg-[linear-gradient(180deg,rgba(255,255,255,0.2),transparent_100%)] px-3 py-3">
             <TimeSeriesChart
               height={320}
               series={[
@@ -114,7 +114,7 @@ export function HistoryPanel({ symbol, currency, initialData }: HistoryPanelProp
               ]}
             />
           </div>
-          <div className="mt-4 grid gap-2 sm:grid-cols-2 xl:grid-cols-4">
+          <div className="mt-4 grid gap-px overflow-hidden rounded-[1.1rem] border border-(--line) bg-(--line) sm:grid-cols-2 xl:grid-cols-4">
             <Stat label="Last close" value={formatCurrency(latestBar?.close ?? null, currency)} />
             <Stat label="Open" value={formatCurrency(latestBar?.open ?? null, currency)} />
             <Stat label="Volume" value={formatNumber(latestBar?.volume ?? null)} />
@@ -140,8 +140,8 @@ type StatProps = {
 
 function Stat({ label, value }: StatProps) {
   return (
-    <div className="glass-subcard rounded-lg px-3 py-2.5">
-      <p className="text-[11px] font-medium uppercase tracking-wider text-(--ink-soft)">{label}</p>
+    <div className="bg-(--surface) px-4 py-3">
+      <p className="text-[11px] font-medium uppercase tracking-[0.15em] text-(--ink-soft)">{label}</p>
       <p className="mt-1 text-sm font-medium text-(--ink)">{value}</p>
     </div>
   );

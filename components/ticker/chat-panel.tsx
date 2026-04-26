@@ -4,6 +4,7 @@ import * as Dialog from "@radix-ui/react-dialog";
 import { ChevronDown, ChevronUp, LoaderCircle, MessageSquarePlus, Send, X } from "lucide-react";
 import { type KeyboardEvent, useEffect, useRef, useState } from "react";
 
+import { ChatMarkdown } from "@/components/ticker/chat-markdown";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { stockYardClient } from "@/lib/stock-yard/client";
@@ -17,6 +18,8 @@ type ChatTurn = {
 
 type ChatPanelProps = {
   symbol: string;
+  desktopLayout?: "rail" | "workspace" | "none";
+  showMobileLauncher?: boolean;
 };
 
 const REVEAL_BASE_DELAY_MS = 18;
@@ -51,7 +54,7 @@ function toRequestConversation(conversation: ChatTurn[]) {
     .map(({ role, content }) => ({ role, content }));
 }
 
-export function ChatPanel({ symbol }: ChatPanelProps) {
+export function ChatPanel({ symbol, desktopLayout = "rail", showMobileLauncher = true }: ChatPanelProps) {
   const [open, setOpen] = useState(false);
   const [desktopExpanded, setDesktopExpanded] = useState(true);
   const [draft, setDraft] = useState("");
@@ -179,59 +182,9 @@ export function ChatPanel({ symbol }: ChatPanelProps) {
 
   return (
     <>
-      <div className="hidden xl:block">
-        {desktopExpanded ? (
-          <ChatSurface
-            symbol={symbol}
-            conversation={conversation}
-            draft={draft}
-            setDraft={setDraft}
-            isSubmitting={isSubmitting}
-            isBusy={isBusy}
-            errorMessage={errorMessage}
-            onSend={sendMessage}
-            onToggleCollapse={() => setDesktopExpanded(false)}
-          />
-        ) : (
-          <Card variant="rail" material="glass" className="sticky top-24 px-4 py-4">
-            <div className="space-y-2">
-              <div className="flex items-center justify-between gap-3">
-                <div>
-                  <p className="text-xs font-medium uppercase tracking-wider text-(--ink-soft)">AI Chat</p>
-                  <h2 className="mt-0.5 text-base font-semibold text-(--ink-strong)">{symbol} discussion</h2>
-                </div>
-                <Button type="button" variant="ghost" size="compact" onClick={() => setDesktopExpanded(true)}>
-                  <ChevronDown className="size-4" />
-                  Open
-                </Button>
-              </div>
-              <p className="text-sm text-(--ink-muted)">Grounded Q&A on this symbol.</p>
-            </div>
-          </Card>
-        )}
-      </div>
-      <Button
-        type="button"
-        aria-haspopup="dialog"
-        aria-expanded={open}
-        onClick={() => setOpen(true)}
-        className="safe-bottom-offset fixed right-4 z-30 shadow-[var(--shadow-fab)] xl:hidden"
-      >
-        <MessageSquarePlus className="mr-2 size-4" />
-        Chat
-      </Button>
-      <Dialog.Root open={open} onOpenChange={setOpen}>
-        <Dialog.Portal>
-          <Dialog.Overlay className="fixed inset-0 z-40 bg-(--overlay)" />
-          <Dialog.Content className="glass-drawer safe-drawer-max-h safe-bottom-pad fixed inset-x-0 bottom-0 z-50 flex flex-col overflow-hidden rounded-t-2xl p-4">
-            <div className="mb-4 flex items-center justify-between gap-3">
-              <Dialog.Title className="text-lg font-bold text-(--ink-strong)">AI Chat</Dialog.Title>
-              <Dialog.Close asChild>
-                <button type="button" className="glass-control rounded-lg p-2 text-(--ink-muted)">
-                  <X className="size-4" />
-                </button>
-              </Dialog.Close>
-            </div>
+      {desktopLayout === "rail" ? (
+        <div className="hidden xl:block">
+          {desktopExpanded ? (
             <ChatSurface
               symbol={symbol}
               conversation={conversation}
@@ -241,11 +194,85 @@ export function ChatPanel({ symbol }: ChatPanelProps) {
               isBusy={isBusy}
               errorMessage={errorMessage}
               onSend={sendMessage}
-              mobile
+              onToggleCollapse={() => setDesktopExpanded(false)}
+              desktopLayout="rail"
             />
-          </Dialog.Content>
-        </Dialog.Portal>
-      </Dialog.Root>
+          ) : (
+            <Card variant="rail" material="glass" className="sticky top-24 px-4 py-4">
+              <div className="space-y-2">
+                <div className="flex items-center justify-between gap-3">
+                  <div>
+                    <p className="text-xs font-medium uppercase tracking-wider text-(--ink-soft)">AI Chat</p>
+                    <h2 className="mt-0.5 text-base font-semibold text-(--ink-strong)">{symbol} discussion</h2>
+                  </div>
+                  <Button type="button" variant="ghost" size="compact" onClick={() => setDesktopExpanded(true)}>
+                    <ChevronDown className="size-4" />
+                    Open
+                  </Button>
+                </div>
+                <p className="text-sm text-(--ink-muted)">Grounded Q&A on this symbol.</p>
+              </div>
+            </Card>
+          )}
+        </div>
+      ) : null}
+
+      {desktopLayout === "workspace" ? (
+        <div className="hidden h-full xl:block">
+          <ChatSurface
+            symbol={symbol}
+            conversation={conversation}
+            draft={draft}
+            setDraft={setDraft}
+            isSubmitting={isSubmitting}
+            isBusy={isBusy}
+            errorMessage={errorMessage}
+            onSend={sendMessage}
+            desktopLayout="workspace"
+          />
+        </div>
+      ) : null}
+
+      {showMobileLauncher ? (
+        <>
+          <Button
+            type="button"
+            aria-haspopup="dialog"
+            aria-expanded={open}
+            onClick={() => setOpen(true)}
+            className="safe-bottom-offset fixed right-4 z-30 shadow-[var(--shadow-fab)] xl:hidden"
+          >
+            <MessageSquarePlus className="mr-2 size-4" />
+            Chat
+          </Button>
+          <Dialog.Root open={open} onOpenChange={setOpen}>
+            <Dialog.Portal>
+              <Dialog.Overlay className="fixed inset-0 z-40 bg-(--overlay)" />
+              <Dialog.Content className="glass-drawer safe-drawer-max-h safe-bottom-pad fixed inset-x-0 bottom-0 z-50 flex flex-col overflow-hidden rounded-t-2xl p-4">
+                <div className="mb-4 flex items-center justify-between gap-3">
+                  <Dialog.Title className="text-lg font-bold text-(--ink-strong)">AI Chat</Dialog.Title>
+                  <Dialog.Close asChild>
+                    <button type="button" className="glass-control rounded-lg p-2 text-(--ink-muted)">
+                      <X className="size-4" />
+                    </button>
+                  </Dialog.Close>
+                </div>
+                <ChatSurface
+                  symbol={symbol}
+                  conversation={conversation}
+                  draft={draft}
+                  setDraft={setDraft}
+                  isSubmitting={isSubmitting}
+                  isBusy={isBusy}
+                  errorMessage={errorMessage}
+                  onSend={sendMessage}
+                  mobile
+                />
+              </Dialog.Content>
+            </Dialog.Portal>
+          </Dialog.Root>
+        </>
+      ) : null}
     </>
   );
 }
@@ -261,10 +288,24 @@ type ChatSurfaceProps = {
   onSend: () => void;
   onToggleCollapse?: () => void;
   mobile?: boolean;
+  desktopLayout?: "rail" | "workspace";
 };
 
-function ChatSurface({ symbol, conversation, draft, setDraft, isSubmitting, isBusy, errorMessage, onSend, onToggleCollapse, mobile = false }: ChatSurfaceProps) {
+function ChatSurface({
+  symbol,
+  conversation,
+  draft,
+  setDraft,
+  isSubmitting,
+  isBusy,
+  errorMessage,
+  onSend,
+  onToggleCollapse,
+  mobile = false,
+  desktopLayout = "rail",
+}: ChatSurfaceProps) {
   const scrollContainerRef = useRef<HTMLDivElement | null>(null);
+  const isWorkspace = !mobile && desktopLayout === "workspace";
 
   useEffect(() => {
     const container = scrollContainerRef.current;
@@ -299,17 +340,23 @@ function ChatSurface({ symbol, conversation, draft, setDraft, isSubmitting, isBu
 
   return (
     <Card
-      variant="rail"
-      material={mobile ? "default" : "glass"}
-      className={mobile ? "flex min-h-0 flex-1 flex-col border-transparent bg-transparent px-0 py-0 shadow-none backdrop-blur-0" : "sticky top-24 px-4 py-4"}
+      variant={isWorkspace ? "band" : "rail"}
+      material={mobile ? "default" : isWorkspace ? "default" : "glass"}
+      className={
+        mobile
+          ? "flex min-h-0 flex-1 flex-col border-transparent bg-transparent px-0 py-0 shadow-none backdrop-blur-0"
+          : isWorkspace
+            ? "flex h-full min-h-0 flex-col overflow-hidden px-0 py-0"
+            : "sticky top-24 px-4 py-4"
+      }
     >
-      <div className="mb-3">
+      <div className={isWorkspace ? "border-b border-(--line) px-5 py-3.5" : "mb-3"}>
         <div className="flex items-start justify-between gap-3">
           <div>
             <p className="text-xs font-medium uppercase tracking-wider text-(--ink-soft)">AI Chat</p>
             <h2 className="mt-1 text-base font-semibold text-(--ink-strong)">{symbol} discussion</h2>
           </div>
-          {!mobile && onToggleCollapse ? (
+          {!mobile && !isWorkspace && onToggleCollapse ? (
             <Button type="button" variant="ghost" size="compact" onClick={onToggleCollapse}>
               <ChevronUp className="size-4" />
               Hide
@@ -318,46 +365,68 @@ function ChatSurface({ symbol, conversation, draft, setDraft, isSubmitting, isBu
         </div>
         <p className="mt-1 text-sm text-(--ink-muted)">Ticker-scoped chat. Sessions reset when the symbol changes.</p>
       </div>
-      <div className={mobile ? "flex min-h-0 flex-1 flex-col gap-2" : "space-y-2"}>
-        <div ref={scrollContainerRef} className={mobile ? "min-h-0 flex-1 space-y-2 overflow-auto pr-1" : "max-h-[420px] space-y-2 overflow-auto pr-1"}>
+      <div className={mobile || isWorkspace ? "flex min-h-0 flex-1 flex-col gap-2 px-5 py-4" : "space-y-2"}>
+        <div
+          ref={scrollContainerRef}
+          className={mobile || isWorkspace ? "min-h-0 flex-1 space-y-4 overflow-auto pr-1" : "max-h-[420px] space-y-4 overflow-auto pr-1"}
+        >
           {conversation.length === 0 ? (
-            <div className="rounded-lg border border-dashed border-(--line-strong) bg-(--surface) px-4 py-5 text-sm text-(--ink-muted)">
+            <div className="w-full max-w-[88ch] text-sm leading-7 text-(--ink-muted)">
               Ask about risks, earnings, analyst tone, ownership, or recent headlines.
             </div>
           ) : (
             conversation.map((turn) => (
-              <div
-                key={turn.id}
-                className={
-                  turn.role === "assistant"
-                    ? "rounded-lg border border-(--line) bg-(--surface) px-4 py-3"
-                    : mobile
-                      ? "ml-auto max-w-[90%] rounded-lg bg-(--accent) px-4 py-3 text-(--accent-contrast)"
-                      : "ml-auto max-w-[85%] rounded-lg bg-(--accent) px-4 py-3 text-(--accent-contrast)"
-                }
-              >
-                <p className="mb-1 text-[11px] font-medium uppercase tracking-wider opacity-60">{turn.role}</p>
-                <p className="text-sm leading-relaxed">
-                  {turn.content}
-                  {turn.status === "revealing" ? <span className="inline-block w-2 animate-pulse text-(--ink-soft)">|</span> : null}
-                </p>
+              <div key={turn.id} className={turn.role === "assistant" ? "w-full" : "flex justify-end"}>
+                <div
+                  className={
+                    turn.role === "assistant"
+                      ? mobile
+                        ? "w-full text-[15px] leading-8 text-(--ink)"
+                        : "w-full max-w-[88ch] text-[15px] leading-8 text-(--ink)"
+                      : mobile
+                        ? "max-w-[90%] rounded-[1.25rem] bg-(--accent) px-4 py-2.5 text-sm leading-relaxed text-(--accent-contrast)"
+                        : "max-w-[68%] rounded-[1.25rem] bg-(--accent) px-4 py-2.5 text-sm leading-relaxed text-(--accent-contrast)"
+                  }
+                >
+                  {turn.role === "assistant" && turn.status === "final" ? (
+                    <ChatMarkdown content={turn.content} />
+                  ) : (
+                    <p className="whitespace-pre-wrap">
+                      {turn.content}
+                      {turn.status === "revealing" ? (
+                        <span
+                          aria-label="Assistant response is still revealing"
+                          className={turn.role === "assistant" ? "ml-1 inline-block w-2 animate-pulse text-(--ink-soft)" : "ml-1 inline-block w-2 animate-pulse opacity-70"}
+                        >
+                          |
+                        </span>
+                      ) : null}
+                    </p>
+                  )}
+                </div>
               </div>
             ))
           )}
           {isSubmitting ? (
-            <div className="flex items-center gap-2 rounded-lg border border-(--line) bg-(--surface) px-4 py-3 text-sm text-(--ink-muted)">
+            <div className="inline-flex items-center gap-2 text-sm text-(--ink-muted)">
               <LoaderCircle className="size-4 animate-spin" />
               Thinking…
             </div>
           ) : null}
         </div>
-        <div className="glass-subcard glass-input-shell rounded-xl p-3">
+        <div className={isWorkspace ? "rounded-[1rem] border border-(--line) bg-(--surface) p-2.5" : "glass-subcard glass-input-shell rounded-xl p-3"}>
           <textarea
             value={draft}
             onChange={(event) => setDraft(event.target.value)}
             onKeyDown={handleTextareaKeyDown}
             placeholder={`Ask about ${symbol}…`}
-            className={mobile ? "min-h-20 w-full resize-none bg-transparent text-sm text-(--ink) outline-none placeholder:text-(--ink-soft)" : "min-h-24 w-full resize-none bg-transparent text-sm text-(--ink) outline-none placeholder:text-(--ink-soft)"}
+            className={
+              mobile
+                ? "min-h-20 w-full resize-none bg-transparent text-sm text-(--ink) outline-none placeholder:text-(--ink-soft)"
+                : isWorkspace
+                  ? "min-h-18 w-full resize-none bg-transparent text-sm text-(--ink) outline-none placeholder:text-(--ink-soft)"
+                  : "min-h-24 w-full resize-none bg-transparent text-sm text-(--ink) outline-none placeholder:text-(--ink-soft)"
+            }
           />
           <div className="mt-2 flex items-center justify-between gap-3">
             <p className="text-xs text-(--ink-soft)">Enter to send • Shift+Enter for newline</p>

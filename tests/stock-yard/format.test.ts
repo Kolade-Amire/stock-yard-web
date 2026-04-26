@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import { formatCurrency, formatDate, formatDateTime, formatPercent, formatSignedPercent } from "@/lib/stock-yard/format";
-import { compareRouteWithQuery, compareRoute, homeRoute, tickerRoute } from "@/lib/routes";
+import { compareRouteWithQuery, compareRoute, homeRoute, tickerRoute, tickerRouteWithQuery } from "@/lib/routes";
 
 describe("stock-yard format helpers", () => {
   it("formats currencies and percentages predictably", () => {
@@ -26,6 +26,8 @@ describe("route helpers", () => {
     expect(homeRoute).toBe("/");
     expect(compareRoute).toBe("/compare");
     expect(tickerRoute("AAPL")).toBe("/ticker/AAPL");
+    expect(tickerRouteWithQuery("AAPL", "")).toBe("/ticker/AAPL");
+    expect(tickerRouteWithQuery("AAPL", "tab=news")).toBe("/ticker/AAPL?tab=news");
     expect(compareRouteWithQuery("symbols=AAPL,MSFT&period=6mo&interval=1d")).toBe("/compare?symbols=AAPL,MSFT&period=6mo&interval=1d");
   });
 });

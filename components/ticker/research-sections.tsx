@@ -14,14 +14,14 @@ import { stockYardClient } from "@/lib/stock-yard/client";
 import { formatCurrency, formatDate, formatDateTime, formatNumber, formatPercent, formatSignedPercent } from "@/lib/stock-yard/format";
 import { isStockYardApiError } from "@/lib/stock-yard/fetch";
 import type { OwnershipResponse } from "@/lib/stock-yard/schemas";
-import { cn } from "@/lib/utils";
 
-type ResearchSectionsProps = {
+type ResearchSectionPanelProps = {
   symbol: string;
   nextEarningsDate: string | null;
+  tab: ResearchTab;
 };
 
-const RESEARCH_TABS = [
+export const RESEARCH_TABS = [
   { key: "financials", label: "Financials" },
   { key: "earnings", label: "Earnings" },
   { key: "analyst", label: "Analyst" },
@@ -40,7 +40,7 @@ const OWNERSHIP_TABS = [
   { key: "insider_roster", label: "Insider roster" },
 ] as const;
 
-type ResearchTab = (typeof RESEARCH_TABS)[number]["key"];
+export type ResearchTab = (typeof RESEARCH_TABS)[number]["key"];
 
 const GLASS_SEGMENTED_LIST_CLASS = "glass-pill-nav touch-scroll-row w-full md:w-fit md:flex-wrap md:overflow-visible p-1.5";
 const GLASS_SEGMENTED_TRIGGER_CLASS =
@@ -48,49 +48,48 @@ const GLASS_SEGMENTED_TRIGGER_CLASS =
 const GLASS_SEGMENTED_DATA_BUTTON_CLASS =
   "shrink-0 rounded-lg border border-transparent bg-transparent px-3 py-1.5 text-sm text-(--ink-muted) transition-colors hover:bg-(--glass-active-wash) hover:text-(--ink) data-[active=true]:border-(--accent) data-[active=true]:bg-(--accent) data-[active=true]:text-(--accent-contrast)";
 
-export function ResearchSections({ symbol, nextEarningsDate }: ResearchSectionsProps) {
-  const [activeTab, setActiveTab] = useState<ResearchTab>("financials");
+export function ResearchSectionPanel({ symbol, nextEarningsDate, tab }: ResearchSectionPanelProps) {
   const [selectedExpiration, setSelectedExpiration] = useState<string | null>(null);
 
   const financialSummary = useQuery({
     queryKey: ["financial-summary", symbol],
     queryFn: () => stockYardClient.getFinancialSummary(symbol),
-    enabled: activeTab === "financials",
+    enabled: tab === "financials",
   });
   const financialTrends = useQuery({
     queryKey: ["financial-trends", symbol],
     queryFn: () => stockYardClient.getFinancialTrends(symbol),
-    enabled: activeTab === "financials",
+    enabled: tab === "financials",
   });
   const earningsHistory = useQuery({
     queryKey: ["earnings-history", symbol],
     queryFn: () => stockYardClient.getEarningsHistory(symbol),
-    enabled: activeTab === "earnings",
+    enabled: tab === "earnings",
   });
   const earningsEstimates = useQuery({
     queryKey: ["earnings-estimates", symbol],
     queryFn: () => stockYardClient.getEarningsEstimates(symbol),
-    enabled: activeTab === "earnings",
+    enabled: tab === "earnings",
   });
   const analystSummary = useQuery({
     queryKey: ["analyst-summary", symbol],
     queryFn: () => stockYardClient.getAnalystSummary(symbol),
-    enabled: activeTab === "analyst",
+    enabled: tab === "analyst",
   });
   const analystHistory = useQuery({
     queryKey: ["analyst-history", symbol],
     queryFn: () => stockYardClient.getAnalystHistory(symbol),
-    enabled: activeTab === "analyst",
+    enabled: tab === "analyst",
   });
   const ownership = useQuery({
     queryKey: ["ownership", symbol],
     queryFn: () => stockYardClient.getOwnership(symbol, "all", 5, 0),
-    enabled: activeTab === "ownership",
+    enabled: tab === "ownership",
   });
   const expirations = useQuery({
     queryKey: ["option-expirations", symbol],
     queryFn: () => stockYardClient.getOptionExpirations(symbol),
-    enabled: activeTab === "options",
+    enabled: tab === "options",
   });
 
   const expiration = selectedExpiration ?? expirations.data?.expirations[0] ?? null;
@@ -98,312 +97,296 @@ export function ResearchSections({ symbol, nextEarningsDate }: ResearchSectionsP
   const optionChain = useQuery({
     queryKey: ["option-chain", symbol, expiration],
     queryFn: () => stockYardClient.getOptionChain(symbol, expiration!),
-    enabled: activeTab === "options" && Boolean(expiration),
+    enabled: tab === "options" && Boolean(expiration),
   });
 
-  return (
-    <Tabs.Root value={activeTab} onValueChange={(value) => setActiveTab(value as ResearchTab)} className="space-y-4">
-      <Card variant="band" material="glass" className="px-4 py-4 sm:px-5">
-        <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-          <div>
-            <h2 className="text-xl font-bold text-(--ink-strong)">Research</h2>
-            <p className="mt-1 text-sm text-(--ink-muted)">Financials, earnings, analyst sentiment, ownership, and options data.</p>
-          </div>
-          <Tabs.List className={cn(GLASS_SEGMENTED_LIST_CLASS, "lg:justify-end")}>
-            {RESEARCH_TABS.map((tab) => (
-              <Tabs.Trigger
-                key={tab.key}
-                value={tab.key}
-                className={GLASS_SEGMENTED_TRIGGER_CLASS}
-              >
-                {tab.label}
-              </Tabs.Trigger>
-            ))}
-          </Tabs.List>
-        </div>
-      </Card>
-
-      <Tabs.Content value="financials">
-        <div className="grid gap-3 xl:grid-cols-[0.95fr_1.05fr]">
-          <Card variant="panel" material="glass" className="px-4 py-4 sm:px-5">
-            <ResearchPanelHeader title="Summary" subtitle="TTM and capital structure" />
-            {financialSummary.data ? (
-              <>
-                <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-3">
-                  <MetricCard label="Revenue TTM" value={formatCurrency(financialSummary.data.financialSummary.revenue_ttm)} />
-                  <MetricCard label="Net income TTM" value={formatCurrency(financialSummary.data.financialSummary.net_income_ttm)} />
-                  <MetricCard label="Free cash flow" value={formatCurrency(financialSummary.data.financialSummary.free_cash_flow)} />
-                  <MetricCard label="EBITDA" value={formatCurrency(financialSummary.data.financialSummary.ebitda)} />
-                  <MetricCard label="ROE" value={formatPercent(financialSummary.data.financialSummary.return_on_equity, 1)} />
-                  <MetricCard label="Debt / equity" value={formatNumber(financialSummary.data.financialSummary.debt_to_equity, 1)} />
-                </div>
-                <div className="mt-3">
-                  <DataLimitations items={financialSummary.data.dataLimitations} />
-                </div>
-              </>
-            ) : (
-              <SectionFallback query={financialSummary} emptyMessage="Financial statements are not materially available for this symbol." />
-            )}
-          </Card>
-          <Card variant="panel" material="glass" className="px-4 py-4 sm:px-5">
-            <ResearchPanelHeader title="Trend" subtitle="Annual and quarterly revenue" layout="inline" />
-            {financialTrends.data?.annual.length || financialTrends.data?.quarterly.length ? (
-              <>
-                <div className="grid gap-2.5 lg:grid-cols-2">
-                  <TrendCard
-                    label="Annual"
-                    items={(financialTrends.data?.annual ?? []).slice(-6).map((point) => formatAnnualTrendDatum(point.periodEnd, point.revenue))}
-                  />
-                  <TrendCard
-                    label="Quarterly"
-                    items={(financialTrends.data?.quarterly ?? []).slice(-6).map((point) => formatQuarterlyTrendDatum(point.periodEnd, point.revenue))}
-                  />
-                </div>
-                <div className="mt-3">
-                  <DataLimitations items={financialTrends.data.dataLimitations} />
-                </div>
-              </>
-            ) : (
-              <SectionFallback query={financialTrends} emptyMessage="Trend data is limited or unavailable for this symbol." />
-            )}
-          </Card>
-        </div>
-      </Tabs.Content>
-
-      <Tabs.Content value="earnings">
-        <div className="grid gap-3 xl:grid-cols-[0.9fr_1.1fr]">
-          <Card variant="panel" material="glass" className="px-4 py-4 sm:px-5">
-            <ResearchPanelHeader title="History" subtitle="Surprise cadence" />
-            <div className="mb-3 rounded-lg border border-(--line) bg-(--surface-muted) px-4 py-3">
-              <p className="text-[11px] font-medium uppercase tracking-wider text-(--ink-soft)">Next earnings date</p>
-              <p className="mt-1 text-base font-semibold text-(--ink-strong)">{formatDate(nextEarningsDate)}</p>
-            </div>
-            {earningsHistory.data?.events.length ? (
-              <div className="space-y-2">
-                {earningsHistory.data.events.slice(-4).reverse().map((event) => (
-                  <div key={event.reportDate} className="flex flex-col gap-2 rounded-lg border border-(--line) bg-(--surface-muted) px-3 py-2.5 sm:flex-row sm:items-center sm:justify-between">
-                    <div>
-                      <p className="font-medium text-(--ink)">{event.quarter}</p>
-                      <p className="text-xs text-(--ink-muted)">{formatDate(event.reportDate)}</p>
-                    </div>
-                    <div className="text-left text-sm sm:text-right">
-                      <p className="text-(--ink)">Actual: {event.epsActual ?? "—"}</p>
-                      <p className="text-(--ink-muted)">Est: {event.epsEstimate ?? "—"}</p>
-                      <p className={event.surprisePercent !== null && event.surprisePercent >= 0 ? "font-medium text-(--positive)" : "font-medium text-(--negative)"}>
-                        {formatSignedPercent(event.surprisePercent, 1)}
-                      </p>
-                    </div>
-                  </div>
-                ))}
-                <DataLimitations items={combineLimitations(earningsHistory.data.dataLimitations, earningsEstimates.data?.dataLimitations ?? [])} />
+  if (tab === "financials") {
+    return (
+      <div className="grid gap-3 xl:grid-cols-[0.95fr_1.05fr]">
+        <Card variant="panel" className="px-5 py-5">
+          <ResearchPanelHeader title="Summary" subtitle="TTM and capital structure" />
+          {financialSummary.data ? (
+            <>
+              <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-3">
+                <MetricCard label="Revenue TTM" value={formatCurrency(financialSummary.data.financialSummary.revenue_ttm)} />
+                <MetricCard label="Net income TTM" value={formatCurrency(financialSummary.data.financialSummary.net_income_ttm)} />
+                <MetricCard label="Free cash flow" value={formatCurrency(financialSummary.data.financialSummary.free_cash_flow)} />
+                <MetricCard label="EBITDA" value={formatCurrency(financialSummary.data.financialSummary.ebitda)} />
+                <MetricCard label="ROE" value={formatPercent(financialSummary.data.financialSummary.return_on_equity, 1)} />
+                <MetricCard label="Debt / equity" value={formatNumber(financialSummary.data.financialSummary.debt_to_equity, 1)} />
               </div>
-            ) : (
-              <SectionFallback query={earningsHistory} emptyMessage="Earnings history is limited or unavailable for this symbol." />
-            )}
-          </Card>
-          <Card variant="panel" material="glass" className="px-4 py-4 sm:px-5">
-            <ResearchPanelHeader title="Estimates" subtitle="Forward EPS and revenue" />
-            {earningsEstimates.data?.epsEstimates.length || earningsEstimates.data?.revenueEstimates.length ? (
-              <>
-                <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-4">
-                  {(earningsEstimates.data?.epsEstimates ?? []).slice(0, 4).map((estimate) => (
-                    <MetricCard
-                      key={estimate.period}
-                      label={estimate.period}
-                      value={estimate.avg !== null ? `${estimate.avg} EPS` : "EPS unavailable"}
-                      meta={`${formatPercent(estimate.growth, 1)} growth · ${formatNumber(estimate.numberOfAnalysts)} analysts`}
-                    />
-                  ))}
-                </div>
-                <div className="mt-3 grid gap-2 sm:grid-cols-2">
-                  {(earningsEstimates.data?.revenueEstimates ?? []).slice(0, 2).map((estimate) => (
-                    <MetricCard
-                      key={`rev-${estimate.period}`}
-                      label={`${estimate.period} revenue`}
-                      value={formatCurrency(estimate.avg)}
-                      meta={`${formatPercent(estimate.growth, 1)} growth`}
-                    />
-                  ))}
-                  {(earningsEstimates.data?.growthEstimates ?? []).slice(0, 2).map((estimate) => (
-                    <MetricCard
-                      key={`growth-${estimate.period}`}
-                      label={`${estimate.period} trend`}
-                      value={formatPercent(estimate.stockTrend, 1)}
-                      meta={`Index ${formatPercent(estimate.indexTrend, 1)}`}
-                    />
-                  ))}
-                </div>
-                <div className="mt-3">
-                  <DataLimitations items={earningsEstimates.data.dataLimitations} />
-                </div>
-              </>
-            ) : (
-              <SectionFallback query={earningsEstimates} emptyMessage="Estimate data is limited or unavailable for this symbol." />
-            )}
-          </Card>
-        </div>
-      </Tabs.Content>
+              <div className="mt-4">
+                <DataLimitations items={financialSummary.data.dataLimitations} />
+              </div>
+            </>
+          ) : (
+            <SectionFallback query={financialSummary} emptyMessage="Financial statements are not materially available for this symbol." />
+          )}
+        </Card>
+        <Card variant="panel" className="px-5 py-5">
+          <ResearchPanelHeader title="Trend" subtitle="Annual and quarterly revenue" layout="inline" />
+          {financialTrends.data?.annual.length || financialTrends.data?.quarterly.length ? (
+            <>
+              <div className="grid gap-2.5 lg:grid-cols-2">
+                <TrendCard
+                  label="Annual"
+                  items={(financialTrends.data?.annual ?? []).slice(-6).map((point) => formatAnnualTrendDatum(point.periodEnd, point.revenue))}
+                />
+                <TrendCard
+                  label="Quarterly"
+                  items={(financialTrends.data?.quarterly ?? []).slice(-6).map((point) => formatQuarterlyTrendDatum(point.periodEnd, point.revenue))}
+                />
+              </div>
+              <div className="mt-4">
+                <DataLimitations items={financialTrends.data.dataLimitations} />
+              </div>
+            </>
+          ) : (
+            <SectionFallback query={financialTrends} emptyMessage="Trend data is limited or unavailable for this symbol." />
+          )}
+        </Card>
+      </div>
+    );
+  }
 
-      <Tabs.Content value="analyst">
-        <div className="grid gap-3 xl:grid-cols-[0.95fr_1.05fr]">
-          <Card variant="panel" material="glass" className="px-4 py-4 sm:px-5">
-            <ResearchPanelHeader title="Summary" subtitle="Targets and recommendations" />
-            {analystSummary.data ? (
-              <>
-                <div className="grid gap-2 sm:grid-cols-2">
-                  <MetricCard label="Target mean" value={formatCurrency(analystSummary.data.analystSummary.targetMean)} />
-                  <MetricCard label="Current target" value={formatCurrency(analystSummary.data.analystSummary.currentPriceTarget)} />
-                  <MetricCard label="Target low" value={formatCurrency(analystSummary.data.analystSummary.targetLow)} />
-                  <MetricCard label="Target high" value={formatCurrency(analystSummary.data.analystSummary.targetHigh)} />
-                </div>
-                <div className="mt-3 grid gap-1.5 sm:grid-cols-2 xl:grid-cols-5">
-                  <MetricCard label="Strong buy" value={formatNumber(analystSummary.data.analystSummary.recommendationSummary.strongBuy)} />
-                  <MetricCard label="Buy" value={formatNumber(analystSummary.data.analystSummary.recommendationSummary.buy)} />
-                  <MetricCard label="Hold" value={formatNumber(analystSummary.data.analystSummary.recommendationSummary.hold)} />
-                  <MetricCard label="Sell" value={formatNumber(analystSummary.data.analystSummary.recommendationSummary.sell)} />
-                  <MetricCard label="Strong sell" value={formatNumber(analystSummary.data.analystSummary.recommendationSummary.strongSell)} />
-                </div>
-                <div className="mt-3">
-                  <DataLimitations items={combineLimitations(analystSummary.data.dataLimitations, analystHistory.data?.dataLimitations ?? [])} />
-                </div>
-              </>
-            ) : (
-              <SectionFallback query={analystSummary} emptyMessage="Analyst coverage is limited for this symbol." />
-            )}
-          </Card>
-          <Card variant="panel" material="glass" className="px-4 py-4 sm:px-5">
-            <ResearchPanelHeader title="Recent actions" subtitle="Firm activity and target changes" />
-            {analystHistory.data?.actions.length ? (
-              <div className="space-y-2">
-                {analystHistory.data.actions.slice(0, 5).map((action) => (
-                  <div key={`${action.gradedAt}-${action.firm ?? action.toGrade ?? "action"}`} className="rounded-lg border border-(--line) bg-(--surface-muted) px-3 py-2.5">
-                    <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
-                      <div>
-                        <p className="font-medium text-(--ink)">{action.firm ?? "Research firm"}</p>
-                        <p className="mt-0.5 text-xs text-(--ink-muted)">{formatDateTime(action.gradedAt)}</p>
-                      </div>
-                      <p className="text-sm font-medium text-(--accent)">{action.priceTargetAction ?? action.action ?? "Update"}</p>
-                    </div>
-                    <p className="mt-1.5 text-xs text-(--ink-muted)">
-                      {action.fromGrade ?? "—"} → {action.toGrade ?? "—"} · target {formatCurrency(action.currentPriceTarget)} from {formatCurrency(action.priorPriceTarget)}
+  if (tab === "earnings") {
+    return (
+      <div className="grid gap-3 xl:grid-cols-[0.9fr_1.1fr]">
+        <Card variant="panel" className="px-5 py-5">
+          <ResearchPanelHeader title="History" subtitle="Surprise cadence" />
+          <div className="mb-4 rounded-[1rem] border border-(--line) bg-(--surface-muted) px-4 py-4">
+            <p className="text-[11px] font-medium uppercase tracking-wider text-(--ink-soft)">Next earnings date</p>
+            <p className="mt-1 text-lg font-semibold text-(--ink-strong)">{formatDate(nextEarningsDate)}</p>
+          </div>
+          {earningsHistory.data?.events.length ? (
+            <div className="space-y-2">
+              {earningsHistory.data.events.slice(-4).reverse().map((event) => (
+                <div key={event.reportDate} className="flex flex-col gap-2 rounded-[1rem] border border-(--line) bg-(--surface-muted) px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
+                  <div>
+                    <p className="font-medium text-(--ink)">{event.quarter}</p>
+                    <p className="text-xs text-(--ink-muted)">{formatDate(event.reportDate)}</p>
+                  </div>
+                  <div className="text-left text-sm sm:text-right">
+                    <p className="text-(--ink)">Actual: {event.epsActual ?? "—"}</p>
+                    <p className="text-(--ink-muted)">Est: {event.epsEstimate ?? "—"}</p>
+                    <p className={event.surprisePercent !== null && event.surprisePercent >= 0 ? "font-medium text-(--positive)" : "font-medium text-(--negative)"}>
+                      {formatSignedPercent(event.surprisePercent, 1)}
                     </p>
                   </div>
-                ))}
-              </div>
-            ) : (
-              <SectionFallback query={analystHistory} emptyMessage="Recent analyst actions are not materially available for this symbol." />
-            )}
-          </Card>
-        </div>
-      </Tabs.Content>
-
-      <Tabs.Content value="ownership">
-        <Card variant="panel" material="glass" className="px-4 py-4 sm:px-5">
-          <ResearchPanelHeader title="Ownership" subtitle="Major holders and roster" />
-          {ownership.data ? (
-            <Tabs.Root defaultValue="institutional" className="space-y-3">
-              <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-4">
-                {ownership.data.majorHolders.slice(0, 4).map((holder) => (
-                  <MetricCard key={holder.key} label={holder.label} value={formatPercent(holder.value, 2)} />
-                ))}
-              </div>
-              <Tabs.List className={GLASS_SEGMENTED_LIST_CLASS}>
-                {OWNERSHIP_TABS.map((tab) => (
-                  <Tabs.Trigger
-                    key={tab.key}
-                    value={tab.key}
-                    className={GLASS_SEGMENTED_TRIGGER_CLASS}
-                  >
-                    {tab.label}
-                  </Tabs.Trigger>
-                ))}
-              </Tabs.List>
-              <Tabs.Content value="institutional" className="space-y-2">
-                {ownership.data.institutionalHolders.length ? (
-                  <OwnershipChartTabContent holders={buildWeightedOwnershipRows(ownership.data.institutionalHolders)} chartBasis="percent" />
-                ) : (
-                  <EmptyInline message="No institutional holder rows returned." />
-                )}
-              </Tabs.Content>
-              <Tabs.Content value="mutual_funds" className="space-y-2">
-                {ownership.data.mutualFundHolders.length ? (
-                  <OwnershipChartTabContent holders={buildWeightedOwnershipRows(ownership.data.mutualFundHolders)} chartBasis="percent" />
-                ) : (
-                  <EmptyInline message="No mutual fund holder rows returned." />
-                )}
-              </Tabs.Content>
-              <Tabs.Content value="insider_roster" className="space-y-2">
-                {ownership.data.insiderRoster.length ? (
-                  <OwnershipChartTabContent
-                    holders={buildInsiderOwnershipRows(ownership.data.insiderRoster)}
-                    chartBasis="shares"
-                    chartTitle="Insider mix"
-                    chartSubtitle="Normalized from displayed insider share totals"
-                    chartValueMode="normalized_percent"
-                    chartValueLabel="Share of displayed total"
-                  />
-                ) : (
-                  <EmptyInline message="No insider roster rows returned." />
-                )}
-              </Tabs.Content>
-              <DataLimitations items={ownership.data.dataLimitations} />
-            </Tabs.Root>
-          ) : (
-            <SectionFallback query={ownership} emptyMessage="Ownership data is limited or unavailable for this symbol." />
-          )}
-        </Card>
-      </Tabs.Content>
-
-      <Tabs.Content value="options">
-        <Card variant="panel" material="glass" className="px-4 py-4 sm:px-5">
-          <ResearchPanelHeader title="Options" subtitle="Chain and expiration deck" />
-          {expirations.data?.expirations.length ? (
-            <div className="space-y-3">
-              <div className="flex flex-col gap-2 lg:flex-row lg:items-center">
-                <div className="rounded-lg border border-(--line) bg-(--surface-muted) px-3 py-1.5 text-xs text-(--ink-soft)">
-                  Underlying {formatCurrency(optionChain.data?.underlyingPrice ?? null)}
                 </div>
-                <div className={GLASS_SEGMENTED_LIST_CLASS}>
-                  {expirations.data.expirations.slice(0, 6).map((item) => (
-                    <button
-                      key={item}
-                      type="button"
-                      onClick={() => setSelectedExpiration(item)}
-                      className={GLASS_SEGMENTED_DATA_BUTTON_CLASS}
-                      data-active={item === expiration}
-                    >
-                      {item}
-                    </button>
-                  ))}
-                </div>
-              </div>
-              <Tabs.Root defaultValue="calls" className="space-y-3">
-                <Tabs.List className={GLASS_SEGMENTED_LIST_CLASS}>
-                  {OPTION_TABS.map((tab) => (
-                    <Tabs.Trigger
-                      key={tab.key}
-                      value={tab.key}
-                      className={GLASS_SEGMENTED_TRIGGER_CLASS}
-                    >
-                      {tab.label}
-                    </Tabs.Trigger>
-                  ))}
-                </Tabs.List>
-                <Tabs.Content value="calls">
-                  <VirtualOptionsTable rows={optionChain.data?.calls ?? []} />
-                </Tabs.Content>
-                <Tabs.Content value="puts">
-                  <VirtualOptionsTable rows={optionChain.data?.puts ?? []} />
-                </Tabs.Content>
-              </Tabs.Root>
-              <DataLimitations items={optionChain.data?.dataLimitations ?? []} />
+              ))}
+              <DataLimitations items={combineLimitations(earningsHistory.data.dataLimitations, earningsEstimates.data?.dataLimitations ?? [])} />
             </div>
           ) : (
-            <SectionFallback query={expirations} emptyMessage="Options data is limited or unavailable for this symbol." />
+            <SectionFallback query={earningsHistory} emptyMessage="Earnings history is limited or unavailable for this symbol." />
           )}
         </Card>
-      </Tabs.Content>
-    </Tabs.Root>
+        <Card variant="panel" className="px-5 py-5">
+          <ResearchPanelHeader title="Estimates" subtitle="Forward EPS and revenue" />
+          {earningsEstimates.data?.epsEstimates.length || earningsEstimates.data?.revenueEstimates.length ? (
+            <>
+              <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-4">
+                {(earningsEstimates.data?.epsEstimates ?? []).slice(0, 4).map((estimate) => (
+                  <MetricCard
+                    key={estimate.period}
+                    label={estimate.period}
+                    value={estimate.avg !== null ? `${estimate.avg} EPS` : "EPS unavailable"}
+                    meta={`${formatPercent(estimate.growth, 1)} growth · ${formatNumber(estimate.numberOfAnalysts)} analysts`}
+                  />
+                ))}
+              </div>
+              <div className="mt-3 grid gap-2 sm:grid-cols-2">
+                {(earningsEstimates.data?.revenueEstimates ?? []).slice(0, 2).map((estimate) => (
+                  <MetricCard
+                    key={`rev-${estimate.period}`}
+                    label={`${estimate.period} revenue`}
+                    value={formatCurrency(estimate.avg)}
+                    meta={`${formatPercent(estimate.growth, 1)} growth`}
+                  />
+                ))}
+                {(earningsEstimates.data?.growthEstimates ?? []).slice(0, 2).map((estimate) => (
+                  <MetricCard
+                    key={`growth-${estimate.period}`}
+                    label={`${estimate.period} trend`}
+                    value={formatPercent(estimate.stockTrend, 1)}
+                    meta={`Index ${formatPercent(estimate.indexTrend, 1)}`}
+                  />
+                ))}
+              </div>
+              <div className="mt-4">
+                <DataLimitations items={earningsEstimates.data.dataLimitations} />
+              </div>
+            </>
+          ) : (
+            <SectionFallback query={earningsEstimates} emptyMessage="Estimate data is limited or unavailable for this symbol." />
+          )}
+        </Card>
+      </div>
+    );
+  }
+
+  if (tab === "analyst") {
+    return (
+      <div className="grid gap-3 xl:grid-cols-[0.95fr_1.05fr]">
+        <Card variant="panel" className="px-5 py-5">
+          <ResearchPanelHeader title="Summary" subtitle="Targets and recommendations" />
+          {analystSummary.data ? (
+            <>
+              <div className="grid gap-2 sm:grid-cols-2">
+                <MetricCard label="Target mean" value={formatCurrency(analystSummary.data.analystSummary.targetMean)} />
+                <MetricCard label="Current target" value={formatCurrency(analystSummary.data.analystSummary.currentPriceTarget)} />
+                <MetricCard label="Target low" value={formatCurrency(analystSummary.data.analystSummary.targetLow)} />
+                <MetricCard label="Target high" value={formatCurrency(analystSummary.data.analystSummary.targetHigh)} />
+              </div>
+              <div className="mt-3 grid gap-1.5 sm:grid-cols-2 xl:grid-cols-5">
+                <MetricCard label="Strong buy" value={formatNumber(analystSummary.data.analystSummary.recommendationSummary.strongBuy)} />
+                <MetricCard label="Buy" value={formatNumber(analystSummary.data.analystSummary.recommendationSummary.buy)} />
+                <MetricCard label="Hold" value={formatNumber(analystSummary.data.analystSummary.recommendationSummary.hold)} />
+                <MetricCard label="Sell" value={formatNumber(analystSummary.data.analystSummary.recommendationSummary.sell)} />
+                <MetricCard label="Strong sell" value={formatNumber(analystSummary.data.analystSummary.recommendationSummary.strongSell)} />
+              </div>
+              <div className="mt-4">
+                <DataLimitations items={combineLimitations(analystSummary.data.dataLimitations, analystHistory.data?.dataLimitations ?? [])} />
+              </div>
+            </>
+          ) : (
+            <SectionFallback query={analystSummary} emptyMessage="Analyst coverage is limited for this symbol." />
+          )}
+        </Card>
+        <Card variant="panel" className="px-5 py-5">
+          <ResearchPanelHeader title="Recent actions" subtitle="Firm activity and target changes" />
+          {analystHistory.data?.actions.length ? (
+            <div className="space-y-2">
+              {analystHistory.data.actions.slice(0, 5).map((action) => (
+                <div key={`${action.gradedAt}-${action.firm ?? action.toGrade ?? "action"}`} className="rounded-[1rem] border border-(--line) bg-(--surface-muted) px-4 py-3">
+                  <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
+                    <div>
+                      <p className="font-medium text-(--ink)">{action.firm ?? "Research firm"}</p>
+                      <p className="mt-0.5 text-xs text-(--ink-muted)">{formatDateTime(action.gradedAt)}</p>
+                    </div>
+                    <p className="text-sm font-medium text-(--accent)">{action.priceTargetAction ?? action.action ?? "Update"}</p>
+                  </div>
+                  <p className="mt-1.5 text-xs text-(--ink-muted)">
+                    {action.fromGrade ?? "—"} → {action.toGrade ?? "—"} · target {formatCurrency(action.currentPriceTarget)} from {formatCurrency(action.priorPriceTarget)}
+                  </p>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <SectionFallback query={analystHistory} emptyMessage="Recent analyst actions are not materially available for this symbol." />
+          )}
+        </Card>
+      </div>
+    );
+  }
+
+  if (tab === "ownership") {
+    return (
+      <Card variant="panel" className="px-5 py-5">
+        <ResearchPanelHeader title="Ownership" subtitle="Major holders and roster" />
+        {ownership.data ? (
+          <Tabs.Root defaultValue="institutional" className="space-y-3">
+            <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-4">
+              {ownership.data.majorHolders.slice(0, 4).map((holder) => (
+                <MetricCard key={holder.key} label={holder.label} value={formatPercent(holder.value, 2)} />
+              ))}
+            </div>
+            <Tabs.List className={GLASS_SEGMENTED_LIST_CLASS}>
+              {OWNERSHIP_TABS.map((ownershipTab) => (
+                <Tabs.Trigger
+                  key={ownershipTab.key}
+                  value={ownershipTab.key}
+                  className={GLASS_SEGMENTED_TRIGGER_CLASS}
+                >
+                  {ownershipTab.label}
+                </Tabs.Trigger>
+              ))}
+            </Tabs.List>
+            <Tabs.Content value="institutional" className="space-y-2">
+              {ownership.data.institutionalHolders.length ? (
+                <OwnershipChartTabContent holders={buildWeightedOwnershipRows(ownership.data.institutionalHolders)} chartBasis="percent" />
+              ) : (
+                <EmptyInline message="No institutional holder rows returned." />
+              )}
+            </Tabs.Content>
+            <Tabs.Content value="mutual_funds" className="space-y-2">
+              {ownership.data.mutualFundHolders.length ? (
+                <OwnershipChartTabContent holders={buildWeightedOwnershipRows(ownership.data.mutualFundHolders)} chartBasis="percent" />
+              ) : (
+                <EmptyInline message="No mutual fund holder rows returned." />
+              )}
+            </Tabs.Content>
+            <Tabs.Content value="insider_roster" className="space-y-2">
+              {ownership.data.insiderRoster.length ? (
+                <OwnershipChartTabContent
+                  holders={buildInsiderOwnershipRows(ownership.data.insiderRoster)}
+                  chartBasis="shares"
+                  chartTitle="Insider mix"
+                  chartSubtitle="Normalized from displayed insider share totals"
+                  chartValueMode="normalized_percent"
+                  chartValueLabel="Share of displayed total"
+                />
+              ) : (
+                <EmptyInline message="No insider roster rows returned." />
+              )}
+            </Tabs.Content>
+            <DataLimitations items={ownership.data.dataLimitations} />
+          </Tabs.Root>
+        ) : (
+          <SectionFallback query={ownership} emptyMessage="Ownership data is limited or unavailable for this symbol." />
+        )}
+      </Card>
+    );
+  }
+
+  return (
+    <Card variant="panel" className="px-5 py-5">
+      <ResearchPanelHeader title="Options" subtitle="Chain and expiration deck" />
+      {expirations.data?.expirations.length ? (
+        <div className="space-y-3">
+          <div className="flex flex-col gap-2 lg:flex-row lg:items-center">
+            <div className="rounded-lg border border-(--line) bg-(--surface-muted) px-3 py-1.5 text-xs text-(--ink-soft)">
+              Underlying {formatCurrency(optionChain.data?.underlyingPrice ?? null)}
+            </div>
+            <div className={GLASS_SEGMENTED_LIST_CLASS}>
+              {expirations.data.expirations.slice(0, 6).map((item) => (
+                <button
+                  key={item}
+                  type="button"
+                  onClick={() => setSelectedExpiration(item)}
+                  className={GLASS_SEGMENTED_DATA_BUTTON_CLASS}
+                  data-active={item === expiration}
+                >
+                  {item}
+                </button>
+              ))}
+            </div>
+          </div>
+          <Tabs.Root defaultValue="calls" className="space-y-3">
+            <Tabs.List className={GLASS_SEGMENTED_LIST_CLASS}>
+              {OPTION_TABS.map((optionTab) => (
+                <Tabs.Trigger
+                  key={optionTab.key}
+                  value={optionTab.key}
+                  className={GLASS_SEGMENTED_TRIGGER_CLASS}
+                >
+                  {optionTab.label}
+                </Tabs.Trigger>
+              ))}
+            </Tabs.List>
+            <Tabs.Content value="calls">
+              <VirtualOptionsTable rows={optionChain.data?.calls ?? []} />
+            </Tabs.Content>
+            <Tabs.Content value="puts">
+              <VirtualOptionsTable rows={optionChain.data?.puts ?? []} />
+            </Tabs.Content>
+          </Tabs.Root>
+          <DataLimitations items={optionChain.data?.dataLimitations ?? []} />
+        </div>
+      ) : (
+        <SectionFallback query={expirations} emptyMessage="Options data is limited or unavailable for this symbol." />
+      )}
+    </Card>
   );
 }
 
