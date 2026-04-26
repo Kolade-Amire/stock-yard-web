@@ -77,18 +77,21 @@
   --shadow-popover: 0 18px 44px rgba(24, 18, 11, 0.18);
   --shadow-fab: 0 10px 26px rgba(24, 18, 11, 0.16);
   --shadow-drawer: 0 -12px 40px rgba(24, 18, 11, 0.18);
+  --gold: #c8a96e;
+  --gold-soft: rgba(200, 169, 110, 0.12);
+  --gold-border: rgba(200, 169, 110, 0.3);
   color-scheme: light;
 }
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme]) {
-    --canvas: #0f1219;
+    --canvas: #0f0e0b;
     --surface: rgba(255, 255, 255, 0.04);
     --surface-strong: rgba(255, 255, 255, 0.08);
     --surface-muted: rgba(255, 255, 255, 0.03);
     --surface-float: rgba(255, 255, 255, 0.06);
-    --surface-overlay: rgba(15, 18, 25, 0.96);
-    --surface-header: rgba(15, 18, 25, 0.82);
+    --surface-overlay: rgba(15, 14, 11, 0.96);
+    --surface-header: rgba(15, 14, 11, 0.82);
     --ink: #e8eaed;
     --ink-strong: #ffffff;
     --ink-muted: rgba(232, 234, 237, 0.64);
@@ -158,18 +161,21 @@
     --shadow-popover: 0 12px 40px rgba(0, 0, 0, 0.4);
     --shadow-fab: 0 8px 24px rgba(0, 0, 0, 0.4);
     --shadow-drawer: 0 -12px 40px rgba(0, 0, 0, 0.4);
+    --gold: #c8a96e;
+    --gold-soft: rgba(200, 169, 110, 0.1);
+    --gold-border: rgba(200, 169, 110, 0.22);
     color-scheme: dark;
   }
 }
 
 :root[data-theme="dark"] {
-  --canvas: #0f1219;
+  --canvas: #0f0e0b;
   --surface: rgba(255, 255, 255, 0.04);
   --surface-strong: rgba(255, 255, 255, 0.08);
   --surface-muted: rgba(255, 255, 255, 0.03);
   --surface-float: rgba(255, 255, 255, 0.06);
-  --surface-overlay: rgba(15, 18, 25, 0.96);
-  --surface-header: rgba(15, 18, 25, 0.82);
+  --surface-overlay: rgba(15, 14, 11, 0.96);
+  --surface-header: rgba(15, 14, 11, 0.82);
   --ink: #e8eaed;
   --ink-strong: #ffffff;
   --ink-muted: rgba(232, 234, 237, 0.64);
@@ -252,6 +258,7 @@ html {
 
 body {
   margin: 0;
+  font-family: var(--font-sans), system-ui, sans-serif;
   background: var(--canvas);
   color: var(--ink);
   -webkit-font-smoothing: antialiased;
@@ -685,5 +692,22 @@ select {
   .chart-bar-rise,
   .chart-bar-fill {
     animation: none !important;
+  }
+}
+
+@keyframes ticker-scroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.ticker-tape-inner {
+  display: flex;
+  white-space: nowrap;
+  animation: ticker-scroll 28s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ticker-tape-inner {
+    animation: none;
   }
 }

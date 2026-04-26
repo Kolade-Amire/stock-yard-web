@@ -1,8 +1,6 @@
 import Link from "next/link";
 
-import { Card } from "@/components/ui/card";
 import { DataLimitations } from "@/components/ui/data-limitations";
-import { formatDateTime, formatNumber } from "@/lib/stock-yard/format";
 import { tickerRoute } from "@/lib/routes";
 import type { EarningsCalendarResponse } from "@/lib/stock-yard/schemas";
 
@@ -10,96 +8,100 @@ type EarningsCalendarTableProps = {
   data: EarningsCalendarResponse | null;
 };
 
-export function EarningsCalendarTable({ data }: EarningsCalendarTableProps) {
-  const hasEvents = Boolean(data?.events.length);
-
-  return (
-    <Card variant="panel" className="overflow-hidden">
-      <div className="border-b border-(--line) px-5 py-4">
-        <p className="text-xs font-medium uppercase tracking-wider text-(--ink-soft)">Calendar</p>
-        <h3 className="mt-1 text-lg font-semibold text-(--ink-strong)">Upcoming earnings</h3>
-      </div>
-      {hasEvents ? (
-        <div className="md:hidden space-y-2 px-4 py-4">
-          {data?.events.map((event) => (
-            <article
-              key={`${event.symbol}-${event.earningsDate}`}
-              className="rounded-lg border border-(--line) bg-(--surface-muted) px-4 py-3"
-            >
-              <div className="flex items-start justify-between gap-3">
-                <div className="min-w-0">
-                  <Link href={tickerRoute(event.symbol)} className="text-sm font-semibold text-(--ink-strong) transition-colors hover:text-(--accent)">
-                    {event.symbol}
-                  </Link>
-                  <p className="truncate text-sm text-(--ink-muted)">{event.companyName}</p>
-                </div>
-                <p className="shrink-0 text-xs font-medium uppercase tracking-wider text-(--ink-soft)">
-                  {event.reportTime ?? "TBD"}
-                </p>
-              </div>
-              <div className="mt-3 grid gap-2 sm:grid-cols-2">
-                <DetailBlock label="Schedule" value={formatDateTime(event.earningsDate)} />
-                <DetailBlock label="EPS Est." value={event.epsEstimate ?? "—"} />
-                <DetailBlock label="Market Cap" value={formatNumber(event.marketCap)} />
-              </div>
-            </article>
-          ))}
-        </div>
-      ) : (
-        <div className="px-4 py-5 text-sm text-(--ink-muted) md:hidden">
-          No scheduled earnings found for this window.
-        </div>
-      )}
-      <div className="hidden overflow-x-auto md:block">
-        <table className="min-w-full text-left text-sm">
-          <thead className="text-xs uppercase tracking-wider text-(--ink-soft)">
-            <tr>
-              <th className="px-5 py-3 font-medium">Symbol</th>
-              <th className="px-5 py-3 font-medium">Company</th>
-              <th className="px-5 py-3 font-medium">Schedule</th>
-              <th className="px-5 py-3 font-medium">Report</th>
-              <th className="px-5 py-3 font-medium">EPS Est.</th>
-              <th className="px-5 py-3 font-medium">Market Cap</th>
-            </tr>
-          </thead>
-          <tbody>
-            {hasEvents ? (
-              data?.events.map((event) => (
-                <tr key={`${event.symbol}-${event.earningsDate}`} className="border-t border-(--line) transition-colors hover:bg-(--surface-muted)">
-                  <td className="px-5 py-3 font-semibold text-(--ink-strong)">
-                    <Link href={tickerRoute(event.symbol)} className="transition-colors hover:text-(--accent)">
-                      {event.symbol}
-                    </Link>
-                  </td>
-                  <td className="px-5 py-3 text-(--ink-muted)">{event.companyName}</td>
-                  <td className="px-5 py-3 text-(--ink-muted)">{formatDateTime(event.earningsDate)}</td>
-                  <td className="px-5 py-3 text-(--ink-muted)">{event.reportTime ?? "TBD"}</td>
-                  <td className="px-5 py-3 text-(--ink-muted)">{event.epsEstimate ?? "—"}</td>
-                  <td className="px-5 py-3 text-(--ink-muted)">{formatNumber(event.marketCap)}</td>
-                </tr>
-              ))
-            ) : (
-              <tr>
-                <td colSpan={6} className="px-5 py-6 text-(--ink-muted)">
-                  No scheduled earnings found for this window.
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
-      <div className="border-t border-(--line) px-5 py-4">
-        <DataLimitations items={data?.dataLimitations ?? []} />
-      </div>
-    </Card>
-  );
+function formatEarningsDate(dateStr: string) {
+  const d = new Date(dateStr);
+  return {
+    day: d.getUTCDate(),
+    month: d.toLocaleString("en-US", { month: "short", timeZone: "UTC" }).toUpperCase(),
+  };
 }
 
-function DetailBlock({ label, value }: { label: string; value: string | number }) {
+export function EarningsCalendarTable({ data }: EarningsCalendarTableProps) {
+  const events = data?.events ?? [];
+
   return (
-    <div className="rounded-md border border-(--line) bg-(--surface) px-3 py-2">
-      <p className="text-[11px] font-medium uppercase tracking-wider text-(--ink-soft)">{label}</p>
-      <p className="mt-1 text-sm text-(--ink)">{value}</p>
+    <div className="border-r border-(--line) px-6 py-5">
+      <p
+        className="text-[9px] tracking-[0.12em] uppercase text-(--ink-soft) mb-3.5 pb-2.5 border-b border-(--line)"
+        style={{ fontFamily: "var(--font-mono)" }}
+      >
+        Earnings calendar · This week
+      </p>
+
+      {events.length ? (
+        <div>
+          {events.slice(0, 8).map((event) => {
+            const { day, month } = formatEarningsDate(event.earningsDate);
+            const reportTimeBadge = event.reportTime?.toLowerCase().includes("before") ? "BMO"
+              : event.reportTime?.toLowerCase().includes("after") ? "AMC"
+              : event.reportTime ?? null;
+            const isAmc = reportTimeBadge === "AMC";
+
+            return (
+              <div
+                key={`${event.symbol}-${event.earningsDate}`}
+                className="flex items-center gap-3 py-2 border-b border-(--line) last:border-b-0"
+              >
+                <div
+                  className="rounded-md text-center px-2 py-1 min-w-[38px] shrink-0 bg-(--surface-muted)"
+                >
+                  <p
+                    className="text-[13px] font-medium text-(--ink) leading-none"
+                    style={{ fontFamily: "var(--font-mono)" }}
+                  >
+                    {day}
+                  </p>
+                  <p
+                    className="text-[9px] text-(--ink-soft) uppercase leading-none mt-0.5"
+                    style={{ fontFamily: "var(--font-mono)" }}
+                  >
+                    {month}
+                  </p>
+                </div>
+
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-1.5">
+                    <Link
+                      href={tickerRoute(event.symbol)}
+                      className="text-[12px] font-medium text-(--ink) hover:text-(--gold) transition-colors"
+                      style={{ fontFamily: "var(--font-mono)" }}
+                    >
+                      {event.symbol}
+                    </Link>
+                    <span className="text-[10px] text-(--ink-soft) truncate">{event.companyName}</span>
+                  </div>
+                  {event.epsEstimate !== null && (
+                    <p
+                      className="text-[10px] text-(--ink-muted) mt-0.5"
+                      style={{ fontFamily: "var(--font-mono)" }}
+                    >
+                      Est. EPS ${event.epsEstimate.toFixed(2)}
+                    </p>
+                  )}
+                </div>
+
+                {reportTimeBadge && (
+                  <span
+                    className={`shrink-0 text-[9px] px-1.5 py-[3px] rounded border ${
+                      isAmc
+                        ? "border-(--gold-border) bg-(--gold-soft) text-(--gold)"
+                        : "border-(--line-strong) bg-(--surface-muted) text-(--ink-muted)"
+                    }`}
+                    style={{ fontFamily: "var(--font-mono)" }}
+                  >
+                    {reportTimeBadge}
+                  </span>
+                )}
+              </div>
+            );
+          })}
+          <div className="mt-3">
+            <DataLimitations items={data?.dataLimitations ?? []} />
+          </div>
+        </div>
+      ) : (
+        <p className="text-[13px] text-(--ink-muted) pt-2">No scheduled earnings found for this window.</p>
+      )}
     </div>
   );
 }

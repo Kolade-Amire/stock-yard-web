@@ -1,10 +1,10 @@
 export function LogoMark() {
   return (
     <p
-      className="text-[1.9rem] font-bold leading-none text-(--ink-strong) md:text-[2.1rem]"
-      style={{ fontFamily: "var(--font-wordmark), cursive" }}
+      className="text-[18px] font-normal leading-none tracking-[-0.02em] text-(--ink-strong)"
+      style={{ fontFamily: "var(--font-serif), serif" }}
     >
-      Stock Yard
+      Stock<em className="italic" style={{ color: "var(--gold)" }}>Yard</em>
     </p>
   );
 }
