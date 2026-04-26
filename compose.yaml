@@ -1,0 +1,10 @@
+services:
+  stock-yard-web:
+    build:
+      context: .
+    container_name: stock-yard-web-local
+    environment:
+      STOCK_YARD_API_BASE_URL: http://host.docker.internal:8000
+    ports:
+      - "3000:3000"
+    restart: unless-stopped
