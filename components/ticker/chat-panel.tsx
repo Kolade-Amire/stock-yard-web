@@ -350,7 +350,7 @@ function ChatSurface({
             : "sticky top-24 px-4 py-4"
       }
     >
-      <div className={isWorkspace ? "border-b border-(--line) px-5 py-4" : "mb-3"}>
+      <div className={isWorkspace ? "border-b border-(--line) px-5 py-3.5" : "mb-3"}>
         <div className="flex items-start justify-between gap-3">
           <div>
             <p className="text-xs font-medium uppercase tracking-wider text-(--ink-soft)">AI Chat</p>
@@ -365,7 +365,7 @@ function ChatSurface({
         </div>
         <p className="mt-1 text-sm text-(--ink-muted)">Ticker-scoped chat. Sessions reset when the symbol changes.</p>
       </div>
-      <div className={mobile || isWorkspace ? "flex min-h-0 flex-1 flex-col gap-3 px-5 py-5" : "space-y-2"}>
+      <div className={mobile || isWorkspace ? "flex min-h-0 flex-1 flex-col gap-2 px-5 py-4" : "space-y-2"}>
         <div
           ref={scrollContainerRef}
           className={mobile || isWorkspace ? "min-h-0 flex-1 space-y-4 overflow-auto pr-1" : "max-h-[420px] space-y-4 overflow-auto pr-1"}
@@ -414,13 +414,19 @@ function ChatSurface({
             </div>
           ) : null}
         </div>
-        <div className={isWorkspace ? "rounded-[1rem] border border-(--line) bg-(--surface) p-3" : "glass-subcard glass-input-shell rounded-xl p-3"}>
+        <div className={isWorkspace ? "rounded-[1rem] border border-(--line) bg-(--surface) p-2.5" : "glass-subcard glass-input-shell rounded-xl p-3"}>
           <textarea
             value={draft}
             onChange={(event) => setDraft(event.target.value)}
             onKeyDown={handleTextareaKeyDown}
             placeholder={`Ask about ${symbol}…`}
-            className={mobile ? "min-h-20 w-full resize-none bg-transparent text-sm text-(--ink) outline-none placeholder:text-(--ink-soft)" : "min-h-24 w-full resize-none bg-transparent text-sm text-(--ink) outline-none placeholder:text-(--ink-soft)"}
+            className={
+              mobile
+                ? "min-h-20 w-full resize-none bg-transparent text-sm text-(--ink) outline-none placeholder:text-(--ink-soft)"
+                : isWorkspace
+                  ? "min-h-18 w-full resize-none bg-transparent text-sm text-(--ink) outline-none placeholder:text-(--ink-soft)"
+                  : "min-h-24 w-full resize-none bg-transparent text-sm text-(--ink) outline-none placeholder:text-(--ink-soft)"
+            }
           />
           <div className="mt-2 flex items-center justify-between gap-3">
             <p className="text-xs text-(--ink-soft)">Enter to send • Shift+Enter for newline</p>

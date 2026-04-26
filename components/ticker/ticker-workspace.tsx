@@ -82,7 +82,12 @@ export function TickerWorkspace({
       <Tabs.Root
         value={activeTab}
         onValueChange={handleTabChange}
-        className="flex h-[min(72dvh,58rem)] min-h-[32rem] flex-col overflow-hidden rounded-[1.8rem] border border-(--line-strong) bg-(--surface-strong) shadow-[var(--shadow-band)]"
+        className={cn(
+          "flex flex-col overflow-hidden rounded-[1.8rem] border border-(--line-strong) bg-(--surface-strong) shadow-[var(--shadow-band)]",
+          activeTab === "ai-chat"
+            ? "h-[min(84dvh,68rem)] min-h-[38rem]"
+            : "h-[min(72dvh,58rem)] min-h-[32rem]",
+        )}
       >
         <div className="border-b border-(--line) bg-[linear-gradient(180deg,rgba(255,255,255,0.28),transparent_100%)] px-4 pt-4 sm:px-5 md:px-6">
           <div className="overflow-x-auto overflow-y-hidden">
@@ -104,7 +109,14 @@ export function TickerWorkspace({
         <div className="min-h-0 flex-1">
           {DESKTOP_TICKER_TABS.map((tab) => (
             <Tabs.Content key={tab.key} value={tab.key} className="h-full data-[state=inactive]:hidden">
-              <div className="h-full overflow-y-auto px-4 py-4 sm:px-5 sm:py-5 md:px-6">
+              <div
+                className={cn(
+                  "h-full",
+                  tab.key === "ai-chat"
+                    ? "overflow-hidden px-2 py-2 sm:px-3 sm:py-3 md:px-4"
+                    : "overflow-y-auto px-4 py-4 sm:px-5 sm:py-5 md:px-6",
+                )}
+              >
                 {renderTickerTabPanel({
                   activeTab: tab.key,
                   symbol,
